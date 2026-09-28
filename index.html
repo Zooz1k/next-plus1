@@ -38,8 +38,14 @@ body{background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:75px}
 .cat-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
 .cat-btn{background:var(--card);border:1px solid var(--brd);color:var(--mut);padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
 .cat-btn.act{background:var(--pri);color:#fff;border-color:var(--pri)}
-.srv-card{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:14px;display:flex;flex-direction:column;justify-content:space-between}
-.ptag{background:rgba(79,70,229,.2);color:#818cf8;border:1px solid rgba(79,70,229,.4);padding:2px 10px;border-radius:50px;font-weight:800;font-size:12px}
+
+/* إبراز وتنوير كروت الخدمات */
+.srv-card{background:linear-gradient(145deg, #1e293b, #162032);border:1px solid #4f46e5;border-radius:16px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 0 15px rgba(79, 70, 229, 0.25);transition:0.3s}
+.srv-card:hover{border-color:#818cf8;box-shadow:0 0 25px rgba(129, 140, 248, 0.4);transform:translateY(-2px)}
+.ptag{background:rgba(79, 70, 229, 0.3);color:#a5b4fc;border:1px solid rgba(79, 70, 229, 0.6);padding:3px 10px;border-radius:50px;font-weight:800;font-size:12px}
+
+/* تصغير وتنسيق قسم الشحن */
+.compact-pay{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:14px}
 .twrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;text-align:right;font-size:12px}
 th{color:var(--mut);border-bottom:1px solid var(--brd);padding:8px;white-space:nowrap}
@@ -48,10 +54,13 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
 .b-pnd{background:rgba(59,130,246,.2);color:#60a5fa}.b-wrk{background:rgba(245,158,11,.2);color:#fbbf24}.b-dn{background:rgba(16,185,129,.2);color:#34d399}.b-rj{background:rgba(239,68,68,.2);color:#f87171}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:15px;z-index:500}
 .mbox{background:var(--card);border:1px solid var(--brd);border-radius:16px;width:100%;max-width:400px;padding:18px}
-.tabs{display:flex;gap:5px;background:var(--inp);padding:5px;border-radius:10px;margin-bottom:12px;flex-wrap:wrap}
-.tab{flex:1;text-align:center;padding:7px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;color:var(--mut);border:none;background:transparent;min-width:90px}
+.tabs{display:flex;gap:5px;background:var(--inp);padding:4px;border-radius:9px;margin-bottom:10px;flex-wrap:wrap}
+.tab{flex:1;text-align:center;padding:6px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;color:var(--mut);border:none;background:transparent;min-width:85px}
 .tab.act{background:var(--pri);color:#fff}
 .flt-tg{position:fixed;bottom:18px;left:18px;background:#0088cc;color:#fff;padding:10px 16px;border-radius:50px;font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 6px 20px rgba(0,136,204,.5);z-index:99;display:flex;align-items:center;gap:6px}
+
+/* إبراز خانة رد الأدمن ورسالة التسليم */
+.delivery-box{background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.4);color:#34d399;padding:6px 10px;border-radius:8px;font-weight:700;font-size:12px}
 </style>
 </head>
 <body>
@@ -94,88 +103,85 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
   <div id="scr-client" class="hide">
     <div id="ann-box" class="ann-bar hide"><span>📢</span><span id="ann-txt"></span></div>
 
-    <div class="card">
-      <div class="ttl">💰 شحن رصيد المحفظة</div>
-      <div class="tabs">
-        <button type="button" class="tab act" id="pt-1" onclick="setPayTab(1)">1. عبر خدمة العملاء</button>
+    <!-- قسم الشحن المصغر -->
+    <div class="compact-pay">
+      <div class="ttl" style="font-size:14px;margin-bottom:8px">💰 شحن رصيد المحفظة</div>
+      <div class="tabs" style="margin-bottom:8px">
+        <button type="button" class="tab act" id="pt-1" onclick="setPayTab(1)">1. خدمة العملاء</button>
         <button type="button" class="tab" id="pt-2" onclick="setPayTab(2)">2. دفع + سكرين</button>
         <button type="button" class="tab" id="pt-3" onclick="setPayTab(3)">3. كود هدية 🎁</button>
       </div>
 
       <div id="pay-1">
-        <p style="font-size:12px;color:#a5b4fc;margin-bottom:8px">اكتب الرقم الذي ستحول منه والمبلغ، وتواصل معنا تلجرام لتأكيد الشحن.</p>
-        <div class="g3">
-          <div class="fg"><label>الرقم الذي سترسل منه</label><input type="tel" id="sup-ph" class="inp" placeholder="رقم المحفظة" dir="ltr"></div>
-          <div class="fg"><label>المبلغ (ج.م)</label><input type="number" id="sup-am" class="inp" placeholder="مثال: 100"></div>
-          <div class="fg" style="display:flex;align-items:flex-end"><button type="button" class="btn b-pri w100" onclick="sendSupPay()">شحن والتواصل تلجرام</button></div>
+        <div class="g3" style="gap:8px">
+          <div class="fg" style="margin:0"><label>الرقم المحول منه</label><input type="tel" id="sup-ph" class="inp" placeholder="01xxxxxxxxx" dir="ltr" style="padding:7px 10px"></div>
+          <div class="fg" style="margin:0"><label>المبلغ (ج.م)</label><input type="number" id="sup-am" class="inp" placeholder="100" style="padding:7px 10px"></div>
+          <div class="fg" style="margin:0;display:flex;align-items:flex-end"><button type="button" class="btn b-pri w100" style="padding:7px" onclick="sendSupPay()">تأكيد وتواصل تلجرام</button></div>
         </div>
-        <a id="sup-lnk" href="https://t.me/nextplus_0" target="_blank" class="btn b-grn w100" style="margin-top:6px">✈️ فتح محادثة خدمة العملاء (@<span id="disp-tg-user">nextplus_0</span>)</a>
+        <a id="sup-lnk" href="https://t.me/nextplus_0" target="_blank" class="btn b-grn w100" style="margin-top:6px;padding:7px">✈️ فتح محادثة خدمة العملاء (@<span id="disp-tg-user">nextplus_0</span>)</a>
       </div>
 
       <div id="pay-2" class="hide">
-        <div style="background:var(--inp);border:1px solid var(--amb);padding:10px 14px;border-radius:10px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-          <div><span style="font-size:11px;color:var(--mut);display:block">رقم التحويل الرسمي (كاش / إنستا باي):</span><strong id="disp-cash-num" style="font-size:19px;color:var(--amb)" dir="ltr">01155799387</strong></div>
+        <div style="background:var(--inp);border:1px solid var(--amb);padding:8px 12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+          <div><span style="font-size:10px;color:var(--mut)">رقم الكاش الرسمي:</span><strong id="disp-cash-num" style="font-size:16px;color:var(--amb)" dir="ltr">01155799387</strong></div>
           <button type="button" class="btn b-amb b-sm" onclick="copyCash()">📋 نسخ الرقم</button>
         </div>
-        <div class="g3">
-          <div class="fg"><label>الرقم المحول منه</label><input type="tel" id="dir-ph" class="inp" placeholder="رقمك المحول منه" dir="ltr"></div>
-          <div class="fg"><label>المبلغ المحول (ج.م)</label><input type="number" id="dir-am" class="inp" placeholder="مثال: 150"></div>
-          <div class="fg"><label>صورة سكرين الدفع</label><input type="file" id="dir-fl" accept="image/*" class="inp" style="padding:6px"></div>
+        <div class="g3" style="gap:8px">
+          <div class="fg" style="margin:0"><label>الرقم المحول منه</label><input type="tel" id="dir-ph" class="inp" placeholder="رقمك" dir="ltr" style="padding:7px 10px"></div>
+          <div class="fg" style="margin:0"><label>المبلغ (ج.م)</label><input type="number" id="dir-am" class="inp" placeholder="150" style="padding:7px 10px"></div>
+          <div class="fg" style="margin:0"><label>سكرين التحويل</label><input type="file" id="dir-fl" accept="image/*" class="inp" style="padding:4px"></div>
         </div>
-        <button type="button" class="btn b-grn w100" onclick="sendDirPay()">إرسال السكرين لبوت الطلبات وتأكيد الشحن</button>
+        <button type="button" class="btn b-grn w100" style="margin-top:8px;padding:7px" onclick="sendDirPay()">إرسال السكرين للشحن</button>
       </div>
 
       <div id="pay-3" class="hide">
-        <p style="font-size:12px;color:var(--amb);margin-bottom:8px">🎁 معك كود هدية أو قسيمة شحن؟ اكتبه هنا للحصول على الرصيد فوراً!</p>
-        <div style="display:flex;gap:8px">
-          <input type="text" id="prm-in" class="inp" placeholder="اكتب كود الهدية هنا (مثال: NEXT10)" dir="ltr">
-          <button type="button" class="btn b-amb" style="white-space:nowrap" onclick="usePromo()">تفعيل الكود</button>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="prm-in" class="inp" placeholder="اكتب كود الهدية (مثال: NEXT10)" dir="ltr" style="padding:7px 10px">
+          <button type="button" class="btn b-amb" style="padding:7px 12px" onclick="usePromo()">تفعيل</button>
         </div>
       </div>
     </div>
 
-    <!-- الخدمات والبحث والأقسام -->
+    <!-- الخدمات البارزة -->
     <div style="margin-bottom:18px">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-        <div class="ttl" style="margin:0">⚡ خدمات Next Plus</div>
-        <input type="text" id="srch-in" class="inp" style="max-width:240px;padding:7px 12px" placeholder="🔍 ابحث عن خدمة..." oninput="render()">
+        <div class="ttl" style="margin:0;color:#818cf8;text-shadow:0 0 10px rgba(129,140,248,0.3)">🔥 خدمات Next Plus المميزة</div>
+        <input type="text" id="srch-in" class="inp" style="max-width:220px;padding:6px 10px" placeholder="🔍 ابحث عن خدمة..." oninput="render()">
       </div>
       <div class="cat-bar" id="cat-list"></div>
       <div class="g3" id="c-srvs"></div>
     </div>
 
     <div class="g2">
-      <div class="card"><div class="ttl">📋 سجل طلباتي</div><div class="twrap"><table><thead><tr><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>الحالة</th><th>رسالة التسليم / الرد</th></tr></thead><tbody id="c-ords"></tbody></table></div></div>
+      <div class="card"><div class="ttl">📋 سجل طلباتي</div><div class="twrap"><table><thead><tr><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>الحالة</th><th>رسالة التسليم / الرد الواضح</th></tr></thead><tbody id="c-ords"></tbody></table></div></div>
       <div class="card"><div class="ttl">💳 سجل عمليات الشحن</div><div class="twrap"><table><thead><tr><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>الحالة</th></tr></thead><tbody id="c-recs"></tbody></table></div></div>
     </div>
   </div>
 
   <!-- 3. الداش بورد للأدمن -->
   <div id="scr-admin" class="hide">
-    <!-- كروت الإحصائيات -->
     <div class="g4">
-      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">👥 إجمالي العملاء</span><b id="st-usrs">0</b></div>
-      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">⏳ طلبات قيد المراجعة</span><b id="st-pnd" style="color:var(--amb)">0</b></div>
-      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">🛒 إجمالي المبيعات</span><b id="st-sls" style="color:var(--grn)">0 ج.م</b></div>
-      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">💵 إجمالي الشحن المقبول</span><b id="st-rch" style="color:#38bdf8">0 ج.م</b></div>
+      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">👥 العملاء</span><b id="st-usrs">0</b></div>
+      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">⏳ قيد المراجعة</span><b id="st-pnd" style="color:var(--amb)">0</b></div>
+      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">🛒 المبيعات</span><b id="st-sls" style="color:var(--grn)">0 ج.م</b></div>
+      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">💵 الشحن المقبول</span><b id="st-rch" style="color:#38bdf8">0 ج.م</b></div>
     </div>
 
-    <!-- إعدادات الكاش والتلجرام والإعلان -->
     <div class="card" style="border-color:var(--amb)">
-      <div class="ttl" style="color:var(--amb)">⚙️ إعدادات المنصة (رقم الكاش + التلجرام + شريط الإعلانات)</div>
+      <div class="ttl" style="color:var(--amb)">⚙️ إعدادات المنصة</div>
       <div class="g3">
-        <div class="fg"><label>📱 رقم الكاش للتحويل</label><input type="text" id="cfg-cash" class="inp" dir="ltr"></div>
-        <div class="fg"><label>✈️ يوزر التلجرام (بدون @)</label><input type="text" id="cfg-tg" class="inp" dir="ltr"></div>
-        <div class="fg"><label>📢 شريط الإعلانات (اتركه فارغاً لإخفائه)</label><input type="text" id="cfg-ann" class="inp" placeholder="مثال: 🔥 عروض خاصة اليوم!"></div>
+        <div class="fg"><label>📱 رقم الكاش</label><input type="text" id="cfg-cash" class="inp" dir="ltr"></div>
+        <div class="fg"><label>✈️ يوزر التلجرام</label><input type="text" id="cfg-tg" class="inp" dir="ltr"></div>
+        <div class="fg"><label>📢 شريط الإعلانات</label><input type="text" id="cfg-ann" class="inp" placeholder="عروض جديدة!"></div>
       </div>
-      <button type="button" class="btn b-amb w100" onclick="saveCfg()">💾 حفظ وتحديث الإعدادات فوراً</button>
+      <button type="button" class="btn b-amb w100" onclick="saveCfg()">💾 حفظ الإعدادات</button>
     </div>
 
     <div class="g2">
       <div class="card">
         <div class="ttl">➕ إضافة خدمة جديدة</div>
         <div class="g2" style="grid-template-columns:1fr 1fr;gap:8px">
-          <div class="fg"><label>اسم الخدمة</label><input type="text" id="s-ttl" class="inp" placeholder="تزويد 1000 متابع"></div>
+          <div class="fg"><label>اسم الخدمة</label><input type="text" id="s-ttl" class="inp" placeholder="اسم الخدمة"></div>
           <div class="fg"><label>القسم</label>
             <select id="s-cat" class="inp">
               <option value="سوشيال ميديا">سوشيال ميديا</option>
@@ -187,32 +193,29 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
           </div>
         </div>
         <div class="fg"><label>سعر الوحدة (ج.م)</label><input type="number" id="s-prc" class="inp" placeholder="50"></div>
-        <div class="fg"><label>وصف الخدمة</label><input type="text" id="s-dsc" class="inp" placeholder="تفاصيل الخدمة..."></div>
+        <div class="fg"><label>وصف الخدمة</label><input type="text" id="s-dsc" class="inp" placeholder="وصف الخدمة..."></div>
         <button type="button" class="btn b-pri w100" onclick="addSrv()">نشر الخدمة</button>
       </div>
-
-      <div class="card"><div class="ttl">🏷️ تعديل الأسعار أو حذف خدمة</div><div id="a-srvs" style="max-height:220px;overflow-y:auto"></div></div>
+      <div class="card"><div class="ttl">🏷️ تعديل الأسعار أو الحذف</div><div id="a-srvs" style="max-height:220px;overflow-y:auto"></div></div>
     </div>
 
-    <!-- إدارة أكواد الهدايا + أرصدة العملاء -->
     <div class="g2">
       <div class="card">
-        <div class="ttl">🎁 إنشاء كود هدية (Promo Code)</div>
+        <div class="ttl">🎁 كود هدية</div>
         <div class="g3" style="grid-template-columns:1fr 1fr 1fr;gap:6px">
-          <div class="fg"><label>الكود</label><input type="text" id="p-cd" class="inp" placeholder="NEXT20" dir="ltr"></div>
-          <div class="fg"><label>المبلغ (ج.م)</label><input type="number" id="p-am" class="inp" placeholder="10"></div>
-          <div class="fg"><label>عدد العملاء</label><input type="number" id="p-mx" class="inp" placeholder="5"></div>
+          <div class="fg"><label>الكود</label><input type="text" id="p-cd" class="inp" placeholder="NEXT" dir="ltr"></div>
+          <div class="fg"><label>المبلغ</label><input type="number" id="p-am" class="inp" placeholder="10"></div>
+          <div class="fg"><label>العدد</label><input type="number" id="p-mx" class="inp" placeholder="5"></div>
         </div>
-        <button type="button" class="btn b-grn w100" onclick="addPromo()" style="margin-bottom:10px">إنشاء الكود</button>
-        <div id="a-prms" style="max-height:110px;overflow-y:auto"></div>
+        <button type="button" class="btn b-grn w100" onclick="addPromo()" style="margin-bottom:8px">إنشاء</button>
+        <div id="a-prms" style="max-height:100px;overflow-y:auto"></div>
       </div>
-
-      <div class="card"><div class="ttl">👤 إضافة / خصم رصيد لعميل</div><div id="a-usrs" style="max-height:230px;overflow-y:auto"></div></div>
+      <div class="card"><div class="ttl">👤 أرصدة العملاء</div><div id="a-usrs" style="max-height:220px;overflow-y:auto"></div></div>
     </div>
 
-    <div class="card"><div class="ttl">💵 طلبات شحن الرصيد</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>السكرين</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="a-recs"></tbody></table></div></div>
+    <div class="card"><div class="ttl">💵 طلبات الشحن</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>السكرين</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="a-recs"></tbody></table></div></div>
 
-    <div class="card"><div class="ttl">🔔 الريكوستات الواردة (مع إرسال رسالة تسليم للعميل)</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>تفاصيل العميل</th><th>رسالة التسليم / رد الأدمن</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody id="a-ords"></tbody></table></div></div>
+    <div class="card"><div class="ttl">🔔 الريكوستات الواردة (اكتب رسالة التسليم هنا)</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>التفاصيل</th><th>رسالة التسليم / رد الأدمن</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody id="a-ords"></tbody></table></div></div>
   </div>
 </div>
 
@@ -259,7 +262,7 @@ try {
 
 var st = {
   user: null,
-  cfg: { cash: "01155799387", tg: "nextplus_0", ann: "🔥 مرحباً بكم في منصة Next Plus! تنفيذ سريع ودعم فني على مدار الساعة." },
+  cfg: { cash: "01155799387", tg: "nextplus_0", ann: "🔥 مرحباً بكم في منصة Next Plus!" },
   users: [{id:"01155799387",name:"أدمن Next Plus",phone:"01155799387",pass:"123456",balance:500,role:"admin"}],
   srvs: [
     {id:"s1",title:"تزويد 1000 متابع حقيقي",cat:"سوشيال ميديا",price:50,desc:"تنفيذ سريع وضمان عدم النقصان"},
@@ -284,7 +287,7 @@ function clnPh(v){
 }
 function msg(t,err){
   var b=document.getElementById("msg-bar"); b.innerText=t; b.style.background=err?"#ef4444":"#10b981";
-  b.classList.remove("hide"); setTimeout(function(){b.classList.add("hide");},3000);
+  b.classList.remove("hide"); setTimeout(function(){b.classList.add("hide");},3500);
 }
 function tgMsg(t){
   try{fetch("https://api.telegram.org/bot"+TG_TOK+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:TG_ID,text:t,parse_mode:"HTML"})});}catch(e){}
@@ -302,7 +305,7 @@ function saveCfg(){
   if(!c || !t){ msg("اكتب رقم الكاش ويوزر التلجرام", true); return; }
   st.cfg = { cash: c, tg: t, ann: a };
   fSet("settings", "main", st.cfg); sv();
-  msg("تم تحديث الإعدادات وشريط الإعلانات!");
+  msg("تم تحديث الإعدادات بنجاح!");
 }
 function copyCash(){
   try{ navigator.clipboard.writeText(st.cfg.cash); msg("تم نسخ الرقم: " + st.cfg.cash); }
@@ -377,7 +380,7 @@ function sendSupPay(){
   var tgUrl = "https://t.me/" + st.cfg.tg + "?text=" + encodeURIComponent("مرحباً، أريد شحن حسابي ("+st.user.phone+") بمبلغ ("+am+" ج.م) من رقم ("+ph+")");
   document.getElementById("sup-lnk").href = tgUrl;
   document.getElementById("sup-ph").value=""; document.getElementById("sup-am").value="";
-  msg("تم تسجيل الطلب! جاري فتح التلجرام...");
+  msg("🔔 تم إرسال طلب الشحن! سيتم إشعارك فور قبول الرصيد.");
   try{ window.open(tgUrl, "_blank"); }catch(e){}
 }
 
@@ -390,12 +393,11 @@ function sendDirPay(){
     st.recs.unshift(r); fSet("recharges", r.id, r); sv();
     tgPic(fl, "📸 <b>إشعار دفع بالسكرين - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 حسابه: <code>"+st.user.phone+"</code>\n📲 محول من: <code>"+ph+"</code>\n💵 المبلغ: "+am+" ج.م");
     document.getElementById("dir-ph").value=""; document.getElementById("dir-am").value=""; document.getElementById("dir-fl").value="";
-    msg("تم إرسال السكرين لبوت الطلبات بنجاح!");
+    msg("🔔 تم إرسال السكرين بنجاح! انتظر إشعار القبول.");
   };
   rd.readAsDataURL(fl);
 }
 
-// نظام أكواد الهدايا
 function addPromo(){
   var cd = document.getElementById("p-cd").value.trim().toUpperCase();
   var am = Number(document.getElementById("p-am").value);
@@ -426,7 +428,7 @@ function usePromo(){
   var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"كود هدية ("+cd+")", amount:p.amount, sender:"Promo", screenshot:null, status:"مقبول"};
   st.recs.unshift(r); fSet("recharges", r.id, r); sv();
   document.getElementById("prm-in").value="";
-  msg("🎉 مبروك! تم إضافة " + p.amount + " ج.م لرصيدك!");
+  msg("🎉 مبروك! تم إضافة " + p.amount + " ج.م لرصيدك وتحديث إشعاراتك!");
 }
 
 function appRec(id, ok){
@@ -435,7 +437,7 @@ function appRec(id, ok){
   if(ok){
     var u = st.users.find(function(x){return x.phone===r.clientPhone;});
     if(u){ u.balance += Number(r.amount); fSet("users", u.id, u); if(st.user.phone===u.phone) st.user.balance=u.balance; }
-    msg("تم قبول الشحن وإضافة الرصيد!");
+    msg("تم قبول الشحن وإضافة الرصيد للعميل!");
   } else msg("تم رفض الطلب", true);
   sv();
 }
@@ -452,7 +454,7 @@ function addSrv(){
   var s = {id:"s_"+Date.now(), title:t, cat:c, price:p, desc:d};
   st.srvs.push(s); fSet("services", s.id, s); sv();
   document.getElementById("s-ttl").value=""; document.getElementById("s-prc").value=""; document.getElementById("s-dsc").value="";
-  msg("تم نشر الخدمة!");
+  msg("تم نشر الخدمة بنجاح!");
 }
 function upPrc(id){
   var p = Number(document.getElementById("ep-"+id).value), s = st.srvs.find(function(x){return x.id===id;});
@@ -483,7 +485,7 @@ function buySrv(){
   st.user.balance -= tot;
   var u = st.users.find(function(x){return x.phone===st.user.phone;});
   if(u){ u.balance = st.user.balance; fSet("users", u.id, u); }
-  var o = {id:"o_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, serviceTitle:curSrv.title, quantity:q, servicePrice:tot, notes:nts, reply:"-", status:"قيد المراجعة"};
+  var o = {id:"o_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, serviceTitle:curSrv.title, quantity:q, servicePrice:tot, notes:nts, reply:"قيد التنفيذ...", status:"قيد المراجعة"};
   st.ords.unshift(o); fSet("orders", o.id, o); sv(); clsMdl();
   tgMsg("🛒 <b>طلب خدمة جديد - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 الموبايل: <code>"+st.user.phone+"</code>\n⚡ الخدمة: "+curSrv.title+"\n🔢 الكمية: "+q+"\n💵 الإجمالي: "+tot+" ج.م\n📝 التفاصيل: <code>"+nts+"</code>");
   msg("تم خصم الرصيد وإرسال طلبك بنجاح!");
@@ -497,7 +499,9 @@ function setOrdSt(id, ns){
     var u = st.users.find(function(x){return x.phone===o.clientPhone;});
     if(u){ u.balance += Number(o.servicePrice); fSet("users", u.id, u); if(st.user.phone===u.phone) st.user.balance=u.balance; }
     msg("تم رفض الطلب وإرجاع الرصيد للعميل", true);
-  } else msg("تم تحديث الطلب وحفظ الرد!");
+  } else {
+    msg("تم تحديث حالة الطلب وإرسال رسالة التسليم للعميل!");
+  }
   o.status = ns; fSet("orders", o.id, o); sv();
 }
 
@@ -508,6 +512,40 @@ function shwImg(id){
 function bdg(s){
   var c = (s==="مكتمل"||s==="مقبول")?"b-dn":(s==="جاري التنفيذ"?"b-wrk":(s==="مرفوض"?"b-rj":"b-pnd"));
   return '<span class="bdg '+c+'">'+s+'</span>';
+}
+
+// نظام تنبيهات وإشعارات لحظية للعميل
+var lastNotifiedRechargeStatus = {};
+var lastNotifiedOrderStatus = {};
+
+function checkClientNotifications() {
+  if (!st.user) return;
+  
+  // فحص شحن الرصيد
+  st.recs.filter(function(r){return r.clientPhone===st.user.phone;}).forEach(function(r){
+    if (lastNotifiedRechargeStatus[r.id] && lastNotifiedRechargeStatus[r.id] !== r.status) {
+      if (r.status === "مقبول") {
+        msg("🎉 إشعار: تم قبول عملية الشحن وإضافة " + r.amount + " ج.م لرصيدك بنجاح!");
+      } else if (r.status === "مرفوض") {
+        msg("⚠️ إشعار: عذراً، تم رفض طلب الشحن الخاص بمبلغ " + r.amount + " ج.م", true);
+      }
+    }
+    lastNotifiedRechargeStatus[r.id] = r.status;
+  });
+
+  // فحص الطلبات وتسليم الخدمات
+  st.ords.filter(function(o){return o.clientPhone===st.user.phone;}).forEach(function(o){
+    if (lastNotifiedOrderStatus[o.id] && lastNotifiedOrderStatus[o.id] !== o.status) {
+      if (o.status === "مكتمل") {
+        msg("🚀 إشعار: تم تسليم خدمتك (" + o.serviceTitle + ") بنجاح! راجع خانة التسليم.");
+      } else if (o.status === "جاري التنفيذ") {
+        msg("⚡ إشعار: طلبك (" + o.serviceTitle + ") أصبح قيد التنفيذ الآن.");
+      } else if (o.status === "مرفوض") {
+        msg("❌ إشعار: تم رفض طلبك (" + o.serviceTitle + ") واسترداد المبلغ لرصيدك.", true);
+      }
+    }
+    lastNotifiedOrderStatus[o.id] = o.status;
+  });
 }
 
 function render(){
@@ -521,6 +559,8 @@ function render(){
   if(!st.user) return;
   document.getElementById("u-bal").innerText = st.user.balance;
   document.getElementById("u-name").innerText = st.user.name + " (" + st.user.phone + ")";
+
+  checkClientNotifications();
 
   // الإحصائيات
   document.getElementById("st-usrs").innerText = st.users.length;
@@ -557,7 +597,8 @@ function render(){
   }).join("") || '<small style="color:var(--mut)">لا توجد أكواد فعالة</small>';
 
   document.getElementById("c-ords").innerHTML = st.ords.filter(function(o){return o.clientPhone===st.user.phone;}).map(function(o){
-    return '<tr><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td>'+o.servicePrice+' ج.م</td><td>'+bdg(o.status)+'</td><td style="color:var(--amb);font-weight:700">'+(o.reply||"-")+'</td></tr>';
+    var repBox = (o.reply && o.reply!=="-" && o.reply!=="قيد التنفيذ...") ? '<div class="delivery-box">📥 '+o.reply+'</div>' : '<span style="color:var(--mut)">قيد المراجعة أو التنفيذ...</span>';
+    return '<tr><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td>'+o.servicePrice+' ج.م</td><td>'+bdg(o.status)+'</td><td>'+repBox+'</td></tr>';
   }).join("") || '<tr><td colspan="5" style="text-align:center;color:var(--mut)">لا توجد طلبات</td></tr>';
 
   document.getElementById("c-recs").innerHTML = st.recs.filter(function(r){return r.clientPhone===st.user.phone;}).map(function(r){
@@ -575,7 +616,7 @@ function render(){
   }).join("");
 
   document.getElementById("a-ords").innerHTML = st.ords.map(function(o){
-    return '<tr><td>'+o.clientName+'<br><small dir="ltr">'+o.clientPhone+'</small></td><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td style="color:var(--grn);font-weight:700">'+o.servicePrice+' ج.م</td><td>'+o.notes+'</td><td><input type="text" id="rp-'+o.id+'" value="'+(o.reply&&o.reply!=="-"?o.reply:"")+'" placeholder="اكتب كود أو رد للعميل" class="inp" style="min-width:130px;padding:4px 6px"></td><td>'+bdg(o.status)+'</td><td style="display:flex;gap:4px"><button type="button" class="btn b-amb b-sm" onclick="setOrdSt(\''+o.id+'\',\'جاري التنفيذ\')">تنفيذ</button><button type="button" class="btn b-grn b-sm" onclick="setOrdSt(\''+o.id+'\',\'مكتمل\')">إكمال</button><button type="button" class="btn b-red b-sm" onclick="setOrdSt(\''+o.id+'\',\'مرفوض\')">رفض</button></td></tr>';
+    return '<tr><td>'+o.clientName+'<br><small dir="ltr">'+o.clientPhone+'</small></td><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td style="color:var(--grn);font-weight:700">'+o.servicePrice+' ج.م</td><td>'+o.notes+'</td><td><input type="text" id="rp-'+o.id+'" value="'+(o.reply&&o.reply!=="-"?o.reply:"")+'" placeholder="اكتب كود الشحن أو رابط التسليم للعميل" class="inp" style="min-width:140px;padding:5px 8px;border-color:#10b981"></td><td>'+bdg(o.status)+'</td><td style="display:flex;gap:4px"><button type="button" class="btn b-amb b-sm" onclick="setOrdSt(\''+o.id+'\',\'جاري التنفيذ\')">تنفيذ</button><button type="button" class="btn b-grn b-sm" onclick="setOrdSt(\''+o.id+'\',\'مكتمل\')">إكمال</button><button type="button" class="btn b-red b-sm" onclick="setOrdSt(\''+o.id+'\',\'مرفوض\')">رفض</button></td></tr>';
   }).join("") || '<tr><td colspan="8" style="text-align:center;color:var(--mut)">لا توجد طلبات واردة</td></tr>';
 }
 
