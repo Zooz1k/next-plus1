@@ -3,51 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Next Plus | منصة الخدمات</title>
+<meta name="theme-color" content="#0f172a">
+<title>Next Plus | منصة الخدمات الإلكترونية</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
 :root{--bg:#0f172a;--card:#1e293b;--inp:#090d16;--brd:#334155;--pri:#4f46e5;--grn:#10b981;--amb:#f59e0b;--red:#ef4444;--txt:#f8fafc;--mut:#94a3b8}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Cairo',sans-serif}
-body{background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:40px}
+body{background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:75px}
 .hide{display:none!important}
-.wrap{max-width:1050px;margin:0 auto;padding:14px}
-#msg-bar{position:fixed;top:15px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.5);text-align:center}
+.wrap{max-width:1080px;margin:0 auto;padding:12px}
+#msg-bar{position:fixed;top:15px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.5);text-align:center;min-width:250px}
 .nav{background:var(--card);border-bottom:1px solid var(--brd);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:90}
-.logo{display:flex;align-items:center;gap:8px;font-size:21px;font-weight:800}
-.logo-ic{background:var(--pri);color:#fff;width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center}
+.logo{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800}
+.logo-ic{background:var(--pri);color:#fff;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center}
 .logo span{color:#818cf8}
 .bal-box{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.4);color:#34d399;padding:4px 12px;border-radius:50px;font-weight:700;font-size:13px}
-.card{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 8px 20px rgba(0,0,0,.3)}
-.auth-box{max-width:390px;margin:45px auto;text-align:center}
+.card{background:var(--card);border:1px solid var(--brd);border-radius:15px;padding:16px;margin-bottom:15px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.auth-box{max-width:390px;margin:40px auto;text-align:center}
 .ttl{font-size:16px;font-weight:800;margin-bottom:12px;color:#fff}
-.fg{margin-bottom:12px;text-align:right}
-.fg label{display:block;font-size:13px;color:var(--mut);margin-bottom:5px;font-weight:600}
-.inp{width:100%;background:var(--inp);border:1px solid var(--brd);color:#fff;padding:10px 12px;border-radius:10px;font-size:14px;outline:none}
+.fg{margin-bottom:10px;text-align:right}
+.fg label{display:block;font-size:12px;color:var(--mut);margin-bottom:4px;font-weight:600}
+.inp{width:100%;background:var(--inp);border:1px solid var(--brd);color:#fff;padding:9px 12px;border-radius:9px;font-size:13px;outline:none}
 .inp:focus{border-color:var(--pri)}
-.btn{border:none;padding:11px 16px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
-.w100{width:100%}.b-pri{background:var(--pri)}.b-grn{background:var(--grn)}.b-amb{background:var(--amb);color:#000}.b-red{background:rgba(239,68,68,.25);color:#f87171;border:1px solid rgba(239,68,68,.4)}.b-sm{padding:5px 10px;font-size:12px;border-radius:7px}
+.btn{border:none;padding:10px 15px;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer;color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:5px;text-decoration:none}
+.w100{width:100%}.b-pri{background:var(--pri)}.b-grn{background:var(--grn)}.b-amb{background:var(--amb);color:#000}.b-red{background:rgba(239,68,68,.25);color:#f87171;border:1px solid rgba(239,68,68,.4)}.b-sm{padding:5px 9px;font-size:11px;border-radius:6px}
 .g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
-.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.srv-card{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:15px;display:flex;flex-direction:column;justify-content:space-between}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:15px}
+.stat-box{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:12px;text-align:center}
+.stat-box b{display:block;font-size:20px;margin-top:4px;color:#818cf8}
+.ann-bar{background:linear-gradient(90deg,rgba(79,70,229,.25),rgba(245,158,11,.2));border:1px solid #6366f1;color:#fff;padding:10px 14px;border-radius:12px;margin-bottom:15px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+.cat-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
+.cat-btn{background:var(--card);border:1px solid var(--brd);color:var(--mut);padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.cat-btn.act{background:var(--pri);color:#fff;border-color:var(--pri)}
+.srv-card{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:14px;display:flex;flex-direction:column;justify-content:space-between}
 .ptag{background:rgba(79,70,229,.2);color:#818cf8;border:1px solid rgba(79,70,229,.4);padding:2px 10px;border-radius:50px;font-weight:800;font-size:12px}
 .twrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;text-align:right;font-size:12px}
 th{color:var(--mut);border-bottom:1px solid var(--brd);padding:8px;white-space:nowrap}
-td{padding:9px 8px;border-bottom:1px solid rgba(51,65,85,.5)}
+td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
 .bdg{padding:2px 8px;border-radius:50px;font-size:11px;font-weight:700;white-space:nowrap}
 .b-pnd{background:rgba(59,130,246,.2);color:#60a5fa}.b-wrk{background:rgba(245,158,11,.2);color:#fbbf24}.b-dn{background:rgba(16,185,129,.2);color:#34d399}.b-rj{background:rgba(239,68,68,.2);color:#f87171}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:15px;z-index:500}
 .mbox{background:var(--card);border:1px solid var(--brd);border-radius:16px;width:100%;max-width:400px;padding:18px}
-.tabs{display:flex;gap:6px;background:var(--inp);padding:5px;border-radius:10px;margin-bottom:14px}
-.tab{flex:1;text-align:center;padding:8px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:var(--mut);border:none;background:transparent}
+.tabs{display:flex;gap:5px;background:var(--inp);padding:5px;border-radius:10px;margin-bottom:12px;flex-wrap:wrap}
+.tab{flex:1;text-align:center;padding:7px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;color:var(--mut);border:none;background:transparent;min-width:90px}
 .tab.act{background:var(--pri);color:#fff}
+.flt-tg{position:fixed;bottom:18px;left:18px;background:#0088cc;color:#fff;padding:10px 16px;border-radius:50px;font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 6px 20px rgba(0,136,204,.5);z-index:99;display:flex;align-items:center;gap:6px}
 </style>
 </head>
 <body>
 
 <div id="msg-bar" class="hide"></div>
+<a id="flt-sup" href="https://t.me/nextplus_0" target="_blank" class="flt-tg">✈️ دعم تلجرام</a>
 
 <nav class="nav hide" id="top-nav">
   <div class="logo"><div class="logo-ic">⚡</div><div>Next <span>Plus</span></div></div>
@@ -60,33 +70,20 @@ td{padding:9px 8px;border-bottom:1px solid rgba(51,65,85,.5)}
 </nav>
 
 <div class="wrap">
-  <!-- 1. شاشة الدخول وإنشاء الحساب -->
+  <!-- 1. شاشة الدخول -->
   <div id="scr-auth">
     <div class="card auth-box">
       <div class="logo-ic" style="width:50px;height:50px;margin:0 auto 10px;font-size:24px">⚡</div>
       <h1 style="font-size:24px;font-weight:800;margin-bottom:14px">Next <span style="color:#818cf8">Plus</span></h1>
-
       <div class="tabs">
         <button type="button" class="tab act" id="t-login" onclick="setAuthTab(false)">تسجيل دخول</button>
         <button type="button" class="tab" id="t-reg" onclick="setAuthTab(true)">إنشاء حساب جديد</button>
       </div>
-
-      <div class="fg hide" id="f-name">
-        <label>الاسم بالكامل</label>
-        <input type="text" id="in-name" class="inp" placeholder="اكتب اسمك هنا">
-      </div>
-      <div class="fg">
-        <label>رقم الموبايل</label>
-        <input type="tel" id="in-phone" class="inp" placeholder="اكتب رقم موبايلك" dir="ltr">
-      </div>
-      <div class="fg">
-        <label>كلمة المرور</label>
-        <input type="password" id="in-pass" class="inp" placeholder="اكتب كلمة المرور" dir="ltr">
-      </div>
-
+      <div class="fg hide" id="f-name"><label>الاسم بالكامل</label><input type="text" id="in-name" class="inp" placeholder="اكتب اسمك هنا"></div>
+      <div class="fg"><label>رقم الموبايل</label><input type="tel" id="in-phone" class="inp" placeholder="اكتب رقم موبايلك" dir="ltr"></div>
+      <div class="fg"><label>كلمة المرور</label><input type="password" id="in-pass" class="inp" placeholder="اكتب كلمة المرور" dir="ltr"></div>
       <button type="button" class="btn b-pri w100" id="btn-auth" onclick="doAuth()">دخول</button>
-
-      <div style="margin-top:14px;font-size:13px;color:var(--mut)">
+      <div style="margin-top:12px;font-size:12px;color:var(--mut)">
         <span id="sw-txt">ليس لديك حساب؟</span>
         <button type="button" onclick="setAuthTab(!isReg)" style="background:none;border:none;color:#818cf8;font-weight:700;cursor:pointer;text-decoration:underline" id="sw-btn">إنشاء حساب جديد</button>
       </div>
@@ -95,89 +92,127 @@ td{padding:9px 8px;border-bottom:1px solid rgba(51,65,85,.5)}
 
   <!-- 2. واجهة العميل -->
   <div id="scr-client" class="hide">
+    <div id="ann-box" class="ann-bar hide"><span>📢</span><span id="ann-txt"></span></div>
+
     <div class="card">
       <div class="ttl">💰 شحن رصيد المحفظة</div>
       <div class="tabs">
-        <button type="button" class="tab act" id="pt-1" onclick="setPayTab(1)">1. شحن عبر خدمة العملاء (تلجرام)</button>
-        <button type="button" class="tab" id="pt-2" onclick="setPayTab(2)">2. دفع على الرقم + سكرين</button>
+        <button type="button" class="tab act" id="pt-1" onclick="setPayTab(1)">1. عبر خدمة العملاء</button>
+        <button type="button" class="tab" id="pt-2" onclick="setPayTab(2)">2. دفع + سكرين</button>
+        <button type="button" class="tab" id="pt-3" onclick="setPayTab(3)">3. كود هدية 🎁</button>
       </div>
 
       <div id="pay-1">
-        <p style="font-size:12px;color:#a5b4fc;margin-bottom:10px">اكتب الرقم الذي ستحول منه والمبلغ، وسيتم توجيهك لخدمة العملاء على التلجرام لتأكيد الشحن.</p>
+        <p style="font-size:12px;color:#a5b4fc;margin-bottom:8px">اكتب الرقم الذي ستحول منه والمبلغ، وتواصل معنا تلجرام لتأكيد الشحن.</p>
         <div class="g3">
           <div class="fg"><label>الرقم الذي سترسل منه</label><input type="tel" id="sup-ph" class="inp" placeholder="رقم المحفظة" dir="ltr"></div>
           <div class="fg"><label>المبلغ (ج.م)</label><input type="number" id="sup-am" class="inp" placeholder="مثال: 100"></div>
           <div class="fg" style="display:flex;align-items:flex-end"><button type="button" class="btn b-pri w100" onclick="sendSupPay()">شحن والتواصل تلجرام</button></div>
         </div>
-        <div id="sup-lnk-box" style="margin-top:8px">
-          <a id="sup-lnk" href="https://t.me/nextplus_0" target="_blank" class="btn b-grn w100">✈️ فتح محادثة خدمة العملاء على التلجرام (@<span id="disp-tg-user">nextplus_0</span>)</a>
-        </div>
+        <a id="sup-lnk" href="https://t.me/nextplus_0" target="_blank" class="btn b-grn w100" style="margin-top:6px">✈️ فتح محادثة خدمة العملاء (@<span id="disp-tg-user">nextplus_0</span>)</a>
       </div>
 
       <div id="pay-2" class="hide">
-        <div style="background:var(--inp);border:1px solid var(--amb);padding:12px 14px;border-radius:10px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-          <div>
-            <span style="font-size:12px;color:var(--mut);display:block">رقم التحويل الرسمي (كاش / إنستا باي):</span>
-            <strong id="disp-cash-num" style="font-size:20px;color:var(--amb);letter-spacing:1px" dir="ltr">01155799387</strong>
-          </div>
+        <div style="background:var(--inp);border:1px solid var(--amb);padding:10px 14px;border-radius:10px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div><span style="font-size:11px;color:var(--mut);display:block">رقم التحويل الرسمي (كاش / إنستا باي):</span><strong id="disp-cash-num" style="font-size:19px;color:var(--amb)" dir="ltr">01155799387</strong></div>
           <button type="button" class="btn b-amb b-sm" onclick="copyCash()">📋 نسخ الرقم</button>
         </div>
         <div class="g3">
           <div class="fg"><label>الرقم المحول منه</label><input type="tel" id="dir-ph" class="inp" placeholder="رقمك المحول منه" dir="ltr"></div>
           <div class="fg"><label>المبلغ المحول (ج.م)</label><input type="number" id="dir-am" class="inp" placeholder="مثال: 150"></div>
-          <div class="fg"><label>صورة سكرين الدفع</label><input type="file" id="dir-fl" accept="image/*" class="inp" style="padding:7px"></div>
+          <div class="fg"><label>صورة سكرين الدفع</label><input type="file" id="dir-fl" accept="image/*" class="inp" style="padding:6px"></div>
         </div>
         <button type="button" class="btn b-grn w100" onclick="sendDirPay()">إرسال السكرين لبوت الطلبات وتأكيد الشحن</button>
       </div>
+
+      <div id="pay-3" class="hide">
+        <p style="font-size:12px;color:var(--amb);margin-bottom:8px">🎁 معك كود هدية أو قسيمة شحن؟ اكتبه هنا للحصول على الرصيد فوراً!</p>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="prm-in" class="inp" placeholder="اكتب كود الهدية هنا (مثال: NEXT10)" dir="ltr">
+          <button type="button" class="btn b-amb" style="white-space:nowrap" onclick="usePromo()">تفعيل الكود</button>
+        </div>
+      </div>
     </div>
 
-    <div style="margin-bottom:20px">
-      <div class="ttl">⚡ خدمات Next Plus المتاحة</div>
+    <!-- الخدمات والبحث والأقسام -->
+    <div style="margin-bottom:18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+        <div class="ttl" style="margin:0">⚡ خدمات Next Plus</div>
+        <input type="text" id="srch-in" class="inp" style="max-width:240px;padding:7px 12px" placeholder="🔍 ابحث عن خدمة..." oninput="render()">
+      </div>
+      <div class="cat-bar" id="cat-list"></div>
       <div class="g3" id="c-srvs"></div>
     </div>
 
     <div class="g2">
-      <div class="card"><div class="ttl">📋 سجل طلباتي</div><div class="twrap"><table><thead><tr><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>التفاصيل</th><th>الحالة</th></tr></thead><tbody id="c-ords"></tbody></table></div></div>
+      <div class="card"><div class="ttl">📋 سجل طلباتي</div><div class="twrap"><table><thead><tr><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>الحالة</th><th>رسالة التسليم / الرد</th></tr></thead><tbody id="c-ords"></tbody></table></div></div>
       <div class="card"><div class="ttl">💳 سجل عمليات الشحن</div><div class="twrap"><table><thead><tr><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>الحالة</th></tr></thead><tbody id="c-recs"></tbody></table></div></div>
     </div>
   </div>
 
-  <!-- 3. الداش بورد (تفتح للأدمن فقط) -->
+  <!-- 3. الداش بورد للأدمن -->
   <div id="scr-admin" class="hide">
+    <!-- كروت الإحصائيات -->
+    <div class="g4">
+      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">👥 إجمالي العملاء</span><b id="st-usrs">0</b></div>
+      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">⏳ طلبات قيد المراجعة</span><b id="st-pnd" style="color:var(--amb)">0</b></div>
+      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">🛒 إجمالي المبيعات</span><b id="st-sls" style="color:var(--grn)">0 ج.م</b></div>
+      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">💵 إجمالي الشحن المقبول</span><b id="st-rch" style="color:#38bdf8">0 ج.م</b></div>
+    </div>
+
+    <!-- إعدادات الكاش والتلجرام والإعلان -->
     <div class="card" style="border-color:var(--amb)">
-      <h2 style="font-size:18px;font-weight:800;color:var(--amb);margin-bottom:12px">⚙️ لوحة تحكم الأدمن (Dashboard) - Next Plus</h2>
-      <div class="g3" style="background:var(--inp);padding:12px;border-radius:12px;border:1px solid var(--brd)">
-        <div class="fg" style="margin:0">
-          <label>📱 رقم الكاش (الذي يحول عليه العملاء)</label>
-          <input type="text" id="cfg-cash" class="inp" placeholder="مثال: 010xxxx" dir="ltr">
-        </div>
-        <div class="fg" style="margin:0">
-          <label>✈️ يوزر التلجرام لخدمة العملاء (بدون @)</label>
-          <input type="text" id="cfg-tg" class="inp" placeholder="nextplus_0" dir="ltr">
-        </div>
-        <div class="fg" style="margin:0;display:flex;align-items:flex-end">
-          <button type="button" class="btn b-amb w100" onclick="saveCfg()">💾 حفظ رقم الكاش والتلجرام</button>
-        </div>
+      <div class="ttl" style="color:var(--amb)">⚙️ إعدادات المنصة (رقم الكاش + التلجرام + شريط الإعلانات)</div>
+      <div class="g3">
+        <div class="fg"><label>📱 رقم الكاش للتحويل</label><input type="text" id="cfg-cash" class="inp" dir="ltr"></div>
+        <div class="fg"><label>✈️ يوزر التلجرام (بدون @)</label><input type="text" id="cfg-tg" class="inp" dir="ltr"></div>
+        <div class="fg"><label>📢 شريط الإعلانات (اتركه فارغاً لإخفائه)</label><input type="text" id="cfg-ann" class="inp" placeholder="مثال: 🔥 عروض خاصة اليوم!"></div>
       </div>
+      <button type="button" class="btn b-amb w100" onclick="saveCfg()">💾 حفظ وتحديث الإعدادات فوراً</button>
     </div>
 
     <div class="g2">
       <div class="card">
         <div class="ttl">➕ إضافة خدمة جديدة</div>
-        <div class="fg"><label>اسم الخدمة</label><input type="text" id="s-ttl" class="inp" placeholder="مثال: تزويد 1000 متابع"></div>
+        <div class="g2" style="grid-template-columns:1fr 1fr;gap:8px">
+          <div class="fg"><label>اسم الخدمة</label><input type="text" id="s-ttl" class="inp" placeholder="تزويد 1000 متابع"></div>
+          <div class="fg"><label>القسم</label>
+            <select id="s-cat" class="inp">
+              <option value="سوشيال ميديا">سوشيال ميديا</option>
+              <option value="شحن ألعاب">شحن ألعاب</option>
+              <option value="تصميمات">تصميمات</option>
+              <option value="خدمات تلجرام">خدمات تلجرام</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+        </div>
         <div class="fg"><label>سعر الوحدة (ج.م)</label><input type="number" id="s-prc" class="inp" placeholder="50"></div>
-        <div class="fg"><label>وصف الخدمة</label><textarea id="s-dsc" rows="2" class="inp" placeholder="تفاصيل الخدمة..."></textarea></div>
+        <div class="fg"><label>وصف الخدمة</label><input type="text" id="s-dsc" class="inp" placeholder="تفاصيل الخدمة..."></div>
         <button type="button" class="btn b-pri w100" onclick="addSrv()">نشر الخدمة</button>
       </div>
-      <div class="card"><div class="ttl">🏷️ تعديل الأسعار أو حذف خدمة</div><div id="a-srvs" style="max-height:260px;overflow-y:auto"></div></div>
+
+      <div class="card"><div class="ttl">🏷️ تعديل الأسعار أو حذف خدمة</div><div id="a-srvs" style="max-height:220px;overflow-y:auto"></div></div>
     </div>
 
+    <!-- إدارة أكواد الهدايا + أرصدة العملاء -->
     <div class="g2">
-      <div class="card"><div class="ttl">💵 طلبات شحن الرصيد</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>السكرين</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="a-recs"></tbody></table></div></div>
-      <div class="card"><div class="ttl">👤 إضافة / خصم رصيد لعميل</div><div id="a-usrs" style="max-height:260px;overflow-y:auto"></div></div>
+      <div class="card">
+        <div class="ttl">🎁 إنشاء كود هدية (Promo Code)</div>
+        <div class="g3" style="grid-template-columns:1fr 1fr 1fr;gap:6px">
+          <div class="fg"><label>الكود</label><input type="text" id="p-cd" class="inp" placeholder="NEXT20" dir="ltr"></div>
+          <div class="fg"><label>المبلغ (ج.م)</label><input type="number" id="p-am" class="inp" placeholder="10"></div>
+          <div class="fg"><label>عدد العملاء</label><input type="number" id="p-mx" class="inp" placeholder="5"></div>
+        </div>
+        <button type="button" class="btn b-grn w100" onclick="addPromo()" style="margin-bottom:10px">إنشاء الكود</button>
+        <div id="a-prms" style="max-height:110px;overflow-y:auto"></div>
+      </div>
+
+      <div class="card"><div class="ttl">👤 إضافة / خصم رصيد لعميل</div><div id="a-usrs" style="max-height:230px;overflow-y:auto"></div></div>
     </div>
 
-    <div class="card"><div class="ttl">🔔 الريكوستات الواردة (طلبات الخدمات)</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الموبايل</th><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>التفاصيل</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody id="a-ords"></tbody></table></div></div>
+    <div class="card"><div class="ttl">💵 طلبات شحن الرصيد</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>السكرين</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="a-recs"></tbody></table></div></div>
+
+    <div class="card"><div class="ttl">🔔 الريكوستات الواردة (مع إرسال رسالة تسليم للعميل)</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>تفاصيل العميل</th><th>رسالة التسليم / رد الأدمن</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody id="a-ords"></tbody></table></div></div>
   </div>
 </div>
 
@@ -224,21 +259,22 @@ try {
 
 var st = {
   user: null,
-  cfg: { cash: "01155799387", tg: "nextplus_0" },
+  cfg: { cash: "01155799387", tg: "nextplus_0", ann: "🔥 مرحباً بكم في منصة Next Plus! تنفيذ سريع ودعم فني على مدار الساعة." },
   users: [{id:"01155799387",name:"أدمن Next Plus",phone:"01155799387",pass:"123456",balance:500,role:"admin"}],
   srvs: [
-    {id:"s1",title:"تزويد 1000 متابع حقيقي",price:50,desc:"تنفيذ سريع وضمان عدم النقصان"},
-    {id:"s2",title:"تصميم شعار احترافي (Logo)",price:150,desc:"تسليم بجودة عالية خلال 24 ساعة"}
+    {id:"s1",title:"تزويد 1000 متابع حقيقي",cat:"سوشيال ميديا",price:50,desc:"تنفيذ سريع وضمان عدم النقصان"},
+    {id:"s2",title:"تصميم شعار احترافي (Logo)",cat:"تصميمات",price:150,desc:"تسليم بجودة عالية خلال 24 ساعة"}
   ],
-  ords: [], recs: []
+  ords: [], recs: [], prms: []
 };
 try {
   var s = localStorage.getItem("np_db");
-  if(s){ var p = JSON.parse(s); st = Object.assign(st, p); if(!st.cfg) st.cfg = {cash:"01155799387",tg:"nextplus_0"}; }
+  if(s){ var p = JSON.parse(s); st = Object.assign(st, p); if(!st.cfg) st.cfg={cash:"01155799387",tg:"nextplus_0",ann:""}; if(!st.prms) st.prms=[]; }
 } catch(e){}
 
 function sv(){ try{localStorage.setItem("np_db",JSON.stringify(st));}catch(e){} render(); }
 function fSet(c,id,d){ if(db) try{db.collection(c).doc(String(id)).set(d);}catch(e){} }
+function fDel(c,id){ if(db) try{db.collection(c).doc(String(id)).delete();}catch(e){} }
 
 function clnPh(v){
   if(!v) return "";
@@ -257,22 +293,22 @@ function tgPic(f,c){
   try{var d=new FormData();d.append("chat_id",TG_ID);d.append("photo",f);d.append("caption",c);d.append("parse_mode","HTML");fetch("https://api.telegram.org/bot"+TG_TOK+"/sendPhoto",{method:"POST",body:d});}catch(e){}
 }
 
+var isReg = false, isAdmView = false, curSrv = null, curCat = "الكل";
+
 function saveCfg(){
   var c = document.getElementById("cfg-cash").value.trim();
   var t = document.getElementById("cfg-tg").value.trim().replace("@","").replace("https://t.me/","");
-  if(!c || !t){ msg("اكتب رقم الكاش ويوزر التلجرام أولاً", true); return; }
-  st.cfg = { cash: c, tg: t };
-  fSet("settings", "main", st.cfg);
-  sv();
-  msg("تم حفظ وتحديث رقم الكاش والتلجرام في الموقع!");
+  var a = document.getElementById("cfg-ann").value.trim();
+  if(!c || !t){ msg("اكتب رقم الكاش ويوزر التلجرام", true); return; }
+  st.cfg = { cash: c, tg: t, ann: a };
+  fSet("settings", "main", st.cfg); sv();
+  msg("تم تحديث الإعدادات وشريط الإعلانات!");
 }
-
 function copyCash(){
-  try{ navigator.clipboard.writeText(st.cfg.cash); msg("تم نسخ رقم الكاش: " + st.cfg.cash); }
+  try{ navigator.clipboard.writeText(st.cfg.cash); msg("تم نسخ الرقم: " + st.cfg.cash); }
   catch(e){ msg("رقم الكاش: " + st.cfg.cash); }
 }
 
-var isReg = false, isAdmView = false, curSrv = null;
 function setAuthTab(r){
   isReg = r;
   document.getElementById("f-name").classList.toggle("hide", !r);
@@ -287,11 +323,11 @@ function doAuth(){
   var ph = clnPh(document.getElementById("in-phone").value);
   var ps = document.getElementById("in-pass").value.trim();
   var nm = document.getElementById("in-name").value.trim();
-  if(!ph || !ps){ msg("اكتب رقم الموبايل وكلمة المرور أولاً", true); return; }
+  if(!ph || !ps){ msg("اكتب رقم الموبايل وكلمة المرور", true); return; }
   var u = st.users.find(function(x){return x.phone===ph;});
   if(isReg){
     if(!nm){ msg("اكتب اسمك بالكامل", true); return; }
-    if(u){ msg("الرقم مسجل بالفعل، اضغط تسجيل دخول", true); setAuthTab(false); return; }
+    if(u){ msg("الرقم مسجل بالفعل، سجل دخول", true); setAuthTab(false); return; }
     u = {id:ph, name:nm, phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client"};
     st.users.push(u); fSet("users", u.id, u);
   } else {
@@ -312,8 +348,9 @@ function openApp(){
   if(!u){ document.getElementById("scr-client").classList.add("hide"); document.getElementById("scr-admin").classList.add("hide"); return; }
   var adm = u.phone===ADM_PH || u.role==="admin";
   document.getElementById("adm-btn").classList.toggle("hide", !adm);
-  document.getElementById("cfg-cash").value = st.cfg.cash;
-  document.getElementById("cfg-tg").value = st.cfg.tg;
+  document.getElementById("cfg-cash").value = st.cfg.cash || "";
+  document.getElementById("cfg-tg").value = st.cfg.tg || "";
+  document.getElementById("cfg-ann").value = st.cfg.ann || "";
   showView(adm ? "admin" : "client"); render();
 }
 function showView(v){
@@ -325,10 +362,10 @@ function showView(v){
 function toggleView(){ showView(isAdmView ? "client" : "admin"); }
 function doLogout(){ st.user = null; sv(); openApp(); }
 function setPayTab(n){
-  document.getElementById("pay-1").classList.toggle("hide", n!==1);
-  document.getElementById("pay-2").classList.toggle("hide", n!==2);
-  document.getElementById("pt-1").classList.toggle("act", n===1);
-  document.getElementById("pt-2").classList.toggle("act", n===2);
+  [1,2,3].forEach(function(i){
+    document.getElementById("pay-"+i).classList.toggle("hide", n!==i);
+    document.getElementById("pt-"+i).classList.toggle("act", n===i);
+  });
 }
 
 function sendSupPay(){
@@ -340,7 +377,7 @@ function sendSupPay(){
   var tgUrl = "https://t.me/" + st.cfg.tg + "?text=" + encodeURIComponent("مرحباً، أريد شحن حسابي ("+st.user.phone+") بمبلغ ("+am+" ج.م) من رقم ("+ph+")");
   document.getElementById("sup-lnk").href = tgUrl;
   document.getElementById("sup-ph").value=""; document.getElementById("sup-am").value="";
-  msg("تم تسجيل الطلب! اضغط على زر التلجرام الأخضر بالأسفل");
+  msg("تم تسجيل الطلب! جاري فتح التلجرام...");
   try{ window.open(tgUrl, "_blank"); }catch(e){}
 }
 
@@ -356,6 +393,40 @@ function sendDirPay(){
     msg("تم إرسال السكرين لبوت الطلبات بنجاح!");
   };
   rd.readAsDataURL(fl);
+}
+
+// نظام أكواد الهدايا
+function addPromo(){
+  var cd = document.getElementById("p-cd").value.trim().toUpperCase();
+  var am = Number(document.getElementById("p-am").value);
+  var mx = Number(document.getElementById("p-mx").value) || 1;
+  if(!cd || am<=0){ msg("اكتب الكود والمبلغ", true); return; }
+  var p = {id:cd, code:cd, amount:am, max:mx, usedBy:[]};
+  st.prms = st.prms.filter(function(x){return x.code!==cd;});
+  st.prms.push(p); fSet("promos", p.id, p); sv();
+  document.getElementById("p-cd").value=""; document.getElementById("p-am").value=""; document.getElementById("p-mx").value="";
+  msg("تم إنشاء كود الهدية: " + cd);
+}
+function delPromo(cd){
+  st.prms = st.prms.filter(function(x){return x.code!==cd;});
+  fDel("promos", cd); sv(); msg("تم حذف الكود", true);
+}
+function usePromo(){
+  var cd = document.getElementById("prm-in").value.trim().toUpperCase();
+  if(!cd){ msg("اكتب الكود أولاً", true); return; }
+  var p = st.prms.find(function(x){return x.code===cd;});
+  if(!p){ msg("الكود غير صحيح أو منتهي!", true); return; }
+  if(!p.usedBy) p.usedBy = [];
+  if(p.usedBy.indexOf(st.user.phone)>-1){ msg("لقد استخدمت هذا الكود من قبل!", true); return; }
+  if(p.usedBy.length >= p.max){ msg("انتهت الكمية المتاحة لهذا الكود!", true); return; }
+  p.usedBy.push(st.user.phone); fSet("promos", p.id, p);
+  st.user.balance += Number(p.amount);
+  var u = st.users.find(function(x){return x.phone===st.user.phone;});
+  if(u){ u.balance = st.user.balance; fSet("users", u.id, u); }
+  var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"كود هدية ("+cd+")", amount:p.amount, sender:"Promo", screenshot:null, status:"مقبول"};
+  st.recs.unshift(r); fSet("recharges", r.id, r); sv();
+  document.getElementById("prm-in").value="";
+  msg("🎉 مبروك! تم إضافة " + p.amount + " ج.م لرصيدك!");
 }
 
 function appRec(id, ok){
@@ -376,9 +447,9 @@ function addBal(ph){
 }
 
 function addSrv(){
-  var t = document.getElementById("s-ttl").value.trim(), p = Number(document.getElementById("s-prc").value), d = document.getElementById("s-dsc").value.trim();
+  var t = document.getElementById("s-ttl").value.trim(), c = document.getElementById("s-cat").value, p = Number(document.getElementById("s-prc").value), d = document.getElementById("s-dsc").value.trim();
   if(!t || p<=0){ msg("اكتب اسم الخدمة والسعر", true); return; }
-  var s = {id:"s_"+Date.now(), title:t, price:p, desc:d};
+  var s = {id:"s_"+Date.now(), title:t, cat:c, price:p, desc:d};
   st.srvs.push(s); fSet("services", s.id, s); sv();
   document.getElementById("s-ttl").value=""; document.getElementById("s-prc").value=""; document.getElementById("s-dsc").value="";
   msg("تم نشر الخدمة!");
@@ -389,9 +460,9 @@ function upPrc(id){
 }
 function delSrv(id){
   st.srvs = st.srvs.filter(function(x){return x.id!==id;});
-  if(db) try{db.collection("services").doc(id).delete();}catch(e){}
-  sv(); msg("تم الحذف", true);
+  fDel("services", id); sv(); msg("تم الحذف", true);
 }
+function setCat(c){ curCat = c; render(); }
 
 function opnMdl(id){
   curSrv = st.srvs.find(function(x){return x.id===id;}); if(!curSrv) return;
@@ -412,19 +483,21 @@ function buySrv(){
   st.user.balance -= tot;
   var u = st.users.find(function(x){return x.phone===st.user.phone;});
   if(u){ u.balance = st.user.balance; fSet("users", u.id, u); }
-  var o = {id:"o_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, serviceTitle:curSrv.title, quantity:q, servicePrice:tot, notes:nts, status:"قيد المراجعة"};
+  var o = {id:"o_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, serviceTitle:curSrv.title, quantity:q, servicePrice:tot, notes:nts, reply:"-", status:"قيد المراجعة"};
   st.ords.unshift(o); fSet("orders", o.id, o); sv(); clsMdl();
   tgMsg("🛒 <b>طلب خدمة جديد - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 الموبايل: <code>"+st.user.phone+"</code>\n⚡ الخدمة: "+curSrv.title+"\n🔢 الكمية: "+q+"\n💵 الإجمالي: "+tot+" ج.م\n📝 التفاصيل: <code>"+nts+"</code>");
   msg("تم خصم الرصيد وإرسال طلبك بنجاح!");
 }
 
 function setOrdSt(id, ns){
-  var o = st.ords.find(function(x){return x.id===id;}); if(!o || o.status===ns) return;
+  var o = st.ords.find(function(x){return x.id===id;}); if(!o) return;
+  var rpEl = document.getElementById("rp-"+id);
+  if(rpEl && rpEl.value.trim()) o.reply = rpEl.value.trim();
   if(ns==="مرفوض" && o.status!=="مرفوض"){
     var u = st.users.find(function(x){return x.phone===o.clientPhone;});
     if(u){ u.balance += Number(o.servicePrice); fSet("users", u.id, u); if(st.user.phone===u.phone) st.user.balance=u.balance; }
     msg("تم رفض الطلب وإرجاع الرصيد للعميل", true);
-  } else msg("تم تحديث حالة الطلب!");
+  } else msg("تم تحديث الطلب وحفظ الرد!");
   o.status = ns; fSet("orders", o.id, o); sv();
 }
 
@@ -441,39 +514,77 @@ function render(){
   document.getElementById("disp-cash-num").innerText = st.cfg.cash;
   document.getElementById("disp-tg-user").innerText = st.cfg.tg;
   document.getElementById("sup-lnk").href = "https://t.me/" + st.cfg.tg;
+  document.getElementById("flt-sup").href = "https://t.me/" + st.cfg.tg;
+  var ab = document.getElementById("ann-box");
+  if(st.cfg.ann){ document.getElementById("ann-txt").innerText = st.cfg.ann; ab.classList.remove("hide"); } else ab.classList.add("hide");
+
   if(!st.user) return;
   document.getElementById("u-bal").innerText = st.user.balance;
   document.getElementById("u-name").innerText = st.user.name + " (" + st.user.phone + ")";
-  document.getElementById("c-srvs").innerHTML = st.srvs.map(function(s){
-    return '<div class="srv-card"><div><div style="display:flex;justify-content:space-between;margin-bottom:8px"><strong>'+s.title+'</strong><span class="ptag">'+s.price+' ج.م</span></div><p style="font-size:12px;color:var(--mut);margin-bottom:12px">'+s.desc+'</p></div><button type="button" class="btn b-pri w100" onclick="opnMdl(\''+s.id+'\')">شراء الخدمة بالرصيد</button></div>';
+
+  // الإحصائيات
+  document.getElementById("st-usrs").innerText = st.users.length;
+  document.getElementById("st-pnd").innerText = st.ords.filter(function(o){return o.status==="قيد المراجعة";}).length;
+  var sls = 0; st.ords.forEach(function(o){ if(o.status!=="مرفوض") sls += Number(o.servicePrice||0); });
+  document.getElementById("st-sls").innerText = sls + " ج.م";
+  var rch = 0; st.recs.forEach(function(r){ if(r.status==="مقبول") rch += Number(r.amount||0); });
+  document.getElementById("st-rch").innerText = rch + " ج.م";
+
+  // الأقسام والبحث
+  var cats = ["الكل","سوشيال ميديا","شحن ألعاب","تصميمات","خدمات تلجرام","أخرى"];
+  document.getElementById("cat-list").innerHTML = cats.map(function(c){
+    return '<button type="button" class="cat-btn '+(curCat===c?'act':'')+'" onclick="setCat(\''+c+'\')">'+c+'</button>';
   }).join("");
+
+  var q = (document.getElementById("srch-in").value||"").trim().toLowerCase();
+  var fltSrvs = st.srvs.filter(function(s){
+    var mCat = (curCat==="الكل" || (s.cat||"سوشيال ميديا")===curCat);
+    var mQ = (!q || s.title.toLowerCase().indexOf(q)>-1 || (s.desc||"").toLowerCase().indexOf(q)>-1);
+    return mCat && mQ;
+  });
+
+  document.getElementById("c-srvs").innerHTML = fltSrvs.map(function(s){
+    return '<div class="srv-card"><div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong>'+s.title+'</strong><span class="ptag">'+s.price+' ج.م</span></div><span style="font-size:10px;color:#a5b4fc;display:block;margin-bottom:6px">📁 '+(s.cat||"عام")+'</span><p style="font-size:12px;color:var(--mut);margin-bottom:12px">'+s.desc+'</p></div><button type="button" class="btn b-pri w100" onclick="opnMdl(\''+s.id+'\')">شراء الخدمة بالرصيد</button></div>';
+  }).join("") || '<p style="color:var(--mut);font-size:13px">لا توجد خدمات مطابقة للبحث</p>';
+
   document.getElementById("a-srvs").innerHTML = st.srvs.map(function(s){
-    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><b>'+s.title+'</b><div style="display:flex;gap:4px"><input type="number" id="ep-'+s.id+'" value="'+s.price+'" class="inp" style="width:70px;padding:4px"><button type="button" class="btn b-grn b-sm" onclick="upPrc(\''+s.id+'\')">حفظ</button><button type="button" class="btn b-red b-sm" onclick="delSrv(\''+s.id+'\')">حذف</button></div></div>';
+    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+s.title+'</b> <small style="color:var(--mut)">('+(s.cat||"عام")+')</small></div><div style="display:flex;gap:4px"><input type="number" id="ep-'+s.id+'" value="'+s.price+'" class="inp" style="width:65px;padding:4px"><button type="button" class="btn b-grn b-sm" onclick="upPrc(\''+s.id+'\')">حفظ</button><button type="button" class="btn b-red b-sm" onclick="delSrv(\''+s.id+'\')">حذف</button></div></div>';
   }).join("");
+
+  document.getElementById("a-prms").innerHTML = (st.prms||[]).map(function(p){
+    var uCnt = (p.usedBy||[]).length;
+    return '<div style="background:var(--inp);padding:6px 10px;border-radius:8px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;font-size:12px"><span>🎁 <b>'+p.code+'</b> ('+p.amount+' ج.م) - استُخدم: '+uCnt+'/'+p.max+'</span><button type="button" class="btn b-red b-sm" onclick="delPromo(\''+p.code+'\')">حذف</button></div>';
+  }).join("") || '<small style="color:var(--mut)">لا توجد أكواد فعالة</small>';
+
   document.getElementById("c-ords").innerHTML = st.ords.filter(function(o){return o.clientPhone===st.user.phone;}).map(function(o){
-    return '<tr><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td>'+o.servicePrice+' ج.م</td><td>'+o.notes+'</td><td>'+bdg(o.status)+'</td></tr>';
+    return '<tr><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td>'+o.servicePrice+' ج.م</td><td>'+bdg(o.status)+'</td><td style="color:var(--amb);font-weight:700">'+(o.reply||"-")+'</td></tr>';
   }).join("") || '<tr><td colspan="5" style="text-align:center;color:var(--mut)">لا توجد طلبات</td></tr>';
+
   document.getElementById("c-recs").innerHTML = st.recs.filter(function(r){return r.clientPhone===st.user.phone;}).map(function(r){
     return '<tr><td>'+r.method+'</td><td style="color:var(--grn);font-weight:700">+'+r.amount+' ج.م</td><td dir="ltr">'+r.sender+'</td><td>'+bdg(r.status)+'</td></tr>';
   }).join("") || '<tr><td colspan="4" style="text-align:center;color:var(--mut)">لا توجد عمليات شحن</td></tr>';
+
   document.getElementById("a-recs").innerHTML = st.recs.map(function(r){
     var sb = r.screenshot ? '<button type="button" class="btn b-pri b-sm" onclick="shwImg(\''+r.id+'\')">عرض</button>' : 'بدون';
     var ac = r.status==="قيد المراجعة" ? '<button type="button" class="btn b-grn b-sm" onclick="appRec(\''+r.id+'\',1)">قبول</button><button type="button" class="btn b-red b-sm" onclick="appRec(\''+r.id+'\',0)">رفض</button>' : '-';
     return '<tr><td>'+r.clientName+'<br><small dir="ltr">'+r.clientPhone+'</small></td><td>'+r.method+'</td><td style="color:var(--grn);font-weight:700">'+r.amount+' ج.م</td><td dir="ltr">'+r.sender+'</td><td>'+sb+'</td><td>'+bdg(r.status)+'</td><td style="display:flex;gap:4px">'+ac+'</td></tr>';
   }).join("") || '<tr><td colspan="7" style="text-align:center;color:var(--mut)">لا توجد طلبات شحن</td></tr>';
+
   document.getElementById("a-usrs").innerHTML = st.users.map(function(u){
-    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+u.name+'</b> <small dir="ltr">('+u.phone+')</small><div style="color:var(--grn);font-size:12px;font-weight:700">الرصيد: '+u.balance+' ج.م</div></div><div style="display:flex;gap:4px"><input type="number" id="mb-'+u.phone+'" placeholder="+ أو -" class="inp" style="width:80px;padding:4px"><button type="button" class="btn b-pri b-sm" onclick="addBal(\''+u.phone+'\')">إضافة</button></div></div>';
+    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+u.name+'</b> <small dir="ltr">('+u.phone+')</small><div style="color:var(--grn);font-size:12px;font-weight:700">الرصيد: '+u.balance+' ج.م</div></div><div style="display:flex;gap:4px"><input type="number" id="mb-'+u.phone+'" placeholder="+ أو -" class="inp" style="width:75px;padding:4px"><button type="button" class="btn b-pri b-sm" onclick="addBal(\''+u.phone+'\')">تحديث</button></div></div>';
   }).join("");
+
   document.getElementById("a-ords").innerHTML = st.ords.map(function(o){
-    return '<tr><td>'+o.clientName+'</td><td dir="ltr">'+o.clientPhone+'</td><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td style="color:var(--grn);font-weight:700">'+o.servicePrice+' ج.م</td><td>'+o.notes+'</td><td>'+bdg(o.status)+'</td><td style="display:flex;gap:4px"><button type="button" class="btn b-amb b-sm" onclick="setOrdSt(\''+o.id+'\',\'جاري التنفيذ\')">تنفيذ</button><button type="button" class="btn b-grn b-sm" onclick="setOrdSt(\''+o.id+'\',\'مكتمل\')">إكمال</button><button type="button" class="btn b-red b-sm" onclick="setOrdSt(\''+o.id+'\',\'مرفوض\')">رفض</button></td></tr>';
+    return '<tr><td>'+o.clientName+'<br><small dir="ltr">'+o.clientPhone+'</small></td><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td style="color:var(--grn);font-weight:700">'+o.servicePrice+' ج.م</td><td>'+o.notes+'</td><td><input type="text" id="rp-'+o.id+'" value="'+(o.reply&&o.reply!=="-"?o.reply:"")+'" placeholder="اكتب كود أو رد للعميل" class="inp" style="min-width:130px;padding:4px 6px"></td><td>'+bdg(o.status)+'</td><td style="display:flex;gap:4px"><button type="button" class="btn b-amb b-sm" onclick="setOrdSt(\''+o.id+'\',\'جاري التنفيذ\')">تنفيذ</button><button type="button" class="btn b-grn b-sm" onclick="setOrdSt(\''+o.id+'\',\'مكتمل\')">إكمال</button><button type="button" class="btn b-red b-sm" onclick="setOrdSt(\''+o.id+'\',\'مرفوض\')">رفض</button></td></tr>';
   }).join("") || '<tr><td colspan="8" style="text-align:center;color:var(--mut)">لا توجد طلبات واردة</td></tr>';
 }
 
 if(db){
   try{
-    db.collection("settings").doc("main").onSnapshot(function(d){if(d.exists){st.cfg=d.data();document.getElementById("cfg-cash").value=st.cfg.cash;document.getElementById("cfg-tg").value=st.cfg.tg;sv();}});
+    db.collection("settings").doc("main").onSnapshot(function(d){if(d.exists){st.cfg=d.data();document.getElementById("cfg-cash").value=st.cfg.cash||"";document.getElementById("cfg-tg").value=st.cfg.tg||"";document.getElementById("cfg-ann").value=st.cfg.ann||"";sv();}});
     db.collection("users").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.users=a;if(st.user){var u=a.find(function(x){return x.phone===st.user.phone;});if(u)st.user=u;}sv();}});
     db.collection("services").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.srvs=a;sv();}});
+    db.collection("promos").onSnapshot(function(s){var a=[];s.forEach(function(d){a.push(d.data());});st.prms=a;sv();});
     db.collection("orders").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.ords=a;sv();}});
     db.collection("recharges").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.recs=a;sv();}});
   }catch(e){}
