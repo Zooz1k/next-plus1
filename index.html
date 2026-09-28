@@ -9,7 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
-:root{--bg:#0f172a;--card:#1e293b;--inp:#090d16;--brd:#334155;--pri:#4f46e5;--grn:#10b981;--amb:#f59e0b;--red:#ef4444;--txt:#f8fafc;--mut:#94a3b8}
+:root{--bg:#0f172a;--card:#1e293b;--inp:#090d16;--brd:#334155;--pri:#6366f1;--grn:#10b981;--amb:#f59e0b;--red:#ef4444;--txt:#f8fafc;--mut:#94a3b8}
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Cairo',sans-serif}
 body{background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:75px}
 .hide{display:none!important}
@@ -34,17 +34,16 @@ body{background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:75px}
 .g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:15px}
 .stat-box{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:12px;text-align:center}
 .stat-box b{display:block;font-size:20px;margin-top:4px;color:#818cf8}
-.ann-bar{background:linear-gradient(90deg,rgba(79,70,229,.25),rgba(245,158,11,.2));border:1px solid #6366f1;color:#fff;padding:10px 14px;border-radius:12px;margin-bottom:15px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ann-bar{background:linear-gradient(90deg,rgba(99,102,241,.25),rgba(245,158,11,.2));border:1px solid var(--pri);color:#fff;padding:10px 14px;border-radius:12px;margin-bottom:15px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
 .cat-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
 .cat-btn{background:var(--card);border:1px solid var(--brd);color:var(--mut);padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
 .cat-btn.act{background:var(--pri);color:#fff;border-color:var(--pri)}
 
-/* إبراز وتنوير كروت الخدمات */
-.srv-card{background:linear-gradient(145deg, #1e293b, #162032);border:1px solid #4f46e5;border-radius:16px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 0 15px rgba(79, 70, 229, 0.25);transition:0.3s}
-.srv-card:hover{border-color:#818cf8;box-shadow:0 0 25px rgba(129, 140, 248, 0.4);transform:translateY(-2px)}
-.ptag{background:rgba(79, 70, 229, 0.3);color:#a5b4fc;border:1px solid rgba(79, 70, 229, 0.6);padding:3px 10px;border-radius:50px;font-weight:800;font-size:12px}
+/* ألوان جديدة ومميزة لكروت الخدمات */
+.srv-card{background:linear-gradient(145deg, #1e1b4b, #1e293b);border:1px solid #818cf8;border-radius:16px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 0 18px rgba(99, 102, 241, 0.3);transition:0.3s}
+.srv-card:hover{border-color:#c7d2fe;box-shadow:0 0 28px rgba(129, 140, 248, 0.5);transform:translateY(-2px)}
+.ptag{background:rgba(99, 102, 241, 0.35);color:#c7d2fe;border:1px solid rgba(129, 140, 248, 0.6);padding:3px 10px;border-radius:50px;font-weight:800;font-size:12px}
 
-/* تصغير وتنسيق قسم الشحن */
 .compact-pay{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:14px}
 .twrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;text-align:right;font-size:12px}
@@ -58,8 +57,6 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
 .tab{flex:1;text-align:center;padding:6px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;color:var(--mut);border:none;background:transparent;min-width:85px}
 .tab.act{background:var(--pri);color:#fff}
 .flt-tg{position:fixed;bottom:18px;left:18px;background:#0088cc;color:#fff;padding:10px 16px;border-radius:50px;font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 6px 20px rgba(0,136,204,.5);z-index:99;display:flex;align-items:center;gap:6px}
-
-/* إبراز خانة رد الأدمن ورسالة التسليم */
 .delivery-box{background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.4);color:#34d399;padding:6px 10px;border-radius:8px;font-weight:700;font-size:12px}
 </style>
 </head>
@@ -79,7 +76,7 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
 </nav>
 
 <div class="wrap">
-  <!-- 1. شاشة الدخول -->
+  <!-- شاشة الدخول -->
   <div id="scr-auth">
     <div class="card auth-box">
       <div class="logo-ic" style="width:50px;height:50px;margin:0 auto 10px;font-size:24px">⚡</div>
@@ -99,11 +96,10 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
     </div>
   </div>
 
-  <!-- 2. واجهة العميل -->
+  <!-- واجهة العميل -->
   <div id="scr-client" class="hide">
     <div id="ann-box" class="ann-bar hide"><span>📢</span><span id="ann-txt"></span></div>
 
-    <!-- قسم الشحن المصغر -->
     <div class="compact-pay">
       <div class="ttl" style="font-size:14px;margin-bottom:8px">💰 شحن رصيد المحفظة</div>
       <div class="tabs" style="margin-bottom:8px">
@@ -142,10 +138,10 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
       </div>
     </div>
 
-    <!-- الخدمات البارزة -->
+    <!-- الخدمات البارزة والملونة -->
     <div style="margin-bottom:18px">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-        <div class="ttl" style="margin:0;color:#818cf8;text-shadow:0 0 10px rgba(129,140,248,0.3)">🔥 خدمات Next Plus المميزة</div>
+        <div class="ttl" style="margin:0;color:#c7d2fe;text-shadow:0 0 12px rgba(199,210,254,0.4)">✨ خدمات Next Plus المميزة</div>
         <input type="text" id="srch-in" class="inp" style="max-width:220px;padding:6px 10px" placeholder="🔍 ابحث عن خدمة..." oninput="render()">
       </div>
       <div class="cat-bar" id="cat-list"></div>
@@ -158,7 +154,7 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
     </div>
   </div>
 
-  <!-- 3. الداش بورد للأدمن -->
+  <!-- الداش بورد للأدمن -->
   <div id="scr-admin" class="hide">
     <div class="g4">
       <div class="stat-box"><span style="font-size:11px;color:var(--mut)">👥 العملاء</span><b id="st-usrs">0</b></div>
@@ -210,12 +206,17 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
         <button type="button" class="btn b-grn w100" onclick="addPromo()" style="margin-bottom:8px">إنشاء</button>
         <div id="a-prms" style="max-height:100px;overflow-y:auto"></div>
       </div>
-      <div class="card"><div class="ttl">👤 أرصدة العملاء</div><div id="a-usrs" style="max-height:220px;overflow-y:auto"></div></div>
+      
+      <!-- قسم إدارة العملاء (تجميد الحساب أو حذفه) -->
+      <div class="card">
+        <div class="ttl">👤 إدارة العملاء (تجميد أو حذف)</div>
+        <div id="a-usrs" style="max-height:220px;overflow-y:auto"></div>
+      </div>
     </div>
 
     <div class="card"><div class="ttl">💵 طلبات الشحن</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>السكرين</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="a-recs"></tbody></table></div></div>
 
-    <div class="card"><div class="ttl">🔔 الريكوستات الواردة (اكتب رسالة التسليم هنا)</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>التفاصيل</th><th>رسالة التسليم / رد الأدمن</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody id="a-ords"></tbody></table></div></div>
+    <div class="card"><div class="ttl">🔔 الريكوستات الواردة (اكتب رسالة التسليم هنا)</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>التفاصيل</th><th>رسالة التسليم / الرد</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody id="a-ords"></tbody></table></div></div>
   </div>
 </div>
 
@@ -263,7 +264,7 @@ try {
 var st = {
   user: null,
   cfg: { cash: "01155799387", tg: "nextplus_0", ann: "🔥 مرحباً بكم في منصة Next Plus!" },
-  users: [{id:"01155799387",name:"أدمن Next Plus",phone:"01155799387",pass:"123456",balance:500,role:"admin"}],
+  users: [{id:"01155799387",name:"أدمن Next Plus",phone:"01155799387",pass:"123456",balance:500,role:"admin",banned:false}],
   srvs: [
     {id:"s1",title:"تزويد 1000 متابع حقيقي",cat:"سوشيال ميديا",price:50,desc:"تنفيذ سريع وضمان عدم النقصان"},
     {id:"s2",title:"تصميم شعار احترافي (Logo)",cat:"تصميمات",price:150,desc:"تسليم بجودة عالية خلال 24 ساعة"}
@@ -328,14 +329,17 @@ function doAuth(){
   var nm = document.getElementById("in-name").value.trim();
   if(!ph || !ps){ msg("اكتب رقم الموبايل وكلمة المرور", true); return; }
   var u = st.users.find(function(x){return x.phone===ph;});
+  
+  if(u && u.banned){ msg("عذراً، هذا الحساب محظور/مجمد من قبل الإدارة!", true); return; }
+
   if(isReg){
     if(!nm){ msg("اكتب اسمك بالكامل", true); return; }
     if(u){ msg("الرقم مسجل بالفعل، سجل دخول", true); setAuthTab(false); return; }
-    u = {id:ph, name:nm, phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client"};
+    u = {id:ph, name:nm, phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client", banned:false};
     st.users.push(u); fSet("users", u.id, u);
   } else {
     if(!u){
-      u = {id:ph, name:ph===ADM_PH?"أدمن Next Plus":("عميل "+ph.slice(-4)), phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client"};
+      u = {id:ph, name:ph===ADM_PH?"أدمن Next Plus":("عميل "+ph.slice(-4)), phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client", banned:false};
       st.users.push(u); fSet("users", u.id, u);
     } else if(u.pass && u.pass!==ps && ph!==ADM_PH){
       msg("كلمة المرور غير صحيحة", true); return;
@@ -428,7 +432,7 @@ function usePromo(){
   var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"كود هدية ("+cd+")", amount:p.amount, sender:"Promo", screenshot:null, status:"مقبول"};
   st.recs.unshift(r); fSet("recharges", r.id, r); sv();
   document.getElementById("prm-in").value="";
-  msg("🎉 مبروك! تم إضافة " + p.amount + " ج.م لرصيدك وتحديث إشعاراتك!");
+  msg("🎉 مبروك! تم إضافة " + p.amount + " ج.م لرصيدك!");
 }
 
 function appRec(id, ok){
@@ -446,6 +450,24 @@ function addBal(ph){
   var v = Number(document.getElementById("mb-"+ph).value); if(!v) return;
   var u = st.users.find(function(x){return x.phone===ph;});
   if(u){ u.balance += v; fSet("users", u.id, u); if(st.user.phone===ph) st.user.balance=u.balance; sv(); msg("تم تحديث الرصيد!"); }
+}
+
+// أدوات تجميد وحذف العميل من الداش بورد
+function toggleBanUser(uid){
+  var u = st.users.find(function(x){return x.id===uid;});
+  if(u && u.phone!==ADM_PH){
+    u.banned = !u.banned;
+    fSet("users", u.id, u); sv();
+    msg(u.banned ? "تم تجميد حساب العميل بنجاح!" : "تم إلغاء تجميد الحساب!");
+  }
+}
+function deleteUser(uid){
+  var u = st.users.find(function(x){return x.id===uid;});
+  if(u && u.phone!==ADM_PH){
+    st.users = st.users.filter(function(x){return x.id!==uid;});
+    fDel("users", uid); sv();
+    msg("تم حذف العميل نهائياً", true);
+  }
 }
 
 function addSrv(){
@@ -514,14 +536,11 @@ function bdg(s){
   return '<span class="bdg '+c+'">'+s+'</span>';
 }
 
-// نظام تنبيهات وإشعارات لحظية للعميل
 var lastNotifiedRechargeStatus = {};
 var lastNotifiedOrderStatus = {};
 
 function checkClientNotifications() {
   if (!st.user) return;
-  
-  // فحص شحن الرصيد
   st.recs.filter(function(r){return r.clientPhone===st.user.phone;}).forEach(function(r){
     if (lastNotifiedRechargeStatus[r.id] && lastNotifiedRechargeStatus[r.id] !== r.status) {
       if (r.status === "مقبول") {
@@ -533,7 +552,6 @@ function checkClientNotifications() {
     lastNotifiedRechargeStatus[r.id] = r.status;
   });
 
-  // فحص الطلبات وتسليم الخدمات
   st.ords.filter(function(o){return o.clientPhone===st.user.phone;}).forEach(function(o){
     if (lastNotifiedOrderStatus[o.id] && lastNotifiedOrderStatus[o.id] !== o.status) {
       if (o.status === "مكتمل") {
@@ -562,7 +580,6 @@ function render(){
 
   checkClientNotifications();
 
-  // الإحصائيات
   document.getElementById("st-usrs").innerText = st.users.length;
   document.getElementById("st-pnd").innerText = st.ords.filter(function(o){return o.status==="قيد المراجعة";}).length;
   var sls = 0; st.ords.forEach(function(o){ if(o.status!=="مرفوض") sls += Number(o.servicePrice||0); });
@@ -570,7 +587,6 @@ function render(){
   var rch = 0; st.recs.forEach(function(r){ if(r.status==="مقبول") rch += Number(r.amount||0); });
   document.getElementById("st-rch").innerText = rch + " ج.م";
 
-  // الأقسام والبحث
   var cats = ["الكل","سوشيال ميديا","شحن ألعاب","تصميمات","خدمات تلجرام","أخرى"];
   document.getElementById("cat-list").innerHTML = cats.map(function(c){
     return '<button type="button" class="cat-btn '+(curCat===c?'act':'')+'" onclick="setCat(\''+c+'\')">'+c+'</button>';
@@ -584,7 +600,7 @@ function render(){
   });
 
   document.getElementById("c-srvs").innerHTML = fltSrvs.map(function(s){
-    return '<div class="srv-card"><div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong>'+s.title+'</strong><span class="ptag">'+s.price+' ج.م</span></div><span style="font-size:10px;color:#a5b4fc;display:block;margin-bottom:6px">📁 '+(s.cat||"عام")+'</span><p style="font-size:12px;color:var(--mut);margin-bottom:12px">'+s.desc+'</p></div><button type="button" class="btn b-pri w100" onclick="opnMdl(\''+s.id+'\')">شراء الخدمة بالرصيد</button></div>';
+    return '<div class="srv-card"><div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong>'+s.title+'</strong><span class="ptag">'+s.price+' ج.م</span></div><span style="font-size:10px;color:#c7d2fe;display:block;margin-bottom:6px">📁 '+(s.cat||"عام")+'</span><p style="font-size:12px;color:var(--mut);margin-bottom:12px">'+s.desc+'</p></div><button type="button" class="btn b-pri w100" onclick="opnMdl(\''+s.id+'\')">شراء الخدمة بالرصيد</button></div>';
   }).join("") || '<p style="color:var(--mut);font-size:13px">لا توجد خدمات مطابقة للبحث</p>';
 
   document.getElementById("a-srvs").innerHTML = st.srvs.map(function(s){
@@ -611,8 +627,13 @@ function render(){
     return '<tr><td>'+r.clientName+'<br><small dir="ltr">'+r.clientPhone+'</small></td><td>'+r.method+'</td><td style="color:var(--grn);font-weight:700">'+r.amount+' ج.م</td><td dir="ltr">'+r.sender+'</td><td>'+sb+'</td><td>'+bdg(r.status)+'</td><td style="display:flex;gap:4px">'+ac+'</td></tr>';
   }).join("") || '<tr><td colspan="7" style="text-align:center;color:var(--mut)">لا توجد طلبات شحن</td></tr>';
 
+  // إدارة العملاء (إضافة رصيد + تجميد الحساب + حذف الحساب)
   document.getElementById("a-usrs").innerHTML = st.users.map(function(u){
-    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+u.name+'</b> <small dir="ltr">('+u.phone+')</small><div style="color:var(--grn);font-size:12px;font-weight:700">الرصيد: '+u.balance+' ج.م</div></div><div style="display:flex;gap:4px"><input type="number" id="mb-'+u.phone+'" placeholder="+ أو -" class="inp" style="width:75px;padding:4px"><button type="button" class="btn b-pri b-sm" onclick="addBal(\''+u.phone+'\')">تحديث</button></div></div>';
+    var isMe = (u.phone === ADM_PH);
+    var banBtn = isMe ? "" : '<button type="button" class="btn '+(u.banned?'b-grn':'b-amb')+' b-sm" onclick="toggleBanUser(\''+u.id+'\')">'+(u.banned?'فك تجميد':'تجميد')+'</button>';
+    var delBtn = isMe ? "" : '<button type="button" class="btn b-red b-sm" onclick="deleteUser(\''+u.id+'\')">حذف</button>';
+    var statusText = u.banned ? ' <span style="color:var(--red);font-size:11px">(مجمد)</span>' : '';
+    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+u.name+'</b>'+statusText+' <small dir="ltr">('+u.phone+')</small><div style="color:var(--grn);font-size:12px;font-weight:700">الرصيد: '+u.balance+' ج.م</div></div><div style="display:flex;gap:4px;align-items:center"><input type="number" id="mb-'+u.phone+'" placeholder="+ أو -" class="inp" style="width:60px;padding:4px"><button type="button" class="btn b-pri b-sm" onclick="addBal(\''+u.phone+'\')">رصيد</button>'+banBtn+delBtn+'</div></div>';
   }).join("");
 
   document.getElementById("a-ords").innerHTML = st.ords.map(function(o){
