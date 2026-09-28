@@ -38,8 +38,7 @@ body{background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:75px}
 .cat-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
 .cat-btn{background:var(--card);border:1px solid var(--brd);color:var(--mut);padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
 .cat-btn.act{background:var(--pri);color:#fff;border-color:var(--pri)}
-.srv-card{background:linear-gradient(145deg, #1e1b4b, #1e293b);border:1px solid #818cf8;border-radius:16px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 0 18px rgba(99, 102, 241, 0.3);transition:0.3s}
-.srv-card:hover{border-color:#c7d2fe;box-shadow:0 0 28px rgba(129, 140, 248, 0.5);transform:translateY(-2px)}
+.srv-card{background:linear-gradient(145deg, #1e1b4b, #1e293b);border:1px solid #818cf8;border-radius:16px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 0 18px rgba(99, 102, 241, 0.3)}
 .ptag{background:rgba(99, 102, 241, 0.35);color:#c7d2fe;border:1px solid rgba(129, 140, 248, 0.6);padding:3px 10px;border-radius:50px;font-weight:800;font-size:12px}
 .compact-pay{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:14px}
 .twrap{overflow-x:auto}
@@ -80,16 +79,16 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
       <div class="logo-ic" style="width:50px;height:50px;margin:0 auto 10px;font-size:24px">⚡</div>
       <h1 style="font-size:24px;font-weight:800;margin-bottom:14px">Next <span style="color:#818cf8">Plus</span></h1>
       <div class="tabs">
-        <button type="button" class="tab act" id="t-login" onclick="setAuthTab(false)">تسجيل دخول</button>
-        <button type="button" class="tab" id="t-reg" onclick="setAuthTab(true)">إنشاء حساب جديد</button>
+        <button type="button" class="tab act" id="t-login" onclick="switchAuthMode(false)">تسجيل دخول</button>
+        <button type="button" class="tab" id="t-reg" onclick="switchAuthMode(true)">إنشاء حساب جديد</button>
       </div>
       <div class="fg hide" id="f-name"><label>الاسم بالكامل</label><input type="text" id="in-name" class="inp" placeholder="اكتب اسمك هنا"></div>
       <div class="fg"><label>رقم الموبايل</label><input type="tel" id="in-phone" class="inp" placeholder="اكتب رقم موبايلك" dir="ltr"></div>
       <div class="fg"><label>كلمة المرور</label><input type="password" id="in-pass" class="inp" placeholder="اكتب كلمة المرور" dir="ltr"></div>
-      <button type="button" class="btn b-pri w100" id="btn-auth" onclick="doAuth()">دخول</button>
+      <button type="button" class="btn b-pri w100" id="btn-auth" onclick="handleAuth()">دخول</button>
       <div style="margin-top:12px;font-size:12px;color:var(--mut)">
         <span id="sw-txt">ليس لديك حساب؟</span>
-        <button type="button" onclick="setAuthTab(!isReg)" style="background:none;border:none;color:#818cf8;font-weight:700;cursor:pointer;text-decoration:underline" id="sw-btn">إنشاء حساب جديد</button>
+        <button type="button" onclick="switchAuthMode(!isRegisterMode)" style="background:none;border:none;color:#818cf8;font-weight:700;cursor:pointer;text-decoration:underline" id="sw-btn">إنشاء حساب جديد</button>
       </div>
     </div>
   </div>
@@ -144,7 +143,6 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
       </div>
     </div>
 
-    <!-- الخدمات البارزة والملونة -->
     <div style="margin-bottom:18px">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
         <div class="ttl" style="margin:0;color:#c7d2fe;text-shadow:0 0 12px rgba(199,210,254,0.4)">✨ خدمات Next Plus المميزة</div>
@@ -254,6 +252,7 @@ var ADM_PH = "01155799387";
 var TG_TOK = "8598235615:AAFo7SmpSCQzKzPWtpyHKqbmGkN6AaoOBeA";
 var TG_ID = "8964064245";
 var db = null;
+
 try {
   firebase.initializeApp({
     apiKey: "AIzaSyCzjX1niR-kteUE5nBaDZlNx8JcrlDr2oY",
@@ -276,9 +275,10 @@ var st = {
   ],
   ords: [], recs: [], prms: []
 };
+
 try {
   var s = localStorage.getItem("np_db");
-  if(s){ var p = JSON.parse(s); st = Object.assign(st, p); if(!st.cfg) st.cfg={cash:"01155799387",tg:"nextplus_0",ann:""}; if(!st.prms) st.prms=[]; }
+  if(s){ var p = JSON.parse(s); st = Object.assign(st, p); if(!st.cfg) st.cfg={cash:"01155799387",tg:"nextplus_0",ann:""}; if(!st.prms) st.prms=[]; if(!st.users) st.users=[]; }
 } catch(e){}
 
 function sv(){ try{localStorage.setItem("np_db",JSON.stringify(st));}catch(e){} render(); }
@@ -291,10 +291,16 @@ function clnPh(v){
   for(var i=0;i<v.length;i++){ var c=v.charAt(i), x=a.indexOf(c); o += x>-1 ? e.charAt(x) : (c>='0'&&c<='9'?c:''); }
   return o;
 }
-function msg(t,err){
-  var b=document.getElementById("msg-bar"); b.innerText=t; b.style.background=err?"#ef4444":"#10b981";
-  b.classList.remove("hide"); setTimeout(function(){b.classList.add("hide");},3500);
+
+function showMsg(t,err){
+  var b = document.getElementById("msg-bar");
+  if(!b) return;
+  b.innerText = t;
+  b.style.background = err ? "#ef4444" : "#10b981";
+  b.classList.remove("hide");
+  setTimeout(function(){ b.classList.add("hide"); }, 3500);
 }
+
 function tgMsg(t){
   try{fetch("https://api.telegram.org/bot"+TG_TOK+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:TG_ID,text:t,parse_mode:"HTML"})});}catch(e){}
 }
@@ -302,121 +308,217 @@ function tgPic(f,c){
   try{var d=new FormData();d.append("chat_id",TG_ID);d.append("photo",f);d.append("caption",c);d.append("parse_mode","HTML");fetch("https://api.telegram.org/bot"+TG_TOK+"/sendPhoto",{method:"POST",body:d});}catch(e){}
 }
 
-var isReg = false, isAdmView = false, curSrv = null, curCat = "الكل";
+var isRegisterMode = false;
+var isAdmView = false;
+var curSrv = null;
+var curCat = "الكل";
+
+function switchAuthMode(reg){
+  isRegisterMode = reg;
+  var nameEl = document.getElementById("f-name");
+  if(nameEl) nameEl.classList.toggle("hide", !reg);
+  
+  var loginTab = document.getElementById("t-login");
+  var regTab = document.getElementById("t-reg");
+  if(loginTab) loginTab.classList.toggle("act", !reg);
+  if(regTab) regTab.classList.toggle("act", reg);
+  
+  var btnAuth = document.getElementById("btn-auth");
+  if(btnAuth) btnAuth.innerText = reg ? "إنشاء حساب ودخول" : "دخول";
+  
+  var swTxt = document.getElementById("sw-txt");
+  if(swTxt) swTxt.innerText = reg ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟";
+  
+  var swBtn = document.getElementById("sw-btn");
+  if(swBtn) swBtn.innerText = reg ? "تسجيل الدخول" : "إنشاء حساب جديد";
+}
+
+function handleAuth(){
+  var phoneInput = document.getElementById("in-phone");
+  var passInput = document.getElementById("in-pass");
+  var nameInput = document.getElementById("in-name");
+
+  var ph = clnPh(phoneInput ? phoneInput.value : "");
+  var ps = passInput ? passInput.value.trim() : "";
+  var nm = nameInput ? nameInput.value.trim() : "";
+
+  if(!ph || !ps){
+    showMsg("اكتب رقم الموبايل وكلمة المرور أولاً", true);
+    return;
+  }
+
+  if(!st.users || !Array.isArray(st.users)){
+    st.users = [{id:"01155799387",name:"أدمن Next Plus",phone:"01155799387",pass:"123456",balance:500,role:"admin",banned:false}];
+  }
+
+  var foundUser = st.users.find(function(x){ return String(x.phone) === String(ph); });
+
+  if(foundUser && foundUser.banned){
+    showMsg("عذراً، هذا الحساب محظور من قبل الإدارة!", true);
+    return;
+  }
+
+  if(isRegisterMode){
+    if(!nm){
+      showMsg("اكتب اسمك بالكامل لإنشاء الحساب", true);
+      return;
+    }
+    if(foundUser){
+      showMsg("الرقم مسجل بالفعل، قم بتسجيل الدخول", true);
+      switchAuthMode(false);
+      return;
+    }
+    foundUser = {
+      id: ph,
+      name: nm,
+      phone: ph,
+      pass: ps,
+      balance: ph === ADM_PH ? 500 : 0,
+      role: ph === ADM_PH ? "admin" : "client",
+      banned: false
+    };
+    st.users.push(foundUser);
+    fSet("users", foundUser.id, foundUser);
+  } else {
+    if(!foundUser){
+      foundUser = {
+        id: ph,
+        name: ph === ADM_PH ? "أدمن Next Plus" : ("عميل " + ph.slice(-4)),
+        phone: ph,
+        pass: ps,
+        balance: ph === ADM_PH ? 500 : 0,
+        role: ph === ADM_PH ? "admin" : "client",
+        banned: false
+      };
+      st.users.push(foundUser);
+      fSet("users", foundUser.id, foundUser);
+    } else {
+      if(foundUser.pass && foundUser.pass !== ps && ph !== ADM_PH){
+        showMsg("كلمة المرور غير صحيحة", true);
+        return;
+      }
+    }
+  }
+
+  st.user = foundUser;
+  sv();
+  openApp();
+  showMsg("مرحباً بك يا " + foundUser.name);
+}
+
+function openApp(){
+  var u = st.user;
+  var authScr = document.getElementById("scr-auth");
+  var topNav = document.getElementById("top-nav");
+  if(authScr) authScr.classList.toggle("hide", !!u);
+  if(topNav) topNav.classList.toggle("hide", !u);
+
+  if(!u){
+    var cliScr = document.getElementById("scr-client");
+    var admScr = document.getElementById("scr-admin");
+    if(cliScr) cliScr.classList.add("hide");
+    if(admScr) admScr.classList.add("hide");
+    return;
+  }
+
+  var isAdm = (u.phone === ADM_PH || u.role === "admin");
+  var admBtn = document.getElementById("adm-btn");
+  if(admBtn) admBtn.classList.toggle("hide", !isAdm);
+
+  var cfgCash = document.getElementById("cfg-cash");
+  var cfgTg = document.getElementById("cfg-tg");
+  var cfgAnn = document.getElementById("cfg-ann");
+  if(cfgCash) cfgCash.value = st.cfg.cash || "";
+  if(cfgTg) cfgTg.value = st.cfg.tg || "";
+  if(cfgAnn) cfgAnn.value = st.cfg.ann || "";
+
+  showView(isAdm ? "admin" : "client");
+  render();
+}
+
+function showView(v){
+  isAdmView = (v === "admin");
+  var admScr = document.getElementById("scr-admin");
+  var cliScr = document.getElementById("scr-client");
+  var admBtn = document.getElementById("adm-btn");
+  if(admScr) admScr.classList.toggle("hide", !isAdmView);
+  if(cliScr) cliScr.classList.toggle("hide", isAdmView);
+  if(admBtn) admBtn.innerText = isAdmView ? "عرض كعميل" : "الداش بورد";
+}
+
+function toggleView(){
+  showView(isAdmView ? "client" : "admin");
+}
+
+function doLogout(){
+  st.user = null;
+  sv();
+  openApp();
+}
+
+function setPayTab(n){
+  [1,2,3].forEach(function(i){
+    var pTab = document.getElementById("pay-"+i);
+    var pBtn = document.getElementById("pt-"+i);
+    if(pTab) pTab.classList.toggle("hide", n !== i);
+    if(pBtn) pBtn.classList.toggle("act", n === i);
+  });
+}
 
 function saveCfg(){
   var c = document.getElementById("cfg-cash").value.trim();
   var t = document.getElementById("cfg-tg").value.trim().replace("@","").replace("https://t.me/","");
   var a = document.getElementById("cfg-ann").value.trim();
-  if(!c || !t){ msg("اكتب رقم الكاش ويوزر التلجرام", true); return; }
+  if(!c || !t){ showMsg("اكتب رقم الكاش ويوزر التلجرام", true); return; }
   st.cfg = { cash: c, tg: t, ann: a };
-  fSet("settings", "main", st.cfg); sv();
-  msg("تم تحديث الإعدادات بنجاح!");
+  fSet("settings", "main", st.cfg);
+  sv();
+  showMsg("تم حفظ الإعدادات بنجاح!");
 }
+
 function copyCash(){
-  try{ navigator.clipboard.writeText(st.cfg.cash); msg("تم نسخ الرقم: " + st.cfg.cash); }
-  catch(e){ msg("رقم الكاش: " + st.cfg.cash); }
-}
-
-function setAuthTab(r){
-  isReg = r;
-  var nameEl = document.getElementById("f-name");
-  if(nameEl) nameEl.classList.toggle("hide", !r);
-  
-  var loginTab = document.getElementById("t-login");
-  var regTab = document.getElementById("t-reg");
-  if(loginTab) loginTab.classList.toggle("act", !r);
-  if(regTab) regTab.classList.toggle("act", r);
-  
-  var btnAuth = document.getElementById("btn-auth");
-  if(btnAuth) btnAuth.innerText = r ? "إنشاء حساب ودخول" : "دخول";
-  
-  var swTxt = document.getElementById("sw-txt");
-  if(swTxt) swTxt.innerText = r ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟";
-  
-  var swBtn = document.getElementById("sw-btn");
-  if(swBtn) swBtn.innerText = r ? "تسجيل الدخول" : "إنشاء حساب جديد";
-}
-
-function doAuth(){
-  var ph = clnPh(document.getElementById("in-phone").value);
-  var ps = document.getElementById("in-pass").value.trim();
-  var nm = document.getElementById("in-name").value.trim();
-  
-  if(!ph || !ps){ msg("اكتب رقم الموبايل وكلمة المرور", true); return; }
-  
-  if(!st.users) st.users = [{id:"01155799387",name:"أدمن Next Plus",phone:"01155799387",pass:"123456",balance:500,role:"admin",banned:false}];
-  
-  var u = st.users.find(function(x){return String(x.phone) === String(ph);});
-  
-  if(u && u.banned){ msg("عذراً، هذا الحساب محظور/مجمد من قبل الإدارة!", true); return; }
-
-  if(isReg){
-    if(!nm){ msg("اكتب اسمك بالكامل", true); return; }
-    if(u){ msg("الرقم مسجل بالفعل، سجل دخول", true); setAuthTab(false); return; }
-    u = {id:ph, name:nm, phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client", banned:false};
-    st.users.push(u); fSet("users", u.id, u);
-  } else {
-    if(!u){
-      u = {id:ph, name:ph===ADM_PH?"أدمن Next Plus":("عميل "+ph.slice(-4)), phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client", banned:false};
-      st.users.push(u); fSet("users", u.id, u);
-    } else if(u.pass && u.pass !== ps && ph !== ADM_PH){
-      msg("كلمة المرور غير صحيحة", true); return;
-    }
+  try{
+    navigator.clipboard.writeText(st.cfg.cash);
+    showMsg("تم نسخ رقم الكاش: " + st.cfg.cash);
+  } catch(e){
+    showMsg("رقم الكاش: " + st.cfg.cash);
   }
-  st.user = u; sv(); openApp(); msg("مرحباً بك يا " + u.name);
-}
-
-function openApp(){
-  var u = st.user;
-  document.getElementById("scr-auth").classList.toggle("hide", !!u);
-  document.getElementById("top-nav").classList.toggle("hide", !u);
-  if(!u){ document.getElementById("scr-client").classList.add("hide"); document.getElementById("scr-admin").classList.add("hide"); return; }
-  var adm = u.phone===ADM_PH || u.role==="admin";
-  document.getElementById("adm-btn").classList.toggle("hide", !adm);
-  document.getElementById("cfg-cash").value = st.cfg.cash || "";
-  document.getElementById("cfg-tg").value = st.cfg.tg || "";
-  document.getElementById("cfg-ann").value = st.cfg.ann || "";
-  showView(adm ? "admin" : "client"); render();
-}
-function showView(v){
-  isAdmView = (v==="admin");
-  document.getElementById("scr-admin").classList.toggle("hide", !isAdmView);
-  document.getElementById("scr-client").classList.toggle("hide", isAdmView);
-  document.getElementById("adm-btn").innerText = isAdmView ? "عرض كعميل" : "الداش بورد";
-}
-function toggleView(){ showView(isAdmView ? "client" : "admin"); }
-function doLogout(){ st.user = null; sv(); openApp(); }
-function setPayTab(n){
-  [1,2,3].forEach(function(i){
-    document.getElementById("pay-"+i).classList.toggle("hide", n!==i);
-    document.getElementById("pt-"+i).classList.toggle("act", n===i);
-  });
 }
 
 function sendSupPay(){
-  var ph = clnPh(document.getElementById("sup-ph").value), am = Number(document.getElementById("sup-am").value);
-  if(!ph || am<=0){ msg("اكتب الرقم والمبلغ أولاً", true); return; }
+  var ph = clnPh(document.getElementById("sup-ph").value);
+  var am = Number(document.getElementById("sup-am").value);
+  if(!ph || am <= 0){ showMsg("اكتب الرقم والمبلغ أولاً", true); return; }
   var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"تلجرام خدمة العملاء", amount:am, sender:ph, screenshot:null, status:"قيد المراجعة"};
-  st.recs.unshift(r); fSet("recharges", r.id, r); sv();
+  st.recs.unshift(r);
+  fSet("recharges", r.id, r);
+  sv();
   tgMsg("🎧 <b>طلب شحن عبر التلجرام - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 حسابه: <code>"+st.user.phone+"</code>\n📲 يحول من: <code>"+ph+"</code>\n💵 المبلغ: "+am+" ج.م");
   var tgUrl = "https://t.me/" + st.cfg.tg + "?text=" + encodeURIComponent("مرحباً، أريد شحن حسابي ("+st.user.phone+") بمبلغ ("+am+" ج.م) من رقم ("+ph+")");
-  document.getElementById("sup-lnk").href = tgUrl;
-  document.getElementById("sup-ph").value=""; document.getElementById("sup-am").value="";
-  msg("🔔 تم إرسال طلب الشحن! سيتم إشعارك فور قبول الرصيد.");
+  var supLnk = document.getElementById("sup-lnk");
+  if(supLnk) supLnk.href = tgUrl;
+  document.getElementById("sup-ph").value = "";
+  document.getElementById("sup-am").value = "";
+  showMsg("🔔 تم إرسال طلب الشحن بنجاح!");
   try{ window.open(tgUrl, "_blank"); }catch(e){}
 }
 
 function sendDirPay(){
-  var ph = clnPh(document.getElementById("dir-ph").value), am = Number(document.getElementById("dir-am").value), fl = document.getElementById("dir-fl").files[0];
-  if(!ph || am<=0 || !fl){ msg("اكتب الرقم والمبلغ وأرفق السكرين", true); return; }
+  var ph = clnPh(document.getElementById("dir-ph").value);
+  var am = Number(document.getElementById("dir-am").value);
+  var fl = document.getElementById("dir-fl").files[0];
+  if(!ph || am <= 0 || !fl){ showMsg("اكتب الرقم والمبلغ وأرفق السكرين", true); return; }
   var rd = new FileReader();
   rd.onload = function(e){
     var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"دفع مباشر + سكرين", amount:am, sender:ph, screenshot:e.target.result, status:"قيد المراجعة"};
-    st.recs.unshift(r); fSet("recharges", r.id, r); sv();
+    st.recs.unshift(r);
+    fSet("recharges", r.id, r);
+    sv();
     tgPic(fl, "📸 <b>إشعار دفع بالسكرين - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 حسابه: <code>"+st.user.phone+"</code>\n📲 محول من: <code>"+ph+"</code>\n💵 المبلغ: "+am+" ج.م");
-    document.getElementById("dir-ph").value=""; document.getElementById("dir-am").value=""; document.getElementById("dir-fl").value="";
-    msg("🔔 تم إرسال السكرين بنجاح! انتظر إشعار القبول.");
+    document.getElementById("dir-ph").value = "";
+    document.getElementById("dir-am").value = "";
+    document.getElementById("dir-fl").value = "";
+    showMsg("🔔 تم إرسال السكرين بنجاح!");
   };
   rd.readAsDataURL(fl);
 }
@@ -425,130 +527,217 @@ function addPromo(){
   var cd = document.getElementById("p-cd").value.trim().toUpperCase();
   var am = Number(document.getElementById("p-am").value);
   var mx = Number(document.getElementById("p-mx").value) || 1;
-  if(!cd || am<=0){ msg("اكتب الكود والمبلغ", true); return; }
+  if(!cd || am <= 0){ showMsg("اكتب الكود والمبلغ", true); return; }
   var p = {id:cd, code:cd, amount:am, max:mx, usedBy:[]};
-  st.prms = st.prms.filter(function(x){return x.code!==cd;});
-  st.prms.push(p); fSet("promos", p.id, p); sv();
-  document.getElementById("p-cd").value=""; document.getElementById("p-am").value=""; document.getElementById("p-mx").value="";
-  msg("تم إنشاء كود الهدية: " + cd);
+  st.prms = (st.prms || []).filter(function(x){ return x.code !== cd; });
+  st.prms.push(p);
+  fSet("promos", p.id, p);
+  sv();
+  document.getElementById("p-cd").value = "";
+  document.getElementById("p-am").value = "";
+  document.getElementById("p-mx").value = "";
+  showMsg("تم إنشاء الكود: " + cd);
 }
+
 function delPromo(cd){
-  st.prms = st.prms.filter(function(x){return x.code!==cd;});
-  fDel("promos", cd); sv(); msg("تم حذف الكود", true);
+  st.prms = (st.prms || []).filter(function(x){ return x.code !== cd; });
+  fDel("promos", cd);
+  sv();
+  showMsg("تم الحذف", true);
 }
+
 function usePromo(){
   var cd = document.getElementById("prm-in").value.trim().toUpperCase();
-  if(!cd){ msg("اكتب الكود أولاً", true); return; }
-  var p = st.prms.find(function(x){return x.code===cd;});
-  if(!p){ msg("الكود غير صحيح أو منتهي!", true); return; }
+  if(!cd){ showMsg("اكتب الكود أولاً", true); return; }
+  var p = (st.prms || []).find(function(x){ return x.code === cd; });
+  if(!p){ showMsg("الكود غير صحيح أو منتهي!", true); return; }
   if(!p.usedBy) p.usedBy = [];
-  if(p.usedBy.indexOf(st.user.phone)>-1){ msg("لقد استخدمت هذا الكود من قبل!", true); return; }
-  if(p.usedBy.length >= p.max){ msg("انتهت الكمية المتاحة لهذا الكود!", true); return; }
-  p.usedBy.push(st.user.phone); fSet("promos", p.id, p);
+  if(p.usedBy.indexOf(st.user.phone) > -1){ showMsg("استخدمت هذا الكود مسبقاً!", true); return; }
+  if(p.usedBy.length >= p.max){ showMsg("انتهت الكمية المتاحة للكود!", true); return; }
+  
+  p.usedBy.push(st.user.phone);
+  fSet("promos", p.id, p);
   st.user.balance += Number(p.amount);
-  var u = st.users.find(function(x){return x.phone===st.user.phone;});
-  if(u){ u.balance = st.user.balance; fSet("users", u.id, u); }
+  var u = st.users.find(function(x){ return x.phone === st.user.phone; });
+  if(u) u.balance = st.user.balance;
+  fSet("users", u.id, u);
+  
   var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"كود هدية ("+cd+")", amount:p.amount, sender:"Promo", screenshot:null, status:"مقبول"};
-  st.recs.unshift(r); fSet("recharges", r.id, r); sv();
-  document.getElementById("prm-in").value="";
-  msg("🎉 مبروك! تم إضافة " + p.amount + " ج.م لرصيدك!");
+  st.recs.unshift(r);
+  fSet("recharges", r.id, r);
+  sv();
+  document.getElementById("prm-in").value = "";
+  showMsg("🎉 مبروك! تمت إضافة " + p.amount + " ج.م لرصيدك!");
 }
 
 function appRec(id, ok){
-  var r = st.recs.find(function(x){return x.id===id;}); if(!r) return;
-  r.status = ok ? "مقبول" : "مرفوض"; fSet("recharges", r.id, r);
+  var r = st.recs.find(function(x){ return x.id === id; });
+  if(!r) return;
+  r.status = ok ? "مقبول" : "مرفوض";
+  fSet("recharges", r.id, r);
   if(ok){
-    var u = st.users.find(function(x){return x.phone===r.clientPhone;});
-    if(u){ u.balance += Number(r.amount); fSet("users", u.id, u); if(st.user.phone===u.phone) st.user.balance=u.balance; }
-    msg("تم قبول الشحن وإضافة الرصيد للعميل!");
-  } else msg("تم رفض الطلب", true);
+    var u = st.users.find(function(x){ return x.phone === r.clientPhone; });
+    if(u){
+      u.balance += Number(r.amount);
+      fSet("users", u.id, u);
+      if(st.user && st.user.phone === u.phone) st.user.balance = u.balance;
+    }
+    showMsg("تم قبول الشحن وإضافة الرصيد!");
+  } else {
+    showMsg("تم رفض طلب الشحن", true);
+  }
   sv();
 }
 
 function addBal(ph){
-  var v = Number(document.getElementById("mb-"+ph).value); if(!v) return;
-  var u = st.users.find(function(x){return x.phone===ph;});
-  if(u){ u.balance += v; fSet("users", u.id, u); if(st.user.phone===ph) st.user.balance=u.balance; sv(); msg("تم تحديث الرصيد!"); }
+  var v = Number(document.getElementById("mb-"+ph).value);
+  if(!v) return;
+  var u = st.users.find(function(x){ return x.phone === ph; });
+  if(u){
+    u.balance += v;
+    fSet("users", u.id, u);
+    if(st.user && st.user.phone === ph) st.user.balance = u.balance;
+    sv();
+    showMsg("تم تحديث رصيد العميل!");
+  }
 }
 
 function toggleBanUser(uid){
-  var u = st.users.find(function(x){return x.id===uid;});
-  if(u && u.phone!==ADM_PH){
+  var u = st.users.find(function(x){ return x.id === uid; });
+  if(u && u.phone !== ADM_PH){
     u.banned = !u.banned;
-    fSet("users", u.id, u); sv();
-    msg(u.banned ? "تم تجميد حساب العميل بنجاح!" : "تم إلغاء تجميد الحساب!");
+    fSet("users", u.id, u);
+    sv();
+    showMsg(u.banned ? "تم تجميد حساب العميل" : "تم فك تجميد الحساب");
   }
 }
+
 function deleteUser(uid){
-  var u = st.users.find(function(x){return x.id===uid;});
-  if(u && u.phone!==ADM_PH){
-    st.users = st.users.filter(function(x){return x.id!==uid;});
-    fDel("users", uid); sv();
-    msg("تم حذف العميل نهائياً", true);
+  var u = st.users.find(function(x){ return x.id === uid; });
+  if(u && u.phone !== ADM_PH){
+    st.users = st.users.filter(function(x){ return x.id !== uid; });
+    fDel("users", uid);
+    sv();
+    showMsg("تم حذف العميل نهائياً", true);
   }
 }
 
 function addSrv(){
-  var t = document.getElementById("s-ttl").value.trim(), c = document.getElementById("s-cat").value, p = Number(document.getElementById("s-prc").value), d = document.getElementById("s-dsc").value.trim();
-  if(!t || p<=0){ msg("اكتب اسم الخدمة والسعر", true); return; }
+  var t = document.getElementById("s-ttl").value.trim();
+  var c = document.getElementById("s-cat").value;
+  var p = Number(document.getElementById("s-prc").value);
+  var d = document.getElementById("s-dsc").value.trim();
+  if(!t || p <= 0){ showMsg("اكتب اسم الخدمة والسعر", true); return; }
   var s = {id:"s_"+Date.now(), title:t, cat:c, price:p, desc:d};
-  st.srvs.push(s); fSet("services", s.id, s); sv();
-  document.getElementById("s-ttl").value=""; document.getElementById("s-prc").value=""; document.getElementById("s-dsc").value="";
-  msg("تم نشر الخدمة بنجاح!");
+  st.srvs.push(s);
+  fSet("services", s.id, s);
+  sv();
+  document.getElementById("s-ttl").value = "";
+  document.getElementById("s-prc").value = "";
+  document.getElementById("s-dsc").value = "";
+  showMsg("تم نشر الخدمة بنجاح!");
 }
+
 function upPrc(id){
-  var p = Number(document.getElementById("ep-"+id).value), s = st.srvs.find(function(x){return x.id===id;});
-  if(s && p>0){ s.price=p; fSet("services", s.id, s); sv(); msg("تم تعديل السعر!"); }
+  var p = Number(document.getElementById("ep-"+id).value);
+  var s = st.srvs.find(function(x){ return x.id === id; });
+  if(s && p > 0){
+    s.price = p;
+    fSet("services", s.id, s);
+    sv();
+    showMsg("تم تعديل السعر!");
+  }
 }
+
 function delSrv(id){
-  st.srvs = st.srvs.filter(function(x){return x.id!==id;});
-  fDel("services", id); sv(); msg("تم الحذف", true);
+  st.srvs = st.srvs.filter(function(x){ return x.id !== id; });
+  fDel("services", id);
+  sv();
+  showMsg("تم حذف الخدمة", true);
 }
-function setCat(c){ curCat = c; render(); }
+
+function setCat(c){
+  curCat = c;
+  render();
+}
 
 function opnMdl(id){
-  curSrv = st.srvs.find(function(x){return x.id===id;}); if(!curSrv) return;
+  curSrv = st.srvs.find(function(x){ return x.id === id; });
+  if(!curSrv) return;
   document.getElementById("m-ttl").innerText = curSrv.title;
   document.getElementById("m-prc").innerText = curSrv.price;
   document.getElementById("m-qty").value = 1;
   document.getElementById("m-nts").value = "";
   document.getElementById("m-bal").innerText = st.user.balance;
-  calcTot(); document.getElementById("ord-mdl").classList.remove("hide");
+  calcTot();
+  document.getElementById("ord-mdl").classList.remove("hide");
 }
-function clsMdl(){ document.getElementById("ord-mdl").classList.add("hide"); }
-function calcTot(){ if(curSrv) document.getElementById("m-tot").innerText = Math.max(1, Number(document.getElementById("m-qty").value)||1) * curSrv.price; }
+
+function clsMdl(){
+  document.getElementById("ord-mdl").classList.add("hide");
+}
+
+function calcTot(){
+  if(curSrv){
+    var q = Math.max(1, Number(document.getElementById("m-qty").value) || 1);
+    document.getElementById("m-tot").innerText = q * curSrv.price;
+  }
+}
 
 function buySrv(){
   if(!curSrv || !st.user) return;
-  var q = Math.max(1, Number(document.getElementById("m-qty").value)||1), tot = q * curSrv.price, nts = document.getElementById("m-nts").value.trim()||"بدون ملاحظات";
-  if(st.user.balance < tot){ msg("رصيدك لا يكفي! اشحن رصيدك أولاً", true); return; }
+  var q = Math.max(1, Number(document.getElementById("m-qty").value) || 1);
+  var tot = q * curSrv.price;
+  var nts = document.getElementById("m-nts").value.trim() || "بدون ملاحظات";
+  
+  if(st.user.balance < tot){
+    showMsg("رصيدك لا يكفي! اشحن رصيدك أولاً", true);
+    return;
+  }
+  
   st.user.balance -= tot;
-  var u = st.users.find(function(x){return x.phone===st.user.phone;});
+  var u = st.users.find(function(x){ return x.phone === st.user.phone; });
   if(u){ u.balance = st.user.balance; fSet("users", u.id, u); }
+  
   var o = {id:"o_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, serviceTitle:curSrv.title, quantity:q, servicePrice:tot, notes:nts, reply:"قيد التنفيذ...", status:"قيد المراجعة"};
-  st.ords.unshift(o); fSet("orders", o.id, o); sv(); clsMdl();
-  tgMsg("🛒 <b>طلب خدمة جديد - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 الموبايل: <code>"+st.user.phone+"</code>\n⚡ الخدمة: "+curSrv.title+"\n🔢 الكمية: "+q+"\n💵 الإجمالي: "+tot+" ج.م\n📝 التفاصيل: <code>"+nts+"</code>");
-  msg("تم خصم الرصيد وإرسال طلبك بنجاح!");
+  st.ords.unshift(o);
+  fSet("orders", o.id, o);
+  sv();
+  clsMdl();
+  tgMsg("🛒 <b>طلب خدمة جديد - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 الموبايل: <code>"+st.user.phone+"</code>\n⚡ الخدمة: "+curSrv.title+"\n🔢 الكمية: "+q+"\n💵 الإجمالي: "+tot+" ج.م");
+  showMsg("تم خصم الرصيد وإرسال طلبك بنجاح!");
 }
 
 function setOrdSt(id, ns){
-  var o = st.ords.find(function(x){return x.id===id;}); if(!o) return;
+  var o = st.ords.find(function(x){ return x.id === id; });
+  if(!o) return;
   var rpEl = document.getElementById("rp-"+id);
   if(rpEl && rpEl.value.trim()) o.reply = rpEl.value.trim();
-  if(ns==="مرفوض" && o.status!=="مرفوض"){
-    var u = st.users.find(function(x){return x.phone===o.clientPhone;});
-    if(u){ u.balance += Number(o.servicePrice); fSet("users", u.id, u); if(st.user.phone===u.phone) st.user.balance=u.balance; }
-    msg("تم رفض الطلب وإرجاع الرصيد للعميل", true);
+  
+  if(ns === "مرفوض" && o.status !== "مرفوض"){
+    var u = st.users.find(function(x){ return x.phone === o.clientPhone; });
+    if(u){
+      u.balance += Number(o.servicePrice);
+      fSet("users", u.id, u);
+      if(st.user && st.user.phone === u.phone) st.user.balance = u.balance;
+    }
+    showMsg("تم رفض الطلب واسترداد الرصيد للعميل", true);
   } else {
-    msg("تم تحديث حالة الطلب وإرسال رسالة التسليم للعميل!");
+    showMsg("تم تحديث الطلب وإرسال رسالة التسليم!");
   }
-  o.status = ns; fSet("orders", o.id, o); sv();
+  o.status = ns;
+  fSet("orders", o.id, o);
+  sv();
 }
 
 function shwImg(id){
-  var r = st.recs.find(function(x){return x.id===id;});
-  if(r && r.screenshot){ document.getElementById("prv-img").src=r.screenshot; document.getElementById("img-mdl").classList.remove("hide"); }
+  var r = st.recs.find(function(x){ return x.id === id; });
+  if(r && r.screenshot){
+    document.getElementById("prv-img").src = r.screenshot;
+    document.getElementById("img-mdl").classList.remove("hide");
+  }
 }
+
 function bdg(s){
   var c = (s==="مكتمل"||s==="مقبول")?"b-dn":(s==="جاري التنفيذ"?"b-wrk":(s==="مرفوض"?"b-rj":"b-pnd"));
   return '<span class="bdg '+c+'">'+s+'</span>';
@@ -557,28 +746,20 @@ function bdg(s){
 var lastNotifiedRechargeStatus = {};
 var lastNotifiedOrderStatus = {};
 
-function checkClientNotifications() {
-  if (!st.user) return;
-  st.recs.filter(function(r){return r.clientPhone===st.user.phone;}).forEach(function(r){
-    if (lastNotifiedRechargeStatus[r.id] && lastNotifiedRechargeStatus[r.id] !== r.status) {
-      if (r.status === "مقبول") {
-        msg("🎉 إشعار: تم قبول عملية الشحن وإضافة " + r.amount + " ج.م لرصيدك بنجاح!");
-      } else if (r.status === "مرفوض") {
-        msg("⚠️ إشعار: عذراً، تم رفض طلب الشحن الخاص بمبلغ " + r.amount + " ج.م", true);
-      }
+function checkClientNotifications(){
+  if(!st.user) return;
+  st.recs.filter(function(r){ return r.clientPhone === st.user.phone; }).forEach(function(r){
+    if(lastNotifiedRechargeStatus[r.id] && lastNotifiedRechargeStatus[r.id] !== r.status){
+      if(r.status === "مقبول") showMsg("🎉 إشعار: تمت الموافقة على شحن مبلغ " + r.amount + " ج.م بنجاح!");
+      if(r.status === "مرفوض") showMsg("⚠️ إشعار: تم رفض طلب الشحن الخاص بمبلغ " + r.amount + " ج.م", true);
     }
     lastNotifiedRechargeStatus[r.id] = r.status;
   });
 
-  st.ords.filter(function(o){return o.clientPhone===st.user.phone;}).forEach(function(o){
-    if (lastNotifiedOrderStatus[o.id] && lastNotifiedOrderStatus[o.id] !== o.status) {
-      if (o.status === "مكتمل") {
-        msg("🚀 إشعار: تم تسليم خدمتك (" + o.serviceTitle + ") بنجاح! راجع خانة التسليم.");
-      } else if (o.status === "جاري التنفيذ") {
-        msg("⚡ إشعار: طلبك (" + o.serviceTitle + ") أصبح قيد التنفيذ الآن.");
-      } else if (o.status === "مرفوض") {
-        msg("❌ إشعار: تم رفض طلبك (" + o.serviceTitle + ") واسترداد المبلغ لرصيدك.", true);
-      }
+  st.ords.filter(function(o){ return o.clientPhone === st.user.phone; }).forEach(function(o){
+    if(lastNotifiedOrderStatus[o.id] && lastNotifiedOrderStatus[o.id] !== o.status){
+      if(o.status === "مكتمل") showMsg("🚀 إشعار: تم تسليم خدمتك (" + o.serviceTitle + ") بنجاح!");
+      if(o.status === "جاري التنفيذ") showMsg("⚡ إشعار: طلبك (" + o.serviceTitle + ") أصبح قيد التنفيذ.");
     }
     lastNotifiedOrderStatus[o.id] = o.status;
   });
@@ -600,11 +781,11 @@ function render(){
 
   checkClientNotifications();
 
-  document.getElementById("st-usrs").innerText = st.users.length;
-  document.getElementById("st-pnd").innerText = st.ords.filter(function(o){return o.status==="قيد المراجعة";}).length;
-  var sls = 0; st.ords.forEach(function(o){ if(o.status!=="مرفوض") sls += Number(o.servicePrice||0); });
+  document.getElementById("st-usrs").innerText = (st.users || []).length;
+  document.getElementById("st-pnd").innerText = (st.ords || []).filter(function(o){ return o.status === "قيد المراجعة"; }).length;
+  var sls = 0; (st.ords || []).forEach(function(o){ if(o.status !== "مرفوض") sls += Number(o.servicePrice || 0); });
   document.getElementById("st-sls").innerText = sls + " ج.م";
-  var rch = 0; st.recs.forEach(function(r){ if(r.status==="مقبول") rch += Number(r.amount||0); });
+  var rch = 0; (st.recs || []).forEach(function(r){ if(r.status === "مقبول") rch += Number(r.amount || 0); });
   document.getElementById("st-rch").innerText = rch + " ج.م";
 
   var cats = ["الكل","سوشيال ميديا","شحن ألعاب","تصميمات","خدمات تلجرام","أخرى"];
@@ -612,57 +793,57 @@ function render(){
     return '<button type="button" class="cat-btn '+(curCat===c?'act':'')+'" onclick="setCat(\''+c+'\')">'+c+'</button>';
   }).join("");
 
-  var q = (document.getElementById("srch-in").value||"").trim().toLowerCase();
-  var fltSrvs = st.srvs.filter(function(s){
-    var mCat = (curCat==="الكل" || (s.cat||"سوشيال ميديا")===curCat);
-    var mQ = (!q || s.title.toLowerCase().indexOf(q)>-1 || (s.desc||"").toLowerCase().indexOf(q)>-1);
+  var q = (document.getElementById("srch-in").value || "").trim().toLowerCase();
+  var fltSrvs = (st.srvs || []).filter(function(s){
+    var mCat = (curCat === "الكل" || (s.cat || "سوشيال ميديا") === curCat);
+    var mQ = (!q || s.title.toLowerCase().indexOf(q) > -1 || (s.desc || "").toLowerCase().indexOf(q) > -1);
     return mCat && mQ;
   });
 
   document.getElementById("c-srvs").innerHTML = fltSrvs.map(function(s){
     return '<div class="srv-card"><div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong>'+s.title+'</strong><span class="ptag">'+s.price+' ج.م</span></div><span style="font-size:10px;color:#c7d2fe;display:block;margin-bottom:6px">📁 '+(s.cat||"عام")+'</span><p style="font-size:12px;color:var(--mut);margin-bottom:12px">'+s.desc+'</p></div><button type="button" class="btn b-pri w100" onclick="opnMdl(\''+s.id+'\')">شراء الخدمة بالرصيد</button></div>';
-  }).join("") || '<p style="color:var(--mut);font-size:13px">لا توجد خدمات مطابقة للبحث</p>';
+  }).join("") || '<p style="color:var(--mut);font-size:13px">لا توجد خدمات مطابقة</p>';
 
-  document.getElementById("a-srvs").innerHTML = st.srvs.map(function(s){
-    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+s.title+'</b> <small style="color:var(--mut)">('+(s.cat||"عام")+')</small></div><div style="display:flex;gap:4px"><input type="number" id="ep-'+s.id+'" value="'+s.price+'" class="inp" style="width:65px;padding:4px"><button type="button" class="btn b-grn b-sm" onclick="upPrc(\''+s.id+'\')">حفظ</button><button type="button" class="btn b-red b-sm" onclick="delSrv(\''+s.id+'\')">حذف</button></div></div>';
+  document.getElementById("a-srvs").innerHTML = (st.srvs || []).map(function(s){
+    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+s.title+'</b></div><div style="display:flex;gap:4px"><input type="number" id="ep-'+s.id+'" value="'+s.price+'" class="inp" style="width:65px;padding:4px"><button type="button" class="btn b-grn b-sm" onclick="upPrc(\''+s.id+'\')">حفظ</button><button type="button" class="btn b-red b-sm" onclick="delSrv(\''+s.id+'\')">حذف</button></div></div>';
   }).join("");
 
-  document.getElementById("a-prms").innerHTML = (st.prms||[]).map(function(p){
-    var uCnt = (p.usedBy||[]).length;
+  document.getElementById("a-prms").innerHTML = (st.prms || []).map(function(p){
+    var uCnt = (p.usedBy || []).length;
     return '<div style="background:var(--inp);padding:6px 10px;border-radius:8px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;font-size:12px"><span>🎁 <b>'+p.code+'</b> ('+p.amount+' ج.م) - استُخدم: '+uCnt+'/'+p.max+'</span><button type="button" class="btn b-red b-sm" onclick="delPromo(\''+p.code+'\')">حذف</button></div>';
-  }).join("") || '<small style="color:var(--mut)">لا توجد أكواد فعالة</small>';
+  }).join("") || '<small style="color:var(--mut)">لا توجد أكواد</small>';
 
-  document.getElementById("c-ords").innerHTML = st.ords.filter(function(o){return o.clientPhone===st.user.phone;}).map(function(o){
-    var repBox = (o.reply && o.reply!=="-" && o.reply!=="قيد التنفيذ...") ? '<div class="delivery-box">📥 '+o.reply+'</div>' : '<span style="color:var(--mut)">قيد المراجعة أو التنفيذ...</span>';
+  document.getElementById("c-ords").innerHTML = (st.ords || []).filter(function(o){ return o.clientPhone === st.user.phone; }).map(function(o){
+    var repBox = (o.reply && o.reply !== "-" && o.reply !== "قيد التنفيذ...") ? '<div class="delivery-box">📥 '+o.reply+'</div>' : '<span style="color:var(--mut)">قيد المراجعة...</span>';
     return '<tr><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td>'+o.servicePrice+' ج.م</td><td>'+bdg(o.status)+'</td><td>'+repBox+'</td></tr>';
   }).join("") || '<tr><td colspan="5" style="text-align:center;color:var(--mut)">لا توجد طلبات</td></tr>';
 
-  document.getElementById("c-recs").innerHTML = st.recs.filter(function(r){return r.clientPhone===st.user.phone;}).map(function(r){
+  document.getElementById("c-recs").innerHTML = (st.recs || []).filter(function(r){ return r.clientPhone === st.user.phone; }).map(function(r){
     return '<tr><td>'+r.method+'</td><td style="color:var(--grn);font-weight:700">+'+r.amount+' ج.م</td><td dir="ltr">'+r.sender+'</td><td>'+bdg(r.status)+'</td></tr>';
   }).join("") || '<tr><td colspan="4" style="text-align:center;color:var(--mut)">لا توجد عمليات شحن</td></tr>';
 
-  document.getElementById("a-recs").innerHTML = st.recs.map(function(r){
+  document.getElementById("a-recs").innerHTML = (st.recs || []).map(function(r){
     var sb = r.screenshot ? '<button type="button" class="btn b-pri b-sm" onclick="shwImg(\''+r.id+'\')">عرض</button>' : 'بدون';
-    var ac = r.status==="قيد المراجعة" ? '<button type="button" class="btn b-grn b-sm" onclick="appRec(\''+r.id+'\',1)">قبول</button><button type="button" class="btn b-red b-sm" onclick="appRec(\''+r.id+'\',0)">رفض</button>' : '-';
+    var ac = r.status === "قيد المراجعة" ? '<button type="button" class="btn b-grn b-sm" onclick="appRec(\''+r.id+'\',1)">قبول</button><button type="button" class="btn b-red b-sm" onclick="appRec(\''+r.id+'\',0)">رفض</button>' : '-';
     return '<tr><td>'+r.clientName+'<br><small dir="ltr">'+r.clientPhone+'</small></td><td>'+r.method+'</td><td style="color:var(--grn);font-weight:700">'+r.amount+' ج.م</td><td dir="ltr">'+r.sender+'</td><td>'+sb+'</td><td>'+bdg(r.status)+'</td><td style="display:flex;gap:4px">'+ac+'</td></tr>';
   }).join("") || '<tr><td colspan="7" style="text-align:center;color:var(--mut)">لا توجد طلبات شحن</td></tr>';
 
-  document.getElementById("a-usrs").innerHTML = st.users.map(function(u){
+  document.getElementById("a-usrs").innerHTML = (st.users || []).map(function(u){
     var isMe = (u.phone === ADM_PH);
-    var banBtn = isMe ? "" : '<button type="button" class="btn '+(u.banned?'b-grn':'b-amb')+' b-sm" onclick="toggleBanUser(\''+u.id+'\')">'+(u.banned?'فك تجميد':'تجميد')+'</button>';
+    var banBtn = isMe ? "" : '<button type="button" class="btn '+(u.banned?'b-grn':'b-amb')+' b-sm" onclick="toggleBanUser(\''+u.id+'\')">'+(u.banned?'فك':'تجميد')+'</button>';
     var delBtn = isMe ? "" : '<button type="button" class="btn b-red b-sm" onclick="deleteUser(\''+u.id+'\')">حذف</button>';
-    var statusText = u.banned ? ' <span style="color:var(--red);font-size:11px">(مجمد)</span>' : '';
-    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+u.name+'</b>'+statusText+' <small dir="ltr">('+u.phone+')</small><div style="color:var(--grn);font-size:12px;font-weight:700">الرصيد: '+u.balance+' ج.م</div></div><div style="display:flex;gap:4px;align-items:center"><input type="number" id="mb-'+u.phone+'" placeholder="+ أو -" class="inp" style="width:60px;padding:4px"><button type="button" class="btn b-pri b-sm" onclick="addBal(\''+u.phone+'\')">رصيد</button>'+banBtn+delBtn+'</div></div>';
+    var stTxt = u.banned ? ' <span style="color:var(--red)">(مجمد)</span>' : '';
+    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+u.name+'</b>'+stTxt+' <small dir="ltr">('+u.phone+')</small><div style="color:var(--grn);font-size:12px;font-weight:700">الرصيد: '+u.balance+' ج.م</div></div><div style="display:flex;gap:4px;align-items:center"><input type="number" id="mb-'+u.phone+'" placeholder="+/-" class="inp" style="width:50px;padding:4px"><button type="button" class="btn b-pri b-sm" onclick="addBal(\''+u.phone+'\')">رصيد</button>'+banBtn+delBtn+'</div></div>';
   }).join("");
 
-  document.getElementById("a-ords").innerHTML = st.ords.map(function(o){
-    return '<tr><td>'+o.clientName+'<br><small dir="ltr">'+o.clientPhone+'</small></td><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td style="color:var(--grn);font-weight:700">'+o.servicePrice+' ج.م</td><td>'+o.notes+'</td><td><input type="text" id="rp-'+o.id+'" value="'+(o.reply&&o.reply!=="-"?o.reply:"")+'" placeholder="اكتب كود الشحن أو رابط التسليم للعميل" class="inp" style="min-width:140px;padding:5px 8px;border-color:#10b981"></td><td>'+bdg(o.status)+'</td><td style="display:flex;gap:4px"><button type="button" class="btn b-amb b-sm" onclick="setOrdSt(\''+o.id+'\',\'جاري التنفيذ\')">تنفيذ</button><button type="button" class="btn b-grn b-sm" onclick="setOrdSt(\''+o.id+'\',\'مكتمل\')">إكمال</button><button type="button" class="btn b-red b-sm" onclick="setOrdSt(\''+o.id+'\',\'مرفوض\')">رفض</button></td></tr>';
+  document.getElementById("a-ords").innerHTML = (st.ords || []).map(function(o){
+    return '<tr><td>'+o.clientName+'<br><small dir="ltr">'+o.clientPhone+'</small></td><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td style="color:var(--grn);font-weight:700">'+o.servicePrice+' ج.م</td><td>'+o.notes+'</td><td><input type="text" id="rp-'+o.id+'" value="'+(o.reply&&o.reply!=="-"?o.reply:"")+'" placeholder="كود التسليم للعميل" class="inp" style="min-width:130px;padding:5px;border-color:#10b981"></td><td>'+bdg(o.status)+'</td><td style="display:flex;gap:4px"><button type="button" class="btn b-amb b-sm" onclick="setOrdSt(\''+o.id+'\',\'جاري التنفيذ\')">تنفيذ</button><button type="button" class="btn b-grn b-sm" onclick="setOrdSt(\''+o.id+'\',\'مكتمل\')">إكمال</button><button type="button" class="btn b-red b-sm" onclick="setOrdSt(\''+o.id+'\',\'مرفوض\')">رفض</button></td></tr>';
   }).join("") || '<tr><td colspan="8" style="text-align:center;color:var(--mut)">لا توجد طلبات واردة</td></tr>';
 }
 
 if(db){
   try{
-    db.collection("settings").doc("main").onSnapshot(function(d){if(d.exists){st.cfg=d.data();document.getElementById("cfg-cash").value=st.cfg.cash||"";document.getElementById("cfg-tg").value=st.cfg.tg||"";document.getElementById("cfg-ann").value=st.cfg.ann||"";sv();}});
+    db.collection("settings").doc("main").onSnapshot(function(d){if(d.exists){st.cfg=d.data();sv();}});
     db.collection("users").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.users=a;if(st.user){var u=a.find(function(x){return String(x.phone)===String(st.user.phone);});if(u)st.user=u;}sv();}});
     db.collection("services").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.srvs=a;sv();}});
     db.collection("promos").onSnapshot(function(s){var a=[];s.forEach(function(d){a.push(d.data());});st.prms=a;sv();}});
@@ -670,7 +851,8 @@ if(db){
     db.collection("recharges").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.recs=a;sv();}});
   }catch(e){}
 }
-setAuthTab(false);
+
+switchAuthMode(false);
 openApp();
 </script>
 </body>
