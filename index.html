@@ -98,24 +98,29 @@ td{padding:9px 8px;border-bottom:1px solid rgba(51,65,85,.5)}
     <div class="card">
       <div class="ttl">💰 شحن رصيد المحفظة</div>
       <div class="tabs">
-        <button type="button" class="tab act" id="pt-1" onclick="setPayTab(1)">1. شحن عبر خدمة العملاء</button>
+        <button type="button" class="tab act" id="pt-1" onclick="setPayTab(1)">1. شحن عبر خدمة العملاء (تلجرام)</button>
         <button type="button" class="tab" id="pt-2" onclick="setPayTab(2)">2. دفع على الرقم + سكرين</button>
       </div>
 
       <div id="pay-1">
-        <p style="font-size:12px;color:#a5b4fc;margin-bottom:10px">اكتب الرقم الذي ستحول منه والمبلغ، وسيتم إرسال طلبك تلقائياً لخدمة العملاء.</p>
+        <p style="font-size:12px;color:#a5b4fc;margin-bottom:10px">اكتب الرقم الذي ستحول منه والمبلغ، وسيتم توجيهك لخدمة العملاء على التلجرام لتأكيد الشحن.</p>
         <div class="g3">
           <div class="fg"><label>الرقم الذي سترسل منه</label><input type="tel" id="sup-ph" class="inp" placeholder="رقم المحفظة" dir="ltr"></div>
           <div class="fg"><label>المبلغ (ج.م)</label><input type="number" id="sup-am" class="inp" placeholder="مثال: 100"></div>
-          <div class="fg" style="display:flex;align-items:flex-end"><button type="button" class="btn b-pri w100" onclick="sendSupPay()">شحن وإرسال لخدمة العملاء</button></div>
+          <div class="fg" style="display:flex;align-items:flex-end"><button type="button" class="btn b-pri w100" onclick="sendSupPay()">شحن والتواصل تلجرام</button></div>
         </div>
-        <div id="sup-lnk-box" class="hide" style="margin-top:8px"><a id="sup-lnk" href="#" target="_blank" class="btn b-grn w100">اضغط هنا لفتح محادثة خدمة العملاء</a></div>
+        <div id="sup-lnk-box" style="margin-top:8px">
+          <a id="sup-lnk" href="https://t.me/nextplus_0" target="_blank" class="btn b-grn w100">✈️ فتح محادثة خدمة العملاء على التلجرام (@<span id="disp-tg-user">nextplus_0</span>)</a>
+        </div>
       </div>
 
       <div id="pay-2" class="hide">
-        <div style="background:var(--inp);border:1px solid var(--amb);padding:10px 14px;border-radius:10px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
-          <div><span style="font-size:11px;color:var(--mut);display:block">رقم التحويل الرسمي (فودافون كاش / إنستا باي):</span><strong style="font-size:18px;color:var(--amb)" dir="ltr">01155799387</strong></div>
-          <span class="bdg b-wrk">أرفق سكرين التحويل</span>
+        <div style="background:var(--inp);border:1px solid var(--amb);padding:12px 14px;border-radius:10px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div>
+            <span style="font-size:12px;color:var(--mut);display:block">رقم التحويل الرسمي (كاش / إنستا باي):</span>
+            <strong id="disp-cash-num" style="font-size:20px;color:var(--amb);letter-spacing:1px" dir="ltr">01155799387</strong>
+          </div>
+          <button type="button" class="btn b-amb b-sm" onclick="copyCash()">📋 نسخ الرقم</button>
         </div>
         <div class="g3">
           <div class="fg"><label>الرقم المحول منه</label><input type="tel" id="dir-ph" class="inp" placeholder="رقمك المحول منه" dir="ltr"></div>
@@ -139,7 +144,22 @@ td{padding:9px 8px;border-bottom:1px solid rgba(51,65,85,.5)}
 
   <!-- 3. الداش بورد (تفتح للأدمن فقط) -->
   <div id="scr-admin" class="hide">
-    <div class="card" style="border-color:var(--amb)"><h2 style="font-size:18px;font-weight:800;color:var(--amb)">⚙️ لوحة تحكم الأدمن (Dashboard) - Next Plus</h2></div>
+    <div class="card" style="border-color:var(--amb)">
+      <h2 style="font-size:18px;font-weight:800;color:var(--amb);margin-bottom:12px">⚙️ لوحة تحكم الأدمن (Dashboard) - Next Plus</h2>
+      <div class="g3" style="background:var(--inp);padding:12px;border-radius:12px;border:1px solid var(--brd)">
+        <div class="fg" style="margin:0">
+          <label>📱 رقم الكاش (الذي يحول عليه العملاء)</label>
+          <input type="text" id="cfg-cash" class="inp" placeholder="مثال: 010xxxx" dir="ltr">
+        </div>
+        <div class="fg" style="margin:0">
+          <label>✈️ يوزر التلجرام لخدمة العملاء (بدون @)</label>
+          <input type="text" id="cfg-tg" class="inp" placeholder="nextplus_0" dir="ltr">
+        </div>
+        <div class="fg" style="margin:0;display:flex;align-items:flex-end">
+          <button type="button" class="btn b-amb w100" onclick="saveCfg()">💾 حفظ رقم الكاش والتلجرام</button>
+        </div>
+      </div>
+    </div>
 
     <div class="g2">
       <div class="card">
@@ -204,6 +224,7 @@ try {
 
 var st = {
   user: null,
+  cfg: { cash: "01155799387", tg: "nextplus_0" },
   users: [{id:"01155799387",name:"أدمن Next Plus",phone:"01155799387",pass:"123456",balance:500,role:"admin"}],
   srvs: [
     {id:"s1",title:"تزويد 1000 متابع حقيقي",price:50,desc:"تنفيذ سريع وضمان عدم النقصان"},
@@ -211,7 +232,11 @@ var st = {
   ],
   ords: [], recs: []
 };
-try { var s = localStorage.getItem("np_db"); if(s) st = JSON.parse(s); } catch(e){}
+try {
+  var s = localStorage.getItem("np_db");
+  if(s){ var p = JSON.parse(s); st = Object.assign(st, p); if(!st.cfg) st.cfg = {cash:"01155799387",tg:"nextplus_0"}; }
+} catch(e){}
+
 function sv(){ try{localStorage.setItem("np_db",JSON.stringify(st));}catch(e){} render(); }
 function fSet(c,id,d){ if(db) try{db.collection(c).doc(String(id)).set(d);}catch(e){} }
 
@@ -230,6 +255,21 @@ function tgMsg(t){
 }
 function tgPic(f,c){
   try{var d=new FormData();d.append("chat_id",TG_ID);d.append("photo",f);d.append("caption",c);d.append("parse_mode","HTML");fetch("https://api.telegram.org/bot"+TG_TOK+"/sendPhoto",{method:"POST",body:d});}catch(e){}
+}
+
+function saveCfg(){
+  var c = document.getElementById("cfg-cash").value.trim();
+  var t = document.getElementById("cfg-tg").value.trim().replace("@","").replace("https://t.me/","");
+  if(!c || !t){ msg("اكتب رقم الكاش ويوزر التلجرام أولاً", true); return; }
+  st.cfg = { cash: c, tg: t };
+  fSet("settings", "main", st.cfg);
+  sv();
+  msg("تم حفظ وتحديث رقم الكاش والتلجرام في الموقع!");
+}
+
+function copyCash(){
+  try{ navigator.clipboard.writeText(st.cfg.cash); msg("تم نسخ رقم الكاش: " + st.cfg.cash); }
+  catch(e){ msg("رقم الكاش: " + st.cfg.cash); }
 }
 
 var isReg = false, isAdmView = false, curSrv = null;
@@ -272,6 +312,8 @@ function openApp(){
   if(!u){ document.getElementById("scr-client").classList.add("hide"); document.getElementById("scr-admin").classList.add("hide"); return; }
   var adm = u.phone===ADM_PH || u.role==="admin";
   document.getElementById("adm-btn").classList.toggle("hide", !adm);
+  document.getElementById("cfg-cash").value = st.cfg.cash;
+  document.getElementById("cfg-tg").value = st.cfg.tg;
   showView(adm ? "admin" : "client"); render();
 }
 function showView(v){
@@ -292,13 +334,14 @@ function setPayTab(n){
 function sendSupPay(){
   var ph = clnPh(document.getElementById("sup-ph").value), am = Number(document.getElementById("sup-am").value);
   if(!ph || am<=0){ msg("اكتب الرقم والمبلغ أولاً", true); return; }
-  var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"خدمة العملاء", amount:am, sender:ph, screenshot:null, status:"قيد المراجعة"};
+  var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"تلجرام خدمة العملاء", amount:am, sender:ph, screenshot:null, status:"قيد المراجعة"};
   st.recs.unshift(r); fSet("recharges", r.id, r); sv();
-  tgMsg("🎧 <b>طلب شحن خدمة العملاء - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 حسابه: <code>"+st.user.phone+"</code>\n📲 يحول من: <code>"+ph+"</code>\n💵 المبلغ: "+am+" ج.م");
-  document.getElementById("sup-lnk").href = "https://wa.me/201155799387?text=" + encodeURIComponent("شحن حساب "+st.user.phone+" بمبلغ "+am+" ج.م من رقم "+ph);
-  document.getElementById("sup-lnk-box").classList.remove("hide");
+  tgMsg("🎧 <b>طلب شحن عبر التلجرام - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 حسابه: <code>"+st.user.phone+"</code>\n📲 يحول من: <code>"+ph+"</code>\n💵 المبلغ: "+am+" ج.م");
+  var tgUrl = "https://t.me/" + st.cfg.tg + "?text=" + encodeURIComponent("مرحباً، أريد شحن حسابي ("+st.user.phone+") بمبلغ ("+am+" ج.م) من رقم ("+ph+")");
+  document.getElementById("sup-lnk").href = tgUrl;
   document.getElementById("sup-ph").value=""; document.getElementById("sup-am").value="";
-  msg("تم إرسال طلب الشحن لخدمة العملاء!");
+  msg("تم تسجيل الطلب! اضغط على زر التلجرام الأخضر بالأسفل");
+  try{ window.open(tgUrl, "_blank"); }catch(e){}
 }
 
 function sendDirPay(){
@@ -395,6 +438,9 @@ function bdg(s){
 }
 
 function render(){
+  document.getElementById("disp-cash-num").innerText = st.cfg.cash;
+  document.getElementById("disp-tg-user").innerText = st.cfg.tg;
+  document.getElementById("sup-lnk").href = "https://t.me/" + st.cfg.tg;
   if(!st.user) return;
   document.getElementById("u-bal").innerText = st.user.balance;
   document.getElementById("u-name").innerText = st.user.name + " (" + st.user.phone + ")";
@@ -425,6 +471,7 @@ function render(){
 
 if(db){
   try{
+    db.collection("settings").doc("main").onSnapshot(function(d){if(d.exists){st.cfg=d.data();document.getElementById("cfg-cash").value=st.cfg.cash;document.getElementById("cfg-tg").value=st.cfg.tg;sv();}});
     db.collection("users").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.users=a;if(st.user){var u=a.find(function(x){return x.phone===st.user.phone;});if(u)st.user=u;}sv();}});
     db.collection("services").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.srvs=a;sv();}});
     db.collection("orders").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.ords=a;sv();}});
