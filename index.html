@@ -38,12 +38,9 @@ body{background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:75px}
 .cat-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
 .cat-btn{background:var(--card);border:1px solid var(--brd);color:var(--mut);padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
 .cat-btn.act{background:var(--pri);color:#fff;border-color:var(--pri)}
-
-/* ألوان جديدة ومميزة لكروت الخدمات */
 .srv-card{background:linear-gradient(145deg, #1e1b4b, #1e293b);border:1px solid #818cf8;border-radius:16px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 0 18px rgba(99, 102, 241, 0.3);transition:0.3s}
 .srv-card:hover{border-color:#c7d2fe;box-shadow:0 0 28px rgba(129, 140, 248, 0.5);transform:translateY(-2px)}
 .ptag{background:rgba(99, 102, 241, 0.35);color:#c7d2fe;border:1px solid rgba(129, 140, 248, 0.6);padding:3px 10px;border-radius:50px;font-weight:800;font-size:12px}
-
 .compact-pay{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:14px}
 .twrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;text-align:right;font-size:12px}
@@ -58,6 +55,7 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
 .tab.act{background:var(--pri);color:#fff}
 .flt-tg{position:fixed;bottom:18px;left:18px;background:#0088cc;color:#fff;padding:10px 16px;border-radius:50px;font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 6px 20px rgba(0,136,204,.5);z-index:99;display:flex;align-items:center;gap:6px}
 .delivery-box{background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.4);color:#34d399;padding:6px 10px;border-radius:8px;font-weight:700;font-size:12px}
+.tg-notice{background:rgba(0,136,204,0.15);border:1px solid rgba(0,136,204,0.4);padding:10px 14px;border-radius:10px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 </style>
 </head>
 <body>
@@ -99,6 +97,15 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
   <!-- واجهة العميل -->
   <div id="scr-client" class="hide">
     <div id="ann-box" class="ann-bar hide"><span>📢</span><span id="ann-txt"></span></div>
+
+    <!-- تنبيه ربط التلجرام لإشعارات الموبايل -->
+    <div class="tg-notice">
+      <div>
+        <strong style="font-size:13px;color:#38bdf8;display:block">🔔 تفعيل إشعارات التلجرام الفورية</strong>
+        <span style="font-size:11px;color:var(--mut)">استقبل إشعارات قبول رصيدك وتنزيل خدماتك مباشرة على تليجرامك.</span>
+      </div>
+      <a id="tg-notif-btn" href="https://t.me/nextplus_0" target="_blank" class="btn b-sm" style="background:#0088cc">ربط حساب التلجرام ✈️</a>
+    </div>
 
     <div class="compact-pay">
       <div class="ttl" style="font-size:14px;margin-bottom:8px">💰 شحن رصيد المحفظة</div>
@@ -207,7 +214,6 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
         <div id="a-prms" style="max-height:100px;overflow-y:auto"></div>
       </div>
       
-      <!-- قسم إدارة العملاء (تجميد الحساب أو حذفه) -->
       <div class="card">
         <div class="ttl">👤 إدارة العملاء (تجميد أو حذف)</div>
         <div id="a-usrs" style="max-height:220px;overflow-y:auto"></div>
@@ -452,7 +458,6 @@ function addBal(ph){
   if(u){ u.balance += v; fSet("users", u.id, u); if(st.user.phone===ph) st.user.balance=u.balance; sv(); msg("تم تحديث الرصيد!"); }
 }
 
-// أدوات تجميد وحذف العميل من الداش بورد
 function toggleBanUser(uid){
   var u = st.users.find(function(x){return x.id===uid;});
   if(u && u.phone!==ADM_PH){
@@ -571,6 +576,8 @@ function render(){
   document.getElementById("disp-tg-user").innerText = st.cfg.tg;
   document.getElementById("sup-lnk").href = "https://t.me/" + st.cfg.tg;
   document.getElementById("flt-sup").href = "https://t.me/" + st.cfg.tg;
+  document.getElementById("tg-notif-btn").href = "https://t.me/" + st.cfg.tg;
+  
   var ab = document.getElementById("ann-box");
   if(st.cfg.ann){ document.getElementById("ann-txt").innerText = st.cfg.ann; ab.classList.remove("hide"); } else ab.classList.add("hide");
 
@@ -627,7 +634,6 @@ function render(){
     return '<tr><td>'+r.clientName+'<br><small dir="ltr">'+r.clientPhone+'</small></td><td>'+r.method+'</td><td style="color:var(--grn);font-weight:700">'+r.amount+' ج.م</td><td dir="ltr">'+r.sender+'</td><td>'+sb+'</td><td>'+bdg(r.status)+'</td><td style="display:flex;gap:4px">'+ac+'</td></tr>';
   }).join("") || '<tr><td colspan="7" style="text-align:center;color:var(--mut)">لا توجد طلبات شحن</td></tr>';
 
-  // إدارة العملاء (إضافة رصيد + تجميد الحساب + حذف الحساب)
   document.getElementById("a-usrs").innerHTML = st.users.map(function(u){
     var isMe = (u.phone === ADM_PH);
     var banBtn = isMe ? "" : '<button type="button" class="btn '+(u.banned?'b-grn':'b-amb')+' b-sm" onclick="toggleBanUser(\''+u.id+'\')">'+(u.banned?'فك تجميد':'تجميد')+'</button>';
@@ -646,7 +652,7 @@ if(db){
     db.collection("settings").doc("main").onSnapshot(function(d){if(d.exists){st.cfg=d.data();document.getElementById("cfg-cash").value=st.cfg.cash||"";document.getElementById("cfg-tg").value=st.cfg.tg||"";document.getElementById("cfg-ann").value=st.cfg.ann||"";sv();}});
     db.collection("users").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.users=a;if(st.user){var u=a.find(function(x){return x.phone===st.user.phone;});if(u)st.user=u;}sv();}});
     db.collection("services").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.srvs=a;sv();}});
-    db.collection("promos").onSnapshot(function(s){var a=[];s.forEach(function(d){a.push(d.data());});st.prms=a;sv();});
+    db.collection("promos").onSnapshot(function(s){var a=[];s.forEach(function(d){a.push(d.data());});st.prms=a;sv();}});
     db.collection("orders").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.ords=a;sv();}});
     db.collection("recharges").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.recs=a;sv();}});
   }catch(e){}
