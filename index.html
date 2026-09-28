@@ -98,7 +98,6 @@ td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
   <div id="scr-client" class="hide">
     <div id="ann-box" class="ann-bar hide"><span>📢</span><span id="ann-txt"></span></div>
 
-    <!-- تنبيه ربط التلجرام لإشعارات الموبايل -->
     <div class="tg-notice">
       <div>
         <strong style="font-size:13px;color:#38bdf8;display:block">🔔 تفعيل إشعارات التلجرام الفورية</strong>
@@ -321,20 +320,34 @@ function copyCash(){
 
 function setAuthTab(r){
   isReg = r;
-  document.getElementById("f-name").classList.toggle("hide", !r);
-  document.getElementById("t-login").classList.toggle("act", !r);
-  document.getElementById("t-reg").classList.toggle("act", r);
-  document.getElementById("btn-auth").innerText = r ? "إنشاء حساب ودخول" : "دخول";
-  document.getElementById("sw-txt").innerText = r ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟";
-  document.getElementById("sw-btn").innerText = r ? "تسجيل الدخول" : "إنشاء حساب جديد";
+  var nameEl = document.getElementById("f-name");
+  if(nameEl) nameEl.classList.toggle("hide", !r);
+  
+  var loginTab = document.getElementById("t-login");
+  var regTab = document.getElementById("t-reg");
+  if(loginTab) loginTab.classList.toggle("act", !r);
+  if(regTab) regTab.classList.toggle("act", r);
+  
+  var btnAuth = document.getElementById("btn-auth");
+  if(btnAuth) btnAuth.innerText = r ? "إنشاء حساب ودخول" : "دخول";
+  
+  var swTxt = document.getElementById("sw-txt");
+  if(swTxt) swTxt.innerText = r ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟";
+  
+  var swBtn = document.getElementById("sw-btn");
+  if(swBtn) swBtn.innerText = r ? "تسجيل الدخول" : "إنشاء حساب جديد";
 }
 
 function doAuth(){
   var ph = clnPh(document.getElementById("in-phone").value);
   var ps = document.getElementById("in-pass").value.trim();
   var nm = document.getElementById("in-name").value.trim();
+  
   if(!ph || !ps){ msg("اكتب رقم الموبايل وكلمة المرور", true); return; }
-  var u = st.users.find(function(x){return x.phone===ph;});
+  
+  if(!st.users) st.users = [{id:"01155799387",name:"أدمن Next Plus",phone:"01155799387",pass:"123456",balance:500,role:"admin",banned:false}];
+  
+  var u = st.users.find(function(x){return String(x.phone) === String(ph);});
   
   if(u && u.banned){ msg("عذراً، هذا الحساب محظور/مجمد من قبل الإدارة!", true); return; }
 
@@ -347,7 +360,7 @@ function doAuth(){
     if(!u){
       u = {id:ph, name:ph===ADM_PH?"أدمن Next Plus":("عميل "+ph.slice(-4)), phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client", banned:false};
       st.users.push(u); fSet("users", u.id, u);
-    } else if(u.pass && u.pass!==ps && ph!==ADM_PH){
+    } else if(u.pass && u.pass !== ps && ph !== ADM_PH){
       msg("كلمة المرور غير صحيحة", true); return;
     }
   }
@@ -650,13 +663,14 @@ function render(){
 if(db){
   try{
     db.collection("settings").doc("main").onSnapshot(function(d){if(d.exists){st.cfg=d.data();document.getElementById("cfg-cash").value=st.cfg.cash||"";document.getElementById("cfg-tg").value=st.cfg.tg||"";document.getElementById("cfg-ann").value=st.cfg.ann||"";sv();}});
-    db.collection("users").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.users=a;if(st.user){var u=a.find(function(x){return x.phone===st.user.phone;});if(u)st.user=u;}sv();}});
+    db.collection("users").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.users=a;if(st.user){var u=a.find(function(x){return String(x.phone)===String(st.user.phone);});if(u)st.user=u;}sv();}});
     db.collection("services").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.srvs=a;sv();}});
     db.collection("promos").onSnapshot(function(s){var a=[];s.forEach(function(d){a.push(d.data());});st.prms=a;sv();}});
     db.collection("orders").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.ords=a;sv();}});
     db.collection("recharges").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.recs=a;sv();}});
   }catch(e){}
 }
+setAuthTab(false);
 openApp();
 </script>
 </body>
