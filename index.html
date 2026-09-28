@@ -1,657 +1,765 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0f172a">
-<title>Next Plus | منصة الخدمات الإلكترونية</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<style>
-:root{--bg:#0f172a;--card:#1e293b;--inp:#090d16;--brd:#334155;--pri:#6366f1;--grn:#10b981;--amb:#f59e0b;--red:#ef4444;--txt:#f8fafc;--mut:#94a3b8}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Cairo',sans-serif}
-body{background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:75px}
-.hide{display:none!important}
-.wrap{max-width:1080px;margin:0 auto;padding:12px}
-#msg-bar{position:fixed;top:15px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.5);text-align:center;min-width:250px}
-.nav{background:var(--card);border-bottom:1px solid var(--brd);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:90}
-.logo{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800}
-.logo-ic{background:var(--pri);color:#fff;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center}
-.logo span{color:#818cf8}
-.bal-box{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.4);color:#34d399;padding:4px 12px;border-radius:50px;font-weight:700;font-size:13px}
-.card{background:var(--card);border:1px solid var(--brd);border-radius:15px;padding:16px;margin-bottom:15px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
-.auth-box{max-width:390px;margin:40px auto;text-align:center}
-.ttl{font-size:16px;font-weight:800;margin-bottom:12px;color:#fff}
-.fg{margin-bottom:10px;text-align:right}
-.fg label{display:block;font-size:12px;color:var(--mut);margin-bottom:4px;font-weight:600}
-.inp{width:100%;background:var(--inp);border:1px solid var(--brd);color:#fff;padding:9px 12px;border-radius:9px;font-size:13px;outline:none}
-.inp:focus{border-color:var(--pri)}
-.btn{border:none;padding:10px 15px;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer;color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:5px;text-decoration:none}
-.w100{width:100%}.b-pri{background:var(--pri)}.b-grn{background:var(--grn)}.b-amb{background:var(--amb);color:#000}.b-red{background:rgba(239,68,68,.25);color:#f87171;border:1px solid rgba(239,68,68,.4)}.b-sm{padding:5px 9px;font-size:11px;border-radius:6px}
-.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
-.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
-.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:15px}
-.stat-box{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:12px;text-align:center}
-.stat-box b{display:block;font-size:20px;margin-top:4px;color:#818cf8}
-.ann-bar{background:linear-gradient(90deg,rgba(99,102,241,.25),rgba(245,158,11,.2));border:1px solid var(--pri);color:#fff;padding:10px 14px;border-radius:12px;margin-bottom:15px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
-.cat-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
-.cat-btn{background:var(--card);border:1px solid var(--brd);color:var(--mut);padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
-.cat-btn.act{background:var(--pri);color:#fff;border-color:var(--pri)}
-
-/* ألوان جديدة ومميزة لكروت الخدمات */
-.srv-card{background:linear-gradient(145deg, #1e1b4b, #1e293b);border:1px solid #818cf8;border-radius:16px;padding:16px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 0 18px rgba(99, 102, 241, 0.3);transition:0.3s}
-.srv-card:hover{border-color:#c7d2fe;box-shadow:0 0 28px rgba(129, 140, 248, 0.5);transform:translateY(-2px)}
-.ptag{background:rgba(99, 102, 241, 0.35);color:#c7d2fe;border:1px solid rgba(129, 140, 248, 0.6);padding:3px 10px;border-radius:50px;font-weight:800;font-size:12px}
-
-.compact-pay{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:14px}
-.twrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;text-align:right;font-size:12px}
-th{color:var(--mut);border-bottom:1px solid var(--brd);padding:8px;white-space:nowrap}
-td{padding:8px;border-bottom:1px solid rgba(51,65,85,.5)}
-.bdg{padding:2px 8px;border-radius:50px;font-size:11px;font-weight:700;white-space:nowrap}
-.b-pnd{background:rgba(59,130,246,.2);color:#60a5fa}.b-wrk{background:rgba(245,158,11,.2);color:#fbbf24}.b-dn{background:rgba(16,185,129,.2);color:#34d399}.b-rj{background:rgba(239,68,68,.2);color:#f87171}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:15px;z-index:500}
-.mbox{background:var(--card);border:1px solid var(--brd);border-radius:16px;width:100%;max-width:400px;padding:18px}
-.tabs{display:flex;gap:5px;background:var(--inp);padding:4px;border-radius:9px;margin-bottom:10px;flex-wrap:wrap}
-.tab{flex:1;text-align:center;padding:6px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;color:var(--mut);border:none;background:transparent;min-width:85px}
-.tab.act{background:var(--pri);color:#fff}
-.flt-tg{position:fixed;bottom:18px;left:18px;background:#0088cc;color:#fff;padding:10px 16px;border-radius:50px;font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 6px 20px rgba(0,136,204,.5);z-index:99;display:flex;align-items:center;gap:6px}
-.delivery-box{background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.4);color:#34d399;padding:6px 10px;border-radius:8px;font-weight:700;font-size:12px}
-</style>
-</head>
-<body>
-
-<div id="msg-bar" class="hide"></div>
-<a id="flt-sup" href="https://t.me/nextplus_0" target="_blank" class="flt-tg">✈️ دعم تلجرام</a>
-
-<nav class="nav hide" id="top-nav">
-  <div class="logo"><div class="logo-ic">⚡</div><div>Next <span>Plus</span></div></div>
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-    <div class="bal-box">الرصيد: <span id="u-bal">0</span> ج.م</div>
-    <span id="u-name" style="font-size:12px;color:var(--mut)"></span>
-    <button type="button" id="adm-btn" class="btn b-amb b-sm hide" onclick="toggleView()">عرض كعميل</button>
-    <button type="button" class="btn b-red b-sm" onclick="doLogout()">خروج</button>
-  </div>
-</nav>
-
-<div class="wrap">
-  <!-- شاشة الدخول -->
-  <div id="scr-auth">
-    <div class="card auth-box">
-      <div class="logo-ic" style="width:50px;height:50px;margin:0 auto 10px;font-size:24px">⚡</div>
-      <h1 style="font-size:24px;font-weight:800;margin-bottom:14px">Next <span style="color:#818cf8">Plus</span></h1>
-      <div class="tabs">
-        <button type="button" class="tab act" id="t-login" onclick="setAuthTab(false)">تسجيل دخول</button>
-        <button type="button" class="tab" id="t-reg" onclick="setAuthTab(true)">إنشاء حساب جديد</button>
-      </div>
-      <div class="fg hide" id="f-name"><label>الاسم بالكامل</label><input type="text" id="in-name" class="inp" placeholder="اكتب اسمك هنا"></div>
-      <div class="fg"><label>رقم الموبايل</label><input type="tel" id="in-phone" class="inp" placeholder="اكتب رقم موبايلك" dir="ltr"></div>
-      <div class="fg"><label>كلمة المرور</label><input type="password" id="in-pass" class="inp" placeholder="اكتب كلمة المرور" dir="ltr"></div>
-      <button type="button" class="btn b-pri w100" id="btn-auth" onclick="doAuth()">دخول</button>
-      <div style="margin-top:12px;font-size:12px;color:var(--mut)">
-        <span id="sw-txt">ليس لديك حساب؟</span>
-        <button type="button" onclick="setAuthTab(!isReg)" style="background:none;border:none;color:#818cf8;font-weight:700;cursor:pointer;text-decoration:underline" id="sw-btn">إنشاء حساب جديد</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- واجهة العميل -->
-  <div id="scr-client" class="hide">
-    <div id="ann-box" class="ann-bar hide"><span>📢</span><span id="ann-txt"></span></div>
-
-    <div class="compact-pay">
-      <div class="ttl" style="font-size:14px;margin-bottom:8px">💰 شحن رصيد المحفظة</div>
-      <div class="tabs" style="margin-bottom:8px">
-        <button type="button" class="tab act" id="pt-1" onclick="setPayTab(1)">1. خدمة العملاء</button>
-        <button type="button" class="tab" id="pt-2" onclick="setPayTab(2)">2. دفع + سكرين</button>
-        <button type="button" class="tab" id="pt-3" onclick="setPayTab(3)">3. كود هدية 🎁</button>
-      </div>
-
-      <div id="pay-1">
-        <div class="g3" style="gap:8px">
-          <div class="fg" style="margin:0"><label>الرقم المحول منه</label><input type="tel" id="sup-ph" class="inp" placeholder="01xxxxxxxxx" dir="ltr" style="padding:7px 10px"></div>
-          <div class="fg" style="margin:0"><label>المبلغ (ج.م)</label><input type="number" id="sup-am" class="inp" placeholder="100" style="padding:7px 10px"></div>
-          <div class="fg" style="margin:0;display:flex;align-items:flex-end"><button type="button" class="btn b-pri w100" style="padding:7px" onclick="sendSupPay()">تأكيد وتواصل تلجرام</button></div>
-        </div>
-        <a id="sup-lnk" href="https://t.me/nextplus_0" target="_blank" class="btn b-grn w100" style="margin-top:6px;padding:7px">✈️ فتح محادثة خدمة العملاء (@<span id="disp-tg-user">nextplus_0</span>)</a>
-      </div>
-
-      <div id="pay-2" class="hide">
-        <div style="background:var(--inp);border:1px solid var(--amb);padding:8px 12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
-          <div><span style="font-size:10px;color:var(--mut)">رقم الكاش الرسمي:</span><strong id="disp-cash-num" style="font-size:16px;color:var(--amb)" dir="ltr">01155799387</strong></div>
-          <button type="button" class="btn b-amb b-sm" onclick="copyCash()">📋 نسخ الرقم</button>
-        </div>
-        <div class="g3" style="gap:8px">
-          <div class="fg" style="margin:0"><label>الرقم المحول منه</label><input type="tel" id="dir-ph" class="inp" placeholder="رقمك" dir="ltr" style="padding:7px 10px"></div>
-          <div class="fg" style="margin:0"><label>المبلغ (ج.م)</label><input type="number" id="dir-am" class="inp" placeholder="150" style="padding:7px 10px"></div>
-          <div class="fg" style="margin:0"><label>سكرين التحويل</label><input type="file" id="dir-fl" accept="image/*" class="inp" style="padding:4px"></div>
-        </div>
-        <button type="button" class="btn b-grn w100" style="margin-top:8px;padding:7px" onclick="sendDirPay()">إرسال السكرين للشحن</button>
-      </div>
-
-      <div id="pay-3" class="hide">
-        <div style="display:flex;gap:6px">
-          <input type="text" id="prm-in" class="inp" placeholder="اكتب كود الهدية (مثال: NEXT10)" dir="ltr" style="padding:7px 10px">
-          <button type="button" class="btn b-amb" style="padding:7px 12px" onclick="usePromo()">تفعيل</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- الخدمات البارزة والملونة -->
-    <div style="margin-bottom:18px">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-        <div class="ttl" style="margin:0;color:#c7d2fe;text-shadow:0 0 12px rgba(199,210,254,0.4)">✨ خدمات Next Plus المميزة</div>
-        <input type="text" id="srch-in" class="inp" style="max-width:220px;padding:6px 10px" placeholder="🔍 ابحث عن خدمة..." oninput="render()">
-      </div>
-      <div class="cat-bar" id="cat-list"></div>
-      <div class="g3" id="c-srvs"></div>
-    </div>
-
-    <div class="g2">
-      <div class="card"><div class="ttl">📋 سجل طلباتي</div><div class="twrap"><table><thead><tr><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>الحالة</th><th>رسالة التسليم / الرد الواضح</th></tr></thead><tbody id="c-ords"></tbody></table></div></div>
-      <div class="card"><div class="ttl">💳 سجل عمليات الشحن</div><div class="twrap"><table><thead><tr><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>الحالة</th></tr></thead><tbody id="c-recs"></tbody></table></div></div>
-    </div>
-  </div>
-
-  <!-- الداش بورد للأدمن -->
-  <div id="scr-admin" class="hide">
-    <div class="g4">
-      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">👥 العملاء</span><b id="st-usrs">0</b></div>
-      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">⏳ قيد المراجعة</span><b id="st-pnd" style="color:var(--amb)">0</b></div>
-      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">🛒 المبيعات</span><b id="st-sls" style="color:var(--grn)">0 ج.م</b></div>
-      <div class="stat-box"><span style="font-size:11px;color:var(--mut)">💵 الشحن المقبول</span><b id="st-rch" style="color:#38bdf8">0 ج.م</b></div>
-    </div>
-
-    <div class="card" style="border-color:var(--amb)">
-      <div class="ttl" style="color:var(--amb)">⚙️ إعدادات المنصة</div>
-      <div class="g3">
-        <div class="fg"><label>📱 رقم الكاش</label><input type="text" id="cfg-cash" class="inp" dir="ltr"></div>
-        <div class="fg"><label>✈️ يوزر التلجرام</label><input type="text" id="cfg-tg" class="inp" dir="ltr"></div>
-        <div class="fg"><label>📢 شريط الإعلانات</label><input type="text" id="cfg-ann" class="inp" placeholder="عروض جديدة!"></div>
-      </div>
-      <button type="button" class="btn b-amb w100" onclick="saveCfg()">💾 حفظ الإعدادات</button>
-    </div>
-
-    <div class="g2">
-      <div class="card">
-        <div class="ttl">➕ إضافة خدمة جديدة</div>
-        <div class="g2" style="grid-template-columns:1fr 1fr;gap:8px">
-          <div class="fg"><label>اسم الخدمة</label><input type="text" id="s-ttl" class="inp" placeholder="اسم الخدمة"></div>
-          <div class="fg"><label>القسم</label>
-            <select id="s-cat" class="inp">
-              <option value="سوشيال ميديا">سوشيال ميديا</option>
-              <option value="شحن ألعاب">شحن ألعاب</option>
-              <option value="تصميمات">تصميمات</option>
-              <option value="خدمات تلجرام">خدمات تلجرام</option>
-              <option value="أخرى">أخرى</option>
-            </select>
-          </div>
-        </div>
-        <div class="fg"><label>سعر الوحدة (ج.م)</label><input type="number" id="s-prc" class="inp" placeholder="50"></div>
-        <div class="fg"><label>وصف الخدمة</label><input type="text" id="s-dsc" class="inp" placeholder="وصف الخدمة..."></div>
-        <button type="button" class="btn b-pri w100" onclick="addSrv()">نشر الخدمة</button>
-      </div>
-      <div class="card"><div class="ttl">🏷️ تعديل الأسعار أو الحذف</div><div id="a-srvs" style="max-height:220px;overflow-y:auto"></div></div>
-    </div>
-
-    <div class="g2">
-      <div class="card">
-        <div class="ttl">🎁 كود هدية</div>
-        <div class="g3" style="grid-template-columns:1fr 1fr 1fr;gap:6px">
-          <div class="fg"><label>الكود</label><input type="text" id="p-cd" class="inp" placeholder="NEXT" dir="ltr"></div>
-          <div class="fg"><label>المبلغ</label><input type="number" id="p-am" class="inp" placeholder="10"></div>
-          <div class="fg"><label>العدد</label><input type="number" id="p-mx" class="inp" placeholder="5"></div>
-        </div>
-        <button type="button" class="btn b-grn w100" onclick="addPromo()" style="margin-bottom:8px">إنشاء</button>
-        <div id="a-prms" style="max-height:100px;overflow-y:auto"></div>
-      </div>
-      
-      <!-- قسم إدارة العملاء (تجميد الحساب أو حذفه) -->
-      <div class="card">
-        <div class="ttl">👤 إدارة العملاء (تجميد أو حذف)</div>
-        <div id="a-usrs" style="max-height:220px;overflow-y:auto"></div>
-      </div>
-    </div>
-
-    <div class="card"><div class="ttl">💵 طلبات الشحن</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>السكرين</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="a-recs"></tbody></table></div></div>
-
-    <div class="card"><div class="ttl">🔔 الريكوستات الواردة (اكتب رسالة التسليم هنا)</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>التفاصيل</th><th>رسالة التسليم / الرد</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody id="a-ords"></tbody></table></div></div>
-  </div>
-</div>
-
-<!-- نافذة شراء الخدمة -->
-<div id="ord-mdl" class="modal hide">
-  <div class="mbox">
-    <h3 id="m-ttl" style="font-size:17px;font-weight:800;margin-bottom:12px">شراء خدمة</h3>
-    <div class="g2" style="grid-template-columns:1fr 1fr;gap:8px">
-      <div class="fg"><label>سعر الوحدة</label><div class="inp" style="color:#818cf8;font-weight:800"><span id="m-prc">0</span> ج.م</div></div>
-      <div class="fg"><label>الكمية</label><input type="number" id="m-qty" class="inp" value="1" min="1" oninput="calcTot()"></div>
-    </div>
-    <div class="fg"><label>الرابط أو التفاصيل المطلوبة</label><textarea id="m-nts" rows="2" class="inp" placeholder="ضع الرابط أو الحساب هنا..."></textarea></div>
-    <div style="background:var(--inp);padding:10px;border-radius:10px;margin-bottom:12px;display:flex;justify-content:space-between">
-      <span>الإجمالي: <strong id="m-tot" style="color:var(--grn)">0</strong> ج.م</span>
-      <span>رصيدك: <strong id="m-bal">0</strong> ج.م</span>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button type="button" class="btn b-pri" style="flex:1" onclick="buySrv()">تأكيد الشراء</button>
-      <button type="button" class="btn b-red" onclick="clsMdl()">إلغاء</button>
-    </div>
-  </div>
-</div>
-
-<div id="img-mdl" class="modal hide" onclick="this.classList.add('hide')">
-  <div class="mbox" style="text-align:center"><img id="prv-img" src="" style="max-width:100%;max-height:70vh;border-radius:10px;margin-bottom:10px"><button type="button" class="btn b-red w100">إغلاق</button></div>
-</div>
-
-<script>
-var ADM_PH = "01155799387";
-var TG_TOK = "8598235615:AAFo7SmpSCQzKzPWtpyHKqbmGkN6AaoOBeA";
-var TG_ID = "8964064245";
-var db = null;
-try {
-  firebase.initializeApp({
-    apiKey: "AIzaSyCzjX1niR-kteUE5nBaDZlNx8JcrlDr2oY",
-    authDomain: "next-plus-9134b.firebaseapp.com",
-    projectId: "next-plus-9134b",
-    storageBucket: "next-plus-9134b.firebasestorage.app",
-    messagingSenderId: "971698140219",
-    appId: "1:971698140219:web:03f46e4ab3cc91f92b981e"
-  });
-  db = firebase.firestore();
-} catch(e){}
-
-var st = {
-  user: null,
-  cfg: { cash: "01155799387", tg: "nextplus_0", ann: "🔥 مرحباً بكم في منصة Next Plus!" },
-  users: [{id:"01155799387",name:"أدمن Next Plus",phone:"01155799387",pass:"123456",balance:500,role:"admin",banned:false}],
-  srvs: [
-    {id:"s1",title:"تزويد 1000 متابع حقيقي",cat:"سوشيال ميديا",price:50,desc:"تنفيذ سريع وضمان عدم النقصان"},
-    {id:"s2",title:"تصميم شعار احترافي (Logo)",cat:"تصميمات",price:150,desc:"تسليم بجودة عالية خلال 24 ساعة"}
-  ],
-  ords: [], recs: [], prms: []
-};
-try {
-  var s = localStorage.getItem("np_db");
-  if(s){ var p = JSON.parse(s); st = Object.assign(st, p); if(!st.cfg) st.cfg={cash:"01155799387",tg:"nextplus_0",ann:""}; if(!st.prms) st.prms=[]; }
-} catch(e){}
-
-function sv(){ try{localStorage.setItem("np_db",JSON.stringify(st));}catch(e){} render(); }
-function fSet(c,id,d){ if(db) try{db.collection(c).doc(String(id)).set(d);}catch(e){} }
-function fDel(c,id){ if(db) try{db.collection(c).doc(String(id)).delete();}catch(e){} }
-
-function clnPh(v){
-  if(!v) return "";
-  var a="٠١٢٣٤٥٦٧٨٩", e="0123456789", o="";
-  for(var i=0;i<v.length;i++){ var c=v.charAt(i), x=a.indexOf(c); o += x>-1 ? e.charAt(x) : (c>='0'&&c<='9'?c:''); }
-  return o;
-}
-function msg(t,err){
-  var b=document.getElementById("msg-bar"); b.innerText=t; b.style.background=err?"#ef4444":"#10b981";
-  b.classList.remove("hide"); setTimeout(function(){b.classList.add("hide");},3500);
-}
-function tgMsg(t){
-  try{fetch("https://api.telegram.org/bot"+TG_TOK+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:TG_ID,text:t,parse_mode:"HTML"})});}catch(e){}
-}
-function tgPic(f,c){
-  try{var d=new FormData();d.append("chat_id",TG_ID);d.append("photo",f);d.append("caption",c);d.append("parse_mode","HTML");fetch("https://api.telegram.org/bot"+TG_TOK+"/sendPhoto",{method:"POST",body:d});}catch(e){}
+:root{
+  --bg:#060a12;
+  --card:#0e1625;
+  --inp:#070c15;
+  --brd:#1d2a40;
+  --pri:#6366f1;
+  --grn:#10b981;
+  --amb:#f59e0b;
+  --red:#ef4444;
+  --txt:#f8fafc;
+  --mut:#8b9ab0;
 }
 
-var isReg = false, isAdmView = false, curSrv = null, curCat = "الكل";
-
-function saveCfg(){
-  var c = document.getElementById("cfg-cash").value.trim();
-  var t = document.getElementById("cfg-tg").value.trim().replace("@","").replace("https://t.me/","");
-  var a = document.getElementById("cfg-ann").value.trim();
-  if(!c || !t){ msg("اكتب رقم الكاش ويوزر التلجرام", true); return; }
-  st.cfg = { cash: c, tg: t, ann: a };
-  fSet("settings", "main", st.cfg); sv();
-  msg("تم تحديث الإعدادات بنجاح!");
-}
-function copyCash(){
-  try{ navigator.clipboard.writeText(st.cfg.cash); msg("تم نسخ الرقم: " + st.cfg.cash); }
-  catch(e){ msg("رقم الكاش: " + st.cfg.cash); }
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:'Cairo',sans-serif;
 }
 
-function setAuthTab(r){
-  isReg = r;
-  document.getElementById("f-name").classList.toggle("hide", !r);
-  document.getElementById("t-login").classList.toggle("act", !r);
-  document.getElementById("t-reg").classList.toggle("act", r);
-  document.getElementById("btn-auth").innerText = r ? "إنشاء حساب ودخول" : "دخول";
-  document.getElementById("sw-txt").innerText = r ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟";
-  document.getElementById("sw-btn").innerText = r ? "تسجيل الدخول" : "إنشاء حساب جديد";
+html{
+  scroll-behavior:smooth;
 }
 
-function doAuth(){
-  var ph = clnPh(document.getElementById("in-phone").value);
-  var ps = document.getElementById("in-pass").value.trim();
-  var nm = document.getElementById("in-name").value.trim();
-  if(!ph || !ps){ msg("اكتب رقم الموبايل وكلمة المرور", true); return; }
-  var u = st.users.find(function(x){return x.phone===ph;});
-  
-  if(u && u.banned){ msg("عذراً، هذا الحساب محظور/مجمد من قبل الإدارة!", true); return; }
+body{
+  background:
+    radial-gradient(circle at 10% 0%,rgba(99,102,241,.12),transparent 28%),
+    radial-gradient(circle at 90% 10%,rgba(16,185,129,.06),transparent 25%),
+    var(--bg);
+  color:var(--txt);
+  min-height:100vh;
+  padding-bottom:80px;
+}
 
-  if(isReg){
-    if(!nm){ msg("اكتب اسمك بالكامل", true); return; }
-    if(u){ msg("الرقم مسجل بالفعل، سجل دخول", true); setAuthTab(false); return; }
-    u = {id:ph, name:nm, phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client", banned:false};
-    st.users.push(u); fSet("users", u.id, u);
-  } else {
-    if(!u){
-      u = {id:ph, name:ph===ADM_PH?"أدمن Next Plus":("عميل "+ph.slice(-4)), phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client", banned:false};
-      st.users.push(u); fSet("users", u.id, u);
-    } else if(u.pass && u.pass!==ps && ph!==ADM_PH){
-      msg("كلمة المرور غير صحيحة", true); return;
-    }
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background:
+    linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);
+  background-size:35px 35px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.8),transparent);
+}
+
+.hide{
+  display:none!important;
+}
+
+.wrap{
+  max-width:1080px;
+  margin:0 auto;
+  padding:16px 13px;
+}
+
+/* =========================
+   الرسائل
+========================= */
+
+#msg-bar{
+  position:fixed;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--grn);
+  color:#fff;
+  padding:11px 22px;
+  border-radius:12px;
+  font-weight:700;
+  font-size:13px;
+  z-index:9999;
+  box-shadow:0 12px 35px rgba(0,0,0,.45);
+  text-align:center;
+  min-width:260px;
+  max-width:90%;
+  border:1px solid rgba(255,255,255,.1);
+}
+
+/* =========================
+   الناف بار
+========================= */
+
+.nav{
+  background:rgba(14,22,37,.88);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(99,102,241,.16);
+  padding:12px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  position:sticky;
+  top:0;
+  z-index:90;
+  box-shadow:0 8px 30px rgba(0,0,0,.25);
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:-.3px;
+}
+
+.logo-ic{
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  color:#fff;
+  width:36px;
+  height:36px;
+  border-radius:11px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 8px 24px rgba(99,102,241,.3);
+}
+
+.logo span{
+  color:#818cf8;
+}
+
+.bal-box{
+  background:rgba(16,185,129,.08);
+  border:1px solid rgba(16,185,129,.28);
+  color:#34d399;
+  padding:5px 13px;
+  border-radius:50px;
+  font-weight:700;
+  font-size:13px;
+}
+
+/* =========================
+   الكروت
+========================= */
+
+.card{
+  background:
+    radial-gradient(circle at top right,rgba(99,102,241,.045),transparent 35%),
+    linear-gradient(145deg,#101a2c,#0b1321);
+  border:1px solid rgba(148,163,184,.12);
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:
+    0 12px 35px rgba(0,0,0,.22),
+    inset 0 1px 0 rgba(255,255,255,.02);
+  transition:.25s ease;
+}
+
+.card:hover{
+  border-color:rgba(99,102,241,.2);
+}
+
+.auth-box{
+  max-width:410px;
+  margin:55px auto;
+  text-align:center;
+  padding:25px;
+  background:
+    radial-gradient(circle at top,rgba(99,102,241,.12),transparent 45%),
+    linear-gradient(145deg,#111c30,#0a111e);
+}
+
+.ttl{
+  font-size:16px;
+  font-weight:800;
+  margin-bottom:13px;
+  color:#fff;
+}
+
+.fg{
+  margin-bottom:11px;
+  text-align:right;
+}
+
+.fg label{
+  display:block;
+  font-size:11px;
+  color:#9aa8bb;
+  margin-bottom:5px;
+  font-weight:600;
+}
+
+/* =========================
+   الإدخالات
+========================= */
+
+.inp{
+  width:100%;
+  background:rgba(5,10,18,.85);
+  border:1px solid #26344b;
+  color:#fff;
+  padding:10px 12px;
+  border-radius:10px;
+  font-size:13px;
+  outline:none;
+  transition:.2s ease;
+}
+
+.inp::placeholder{
+  color:#59687d;
+}
+
+.inp:hover{
+  border-color:#34445e;
+}
+
+.inp:focus{
+  border-color:#6366f1;
+  box-shadow:0 0 0 3px rgba(99,102,241,.10);
+}
+
+/* =========================
+   الأزرار
+========================= */
+
+.btn{
+  border:none;
+  padding:10px 16px;
+  border-radius:10px;
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  color:#fff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  text-decoration:none;
+  transition:.2s ease;
+  box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.08);
+}
+
+.btn:active{
+  transform:translateY(0);
+}
+
+.w100{
+  width:100%;
+}
+
+.b-pri{
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  box-shadow:0 7px 20px rgba(99,102,241,.2);
+}
+
+.b-grn{
+  background:linear-gradient(135deg,#10b981,#059669);
+  box-shadow:0 7px 20px rgba(16,185,129,.17);
+}
+
+.b-amb{
+  background:linear-gradient(135deg,#f59e0b,#d97706);
+  color:#080b10;
+}
+
+.b-red{
+  background:rgba(239,68,68,.08);
+  color:#fb7185;
+  border:1px solid rgba(239,68,68,.28);
+}
+
+.b-sm{
+  padding:6px 10px;
+  font-size:11px;
+  border-radius:7px;
+}
+
+/* =========================
+   الشبكات
+========================= */
+
+.g2{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+  gap:15px;
+}
+
+.g3{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:13px;
+}
+
+.g4{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:11px;
+  margin-bottom:16px;
+}
+
+/* =========================
+   الإحصائيات
+========================= */
+
+.stat-box{
+  background:
+    linear-gradient(145deg,#111c30,#0a1322);
+  border:1px solid rgba(148,163,184,.12);
+  border-radius:15px;
+  padding:14px;
+  text-align:center;
+  box-shadow:0 8px 25px rgba(0,0,0,.18);
+  transition:.2s ease;
+}
+
+.stat-box:hover{
+  transform:translateY(-2px);
+  border-color:rgba(99,102,241,.25);
+}
+
+.stat-box b{
+  display:block;
+  font-size:21px;
+  margin-top:5px;
+  color:#818cf8;
+}
+
+/* =========================
+   الإعلان
+========================= */
+
+.ann-bar{
+  background:
+    linear-gradient(90deg,rgba(99,102,241,.15),rgba(245,158,11,.08));
+  border:1px solid rgba(99,102,241,.35);
+  color:#fff;
+  padding:11px 15px;
+  border-radius:13px;
+  margin-bottom:16px;
+  font-size:13px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+/* =========================
+   الأقسام
+========================= */
+
+.cat-bar{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding:3px 2px 9px;
+  margin-bottom:13px;
+  scrollbar-width:thin;
+}
+
+.cat-btn{
+  background:rgba(14,22,37,.85);
+  border:1px solid #26344b;
+  color:#8e9db2;
+  padding:7px 15px;
+  border-radius:50px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.2s ease;
+}
+
+.cat-btn:hover{
+  color:#fff;
+  border-color:#455673;
+}
+
+.cat-btn.act{
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  color:#fff;
+  border-color:#6366f1;
+  box-shadow:0 5px 18px rgba(99,102,241,.22);
+}
+
+/* =========================
+   كروت الخدمات
+========================= */
+
+.srv-card{
+  background:
+    radial-gradient(circle at top right,rgba(99,102,241,.13),transparent 40%),
+    linear-gradient(145deg,#121d35,#0b1424);
+  border:1px solid rgba(129,140,248,.35);
+  border-radius:18px;
+  padding:17px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.22),
+    0 0 20px rgba(99,102,241,.07);
+  transition:.25s ease;
+  min-height:165px;
+}
+
+.srv-card:hover{
+  border-color:#818cf8;
+  box-shadow:
+    0 15px 35px rgba(0,0,0,.3),
+    0 0 30px rgba(99,102,241,.18);
+  transform:translateY(-3px);
+}
+
+.ptag{
+  background:rgba(99,102,241,.13);
+  color:#c7d2fe;
+  border:1px solid rgba(129,140,248,.35);
+  padding:4px 10px;
+  border-radius:50px;
+  font-weight:800;
+  font-size:11px;
+  white-space:nowrap;
+}
+
+/* =========================
+   الشحن
+========================= */
+
+.compact-pay{
+  background:
+    linear-gradient(145deg,#111b2e,#0b1321);
+  border:1px solid rgba(148,163,184,.12);
+  border-radius:17px;
+  padding:16px;
+  margin-bottom:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+}
+
+/* =========================
+   التابات
+========================= */
+
+.tabs{
+  display:flex;
+  gap:5px;
+  background:rgba(4,9,17,.75);
+  border:1px solid rgba(148,163,184,.08);
+  padding:5px;
+  border-radius:11px;
+  margin-bottom:11px;
+  flex-wrap:wrap;
+}
+
+.tab{
+  flex:1;
+  text-align:center;
+  padding:7px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  color:#8190a6;
+  border:none;
+  background:transparent;
+  min-width:85px;
+  transition:.2s ease;
+}
+
+.tab:hover{
+  color:#fff;
+}
+
+.tab.act{
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(99,102,241,.2);
+}
+
+/* =========================
+   الجداول
+========================= */
+
+.twrap{
+  overflow-x:auto;
+  border-radius:11px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  text-align:right;
+  font-size:12px;
+  min-width:600px;
+}
+
+th{
+  color:#8190a5;
+  background:rgba(4,9,17,.3);
+  border-bottom:1px solid #26344b;
+  padding:10px 9px;
+  white-space:nowrap;
+  font-weight:700;
+}
+
+td{
+  padding:10px 9px;
+  border-bottom:1px solid rgba(38,52,75,.5);
+  color:#dce4ef;
+}
+
+tbody tr{
+  transition:.15s ease;
+}
+
+tbody tr:hover{
+  background:rgba(99,102,241,.035);
+}
+
+/* =========================
+   الحالات
+========================= */
+
+.bdg{
+  padding:3px 9px;
+  border-radius:50px;
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
+  display:inline-block;
+}
+
+.b-pnd{
+  background:rgba(59,130,246,.1);
+  color:#60a5fa;
+  border:1px solid rgba(59,130,246,.18);
+}
+
+.b-wrk{
+  background:rgba(245,158,11,.1);
+  color:#fbbf24;
+  border:1px solid rgba(245,158,11,.18);
+}
+
+.b-dn{
+  background:rgba(16,185,129,.1);
+  color:#34d399;
+  border:1px solid rgba(16,185,129,.18);
+}
+
+.b-rj{
+  background:rgba(239,68,68,.1);
+  color:#f87171;
+  border:1px solid rgba(239,68,68,.18);
+}
+
+/* =========================
+   المودال
+========================= */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(1,5,12,.84);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+  z-index:500;
+}
+
+.mbox{
+  background:
+    radial-gradient(circle at top right,rgba(99,102,241,.1),transparent 40%),
+    linear-gradient(145deg,#121d32,#0a111e);
+  border:1px solid rgba(99,102,241,.24);
+  border-radius:19px;
+  width:100%;
+  max-width:420px;
+  padding:20px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
+}
+
+/* =========================
+   زر التليجرام
+========================= */
+
+.flt-tg{
+  position:fixed;
+  bottom:18px;
+  left:18px;
+  background:linear-gradient(135deg,#0088cc,#0077b5);
+  color:#fff;
+  padding:11px 17px;
+  border-radius:50px;
+  font-weight:800;
+  font-size:13px;
+  text-decoration:none;
+  box-shadow:0 8px 25px rgba(0,136,204,.3);
+  z-index:99;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  transition:.2s ease;
+}
+
+.flt-tg:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 32px rgba(0,136,204,.4);
+}
+
+/* =========================
+   رسالة التسليم
+========================= */
+
+.delivery-box{
+  background:rgba(16,185,129,.07);
+  border:1px solid rgba(16,185,129,.25);
+  color:#34d399;
+  padding:7px 10px;
+  border-radius:9px;
+  font-weight:700;
+  font-size:11px;
+  line-height:1.7;
+}
+
+/* =========================
+   القوائم الداخلية
+========================= */
+
+#a-srvs > div,
+#a-prms > div,
+#a-usrs > div{
+  border:1px solid rgba(148,163,184,.08);
+  background:rgba(5,10,18,.6)!important;
+  transition:.2s ease;
+}
+
+#a-srvs > div:hover,
+#a-prms > div:hover,
+#a-usrs > div:hover{
+  border-color:rgba(99,102,241,.2);
+  background:rgba(12,20,34,.9)!important;
+}
+
+/* =========================
+   السكرول
+========================= */
+
+::-webkit-scrollbar{
+  width:7px;
+  height:7px;
+}
+
+::-webkit-scrollbar-track{
+  background:#070c15;
+}
+
+::-webkit-scrollbar-thumb{
+  background:#273652;
+  border-radius:50px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background:#3b4d70;
+}
+
+/* =========================
+   الموبايل
+========================= */
+
+@media(max-width:650px){
+
+  body{
+    padding-bottom:85px;
   }
-  st.user = u; sv(); openApp(); msg("مرحباً بك يا " + u.name);
-}
 
-function openApp(){
-  var u = st.user;
-  document.getElementById("scr-auth").classList.toggle("hide", !!u);
-  document.getElementById("top-nav").classList.toggle("hide", !u);
-  if(!u){ document.getElementById("scr-client").classList.add("hide"); document.getElementById("scr-admin").classList.add("hide"); return; }
-  var adm = u.phone===ADM_PH || u.role==="admin";
-  document.getElementById("adm-btn").classList.toggle("hide", !adm);
-  document.getElementById("cfg-cash").value = st.cfg.cash || "";
-  document.getElementById("cfg-tg").value = st.cfg.tg || "";
-  document.getElementById("cfg-ann").value = st.cfg.ann || "";
-  showView(adm ? "admin" : "client"); render();
-}
-function showView(v){
-  isAdmView = (v==="admin");
-  document.getElementById("scr-admin").classList.toggle("hide", !isAdmView);
-  document.getElementById("scr-client").classList.toggle("hide", isAdmView);
-  document.getElementById("adm-btn").innerText = isAdmView ? "عرض كعميل" : "الداش بورد";
-}
-function toggleView(){ showView(isAdmView ? "client" : "admin"); }
-function doLogout(){ st.user = null; sv(); openApp(); }
-function setPayTab(n){
-  [1,2,3].forEach(function(i){
-    document.getElementById("pay-"+i).classList.toggle("hide", n!==i);
-    document.getElementById("pt-"+i).classList.toggle("act", n===i);
-  });
-}
+  .wrap{
+    padding:12px 9px;
+  }
 
-function sendSupPay(){
-  var ph = clnPh(document.getElementById("sup-ph").value), am = Number(document.getElementById("sup-am").value);
-  if(!ph || am<=0){ msg("اكتب الرقم والمبلغ أولاً", true); return; }
-  var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"تلجرام خدمة العملاء", amount:am, sender:ph, screenshot:null, status:"قيد المراجعة"};
-  st.recs.unshift(r); fSet("recharges", r.id, r); sv();
-  tgMsg("🎧 <b>طلب شحن عبر التلجرام - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 حسابه: <code>"+st.user.phone+"</code>\n📲 يحول من: <code>"+ph+"</code>\n💵 المبلغ: "+am+" ج.م");
-  var tgUrl = "https://t.me/" + st.cfg.tg + "?text=" + encodeURIComponent("مرحباً، أريد شحن حسابي ("+st.user.phone+") بمبلغ ("+am+" ج.م) من رقم ("+ph+")");
-  document.getElementById("sup-lnk").href = tgUrl;
-  document.getElementById("sup-ph").value=""; document.getElementById("sup-am").value="";
-  msg("🔔 تم إرسال طلب الشحن! سيتم إشعارك فور قبول الرصيد.");
-  try{ window.open(tgUrl, "_blank"); }catch(e){}
-}
+  .nav{
+    padding:10px 12px;
+  }
 
-function sendDirPay(){
-  var ph = clnPh(document.getElementById("dir-ph").value), am = Number(document.getElementById("dir-am").value), fl = document.getElementById("dir-fl").files[0];
-  if(!ph || am<=0 || !fl){ msg("اكتب الرقم والمبلغ وأرفق السكرين", true); return; }
-  var rd = new FileReader();
-  rd.onload = function(e){
-    var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"دفع مباشر + سكرين", amount:am, sender:ph, screenshot:e.target.result, status:"قيد المراجعة"};
-    st.recs.unshift(r); fSet("recharges", r.id, r); sv();
-    tgPic(fl, "📸 <b>إشعار دفع بالسكرين - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 حسابه: <code>"+st.user.phone+"</code>\n📲 محول من: <code>"+ph+"</code>\n💵 المبلغ: "+am+" ج.م");
-    document.getElementById("dir-ph").value=""; document.getElementById("dir-am").value=""; document.getElementById("dir-fl").value="";
-    msg("🔔 تم إرسال السكرين بنجاح! انتظر إشعار القبول.");
-  };
-  rd.readAsDataURL(fl);
-}
+  .logo{
+    font-size:18px;
+  }
 
-function addPromo(){
-  var cd = document.getElementById("p-cd").value.trim().toUpperCase();
-  var am = Number(document.getElementById("p-am").value);
-  var mx = Number(document.getElementById("p-mx").value) || 1;
-  if(!cd || am<=0){ msg("اكتب الكود والمبلغ", true); return; }
-  var p = {id:cd, code:cd, amount:am, max:mx, usedBy:[]};
-  st.prms = st.prms.filter(function(x){return x.code!==cd;});
-  st.prms.push(p); fSet("promos", p.id, p); sv();
-  document.getElementById("p-cd").value=""; document.getElementById("p-am").value=""; document.getElementById("p-mx").value="";
-  msg("تم إنشاء كود الهدية: " + cd);
-}
-function delPromo(cd){
-  st.prms = st.prms.filter(function(x){return x.code!==cd;});
-  fDel("promos", cd); sv(); msg("تم حذف الكود", true);
-}
-function usePromo(){
-  var cd = document.getElementById("prm-in").value.trim().toUpperCase();
-  if(!cd){ msg("اكتب الكود أولاً", true); return; }
-  var p = st.prms.find(function(x){return x.code===cd;});
-  if(!p){ msg("الكود غير صحيح أو منتهي!", true); return; }
-  if(!p.usedBy) p.usedBy = [];
-  if(p.usedBy.indexOf(st.user.phone)>-1){ msg("لقد استخدمت هذا الكود من قبل!", true); return; }
-  if(p.usedBy.length >= p.max){ msg("انتهت الكمية المتاحة لهذا الكود!", true); return; }
-  p.usedBy.push(st.user.phone); fSet("promos", p.id, p);
-  st.user.balance += Number(p.amount);
-  var u = st.users.find(function(x){return x.phone===st.user.phone;});
-  if(u){ u.balance = st.user.balance; fSet("users", u.id, u); }
-  var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"كود هدية ("+cd+")", amount:p.amount, sender:"Promo", screenshot:null, status:"مقبول"};
-  st.recs.unshift(r); fSet("recharges", r.id, r); sv();
-  document.getElementById("prm-in").value="";
-  msg("🎉 مبروك! تم إضافة " + p.amount + " ج.م لرصيدك!");
-}
+  .logo-ic{
+    width:33px;
+    height:33px;
+  }
 
-function appRec(id, ok){
-  var r = st.recs.find(function(x){return x.id===id;}); if(!r) return;
-  r.status = ok ? "مقبول" : "مرفوض"; fSet("recharges", r.id, r);
-  if(ok){
-    var u = st.users.find(function(x){return x.phone===r.clientPhone;});
-    if(u){ u.balance += Number(r.amount); fSet("users", u.id, u); if(st.user.phone===u.phone) st.user.balance=u.balance; }
-    msg("تم قبول الشحن وإضافة الرصيد للعميل!");
-  } else msg("تم رفض الطلب", true);
-  sv();
-}
+  .card{
+    padding:14px;
+    border-radius:15px;
+  }
 
-function addBal(ph){
-  var v = Number(document.getElementById("mb-"+ph).value); if(!v) return;
-  var u = st.users.find(function(x){return x.phone===ph;});
-  if(u){ u.balance += v; fSet("users", u.id, u); if(st.user.phone===ph) st.user.balance=u.balance; sv(); msg("تم تحديث الرصيد!"); }
-}
+  .auth-box{
+    margin:30px auto;
+    padding:19px;
+  }
 
-// أدوات تجميد وحذف العميل من الداش بورد
-function toggleBanUser(uid){
-  var u = st.users.find(function(x){return x.id===uid;});
-  if(u && u.phone!==ADM_PH){
-    u.banned = !u.banned;
-    fSet("users", u.id, u); sv();
-    msg(u.banned ? "تم تجميد حساب العميل بنجاح!" : "تم إلغاء تجميد الحساب!");
+  .g2,
+  .g3{
+    grid-template-columns:1fr;
+  }
+
+  .g4{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .stat-box{
+    padding:11px 7px;
+  }
+
+  .stat-box b{
+    font-size:18px;
+  }
+
+  .compact-pay{
+    padding:13px;
+  }
+
+  .srv-card{
+    min-height:150px;
+    padding:15px;
+  }
+
+  .flt-tg{
+    bottom:14px;
+    left:12px;
+    padding:10px 14px;
+  }
+
+  .mbox{
+    padding:17px;
+  }
+
+  table{
+    font-size:11px;
+  }
+
+  th,
+  td{
+    padding:8px 7px;
+  }
+
+  #a-usrs > div{
+    flex-direction:column;
+    align-items:stretch!important;
+  }
+
+  #a-usrs > div > div:last-child{
+    flex-wrap:wrap;
+  }
+
+  #a-usrs .inp{
+    flex:1;
+    min-width:70px;
   }
 }
-function deleteUser(uid){
-  var u = st.users.find(function(x){return x.id===uid;});
-  if(u && u.phone!==ADM_PH){
-    st.users = st.users.filter(function(x){return x.id!==uid;});
-    fDel("users", uid); sv();
-    msg("تم حذف العميل نهائياً", true);
-  }
-}
-
-function addSrv(){
-  var t = document.getElementById("s-ttl").value.trim(), c = document.getElementById("s-cat").value, p = Number(document.getElementById("s-prc").value), d = document.getElementById("s-dsc").value.trim();
-  if(!t || p<=0){ msg("اكتب اسم الخدمة والسعر", true); return; }
-  var s = {id:"s_"+Date.now(), title:t, cat:c, price:p, desc:d};
-  st.srvs.push(s); fSet("services", s.id, s); sv();
-  document.getElementById("s-ttl").value=""; document.getElementById("s-prc").value=""; document.getElementById("s-dsc").value="";
-  msg("تم نشر الخدمة بنجاح!");
-}
-function upPrc(id){
-  var p = Number(document.getElementById("ep-"+id).value), s = st.srvs.find(function(x){return x.id===id;});
-  if(s && p>0){ s.price=p; fSet("services", s.id, s); sv(); msg("تم تعديل السعر!"); }
-}
-function delSrv(id){
-  st.srvs = st.srvs.filter(function(x){return x.id!==id;});
-  fDel("services", id); sv(); msg("تم الحذف", true);
-}
-function setCat(c){ curCat = c; render(); }
-
-function opnMdl(id){
-  curSrv = st.srvs.find(function(x){return x.id===id;}); if(!curSrv) return;
-  document.getElementById("m-ttl").innerText = curSrv.title;
-  document.getElementById("m-prc").innerText = curSrv.price;
-  document.getElementById("m-qty").value = 1;
-  document.getElementById("m-nts").value = "";
-  document.getElementById("m-bal").innerText = st.user.balance;
-  calcTot(); document.getElementById("ord-mdl").classList.remove("hide");
-}
-function clsMdl(){ document.getElementById("ord-mdl").classList.add("hide"); }
-function calcTot(){ if(curSrv) document.getElementById("m-tot").innerText = Math.max(1, Number(document.getElementById("m-qty").value)||1) * curSrv.price; }
-
-function buySrv(){
-  if(!curSrv || !st.user) return;
-  var q = Math.max(1, Number(document.getElementById("m-qty").value)||1), tot = q * curSrv.price, nts = document.getElementById("m-nts").value.trim()||"بدون ملاحظات";
-  if(st.user.balance < tot){ msg("رصيدك لا يكفي! اشحن رصيدك أولاً", true); return; }
-  st.user.balance -= tot;
-  var u = st.users.find(function(x){return x.phone===st.user.phone;});
-  if(u){ u.balance = st.user.balance; fSet("users", u.id, u); }
-  var o = {id:"o_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, serviceTitle:curSrv.title, quantity:q, servicePrice:tot, notes:nts, reply:"قيد التنفيذ...", status:"قيد المراجعة"};
-  st.ords.unshift(o); fSet("orders", o.id, o); sv(); clsMdl();
-  tgMsg("🛒 <b>طلب خدمة جديد - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 الموبايل: <code>"+st.user.phone+"</code>\n⚡ الخدمة: "+curSrv.title+"\n🔢 الكمية: "+q+"\n💵 الإجمالي: "+tot+" ج.م\n📝 التفاصيل: <code>"+nts+"</code>");
-  msg("تم خصم الرصيد وإرسال طلبك بنجاح!");
-}
-
-function setOrdSt(id, ns){
-  var o = st.ords.find(function(x){return x.id===id;}); if(!o) return;
-  var rpEl = document.getElementById("rp-"+id);
-  if(rpEl && rpEl.value.trim()) o.reply = rpEl.value.trim();
-  if(ns==="مرفوض" && o.status!=="مرفوض"){
-    var u = st.users.find(function(x){return x.phone===o.clientPhone;});
-    if(u){ u.balance += Number(o.servicePrice); fSet("users", u.id, u); if(st.user.phone===u.phone) st.user.balance=u.balance; }
-    msg("تم رفض الطلب وإرجاع الرصيد للعميل", true);
-  } else {
-    msg("تم تحديث حالة الطلب وإرسال رسالة التسليم للعميل!");
-  }
-  o.status = ns; fSet("orders", o.id, o); sv();
-}
-
-function shwImg(id){
-  var r = st.recs.find(function(x){return x.id===id;});
-  if(r && r.screenshot){ document.getElementById("prv-img").src=r.screenshot; document.getElementById("img-mdl").classList.remove("hide"); }
-}
-function bdg(s){
-  var c = (s==="مكتمل"||s==="مقبول")?"b-dn":(s==="جاري التنفيذ"?"b-wrk":(s==="مرفوض"?"b-rj":"b-pnd"));
-  return '<span class="bdg '+c+'">'+s+'</span>';
-}
-
-var lastNotifiedRechargeStatus = {};
-var lastNotifiedOrderStatus = {};
-
-function checkClientNotifications() {
-  if (!st.user) return;
-  st.recs.filter(function(r){return r.clientPhone===st.user.phone;}).forEach(function(r){
-    if (lastNotifiedRechargeStatus[r.id] && lastNotifiedRechargeStatus[r.id] !== r.status) {
-      if (r.status === "مقبول") {
-        msg("🎉 إشعار: تم قبول عملية الشحن وإضافة " + r.amount + " ج.م لرصيدك بنجاح!");
-      } else if (r.status === "مرفوض") {
-        msg("⚠️ إشعار: عذراً، تم رفض طلب الشحن الخاص بمبلغ " + r.amount + " ج.م", true);
-      }
-    }
-    lastNotifiedRechargeStatus[r.id] = r.status;
-  });
-
-  st.ords.filter(function(o){return o.clientPhone===st.user.phone;}).forEach(function(o){
-    if (lastNotifiedOrderStatus[o.id] && lastNotifiedOrderStatus[o.id] !== o.status) {
-      if (o.status === "مكتمل") {
-        msg("🚀 إشعار: تم تسليم خدمتك (" + o.serviceTitle + ") بنجاح! راجع خانة التسليم.");
-      } else if (o.status === "جاري التنفيذ") {
-        msg("⚡ إشعار: طلبك (" + o.serviceTitle + ") أصبح قيد التنفيذ الآن.");
-      } else if (o.status === "مرفوض") {
-        msg("❌ إشعار: تم رفض طلبك (" + o.serviceTitle + ") واسترداد المبلغ لرصيدك.", true);
-      }
-    }
-    lastNotifiedOrderStatus[o.id] = o.status;
-  });
-}
-
-function render(){
-  document.getElementById("disp-cash-num").innerText = st.cfg.cash;
-  document.getElementById("disp-tg-user").innerText = st.cfg.tg;
-  document.getElementById("sup-lnk").href = "https://t.me/" + st.cfg.tg;
-  document.getElementById("flt-sup").href = "https://t.me/" + st.cfg.tg;
-  var ab = document.getElementById("ann-box");
-  if(st.cfg.ann){ document.getElementById("ann-txt").innerText = st.cfg.ann; ab.classList.remove("hide"); } else ab.classList.add("hide");
-
-  if(!st.user) return;
-  document.getElementById("u-bal").innerText = st.user.balance;
-  document.getElementById("u-name").innerText = st.user.name + " (" + st.user.phone + ")";
-
-  checkClientNotifications();
-
-  document.getElementById("st-usrs").innerText = st.users.length;
-  document.getElementById("st-pnd").innerText = st.ords.filter(function(o){return o.status==="قيد المراجعة";}).length;
-  var sls = 0; st.ords.forEach(function(o){ if(o.status!=="مرفوض") sls += Number(o.servicePrice||0); });
-  document.getElementById("st-sls").innerText = sls + " ج.م";
-  var rch = 0; st.recs.forEach(function(r){ if(r.status==="مقبول") rch += Number(r.amount||0); });
-  document.getElementById("st-rch").innerText = rch + " ج.م";
-
-  var cats = ["الكل","سوشيال ميديا","شحن ألعاب","تصميمات","خدمات تلجرام","أخرى"];
-  document.getElementById("cat-list").innerHTML = cats.map(function(c){
-    return '<button type="button" class="cat-btn '+(curCat===c?'act':'')+'" onclick="setCat(\''+c+'\')">'+c+'</button>';
-  }).join("");
-
-  var q = (document.getElementById("srch-in").value||"").trim().toLowerCase();
-  var fltSrvs = st.srvs.filter(function(s){
-    var mCat = (curCat==="الكل" || (s.cat||"سوشيال ميديا")===curCat);
-    var mQ = (!q || s.title.toLowerCase().indexOf(q)>-1 || (s.desc||"").toLowerCase().indexOf(q)>-1);
-    return mCat && mQ;
-  });
-
-  document.getElementById("c-srvs").innerHTML = fltSrvs.map(function(s){
-    return '<div class="srv-card"><div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong>'+s.title+'</strong><span class="ptag">'+s.price+' ج.م</span></div><span style="font-size:10px;color:#c7d2fe;display:block;margin-bottom:6px">📁 '+(s.cat||"عام")+'</span><p style="font-size:12px;color:var(--mut);margin-bottom:12px">'+s.desc+'</p></div><button type="button" class="btn b-pri w100" onclick="opnMdl(\''+s.id+'\')">شراء الخدمة بالرصيد</button></div>';
-  }).join("") || '<p style="color:var(--mut);font-size:13px">لا توجد خدمات مطابقة للبحث</p>';
-
-  document.getElementById("a-srvs").innerHTML = st.srvs.map(function(s){
-    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+s.title+'</b> <small style="color:var(--mut)">('+(s.cat||"عام")+')</small></div><div style="display:flex;gap:4px"><input type="number" id="ep-'+s.id+'" value="'+s.price+'" class="inp" style="width:65px;padding:4px"><button type="button" class="btn b-grn b-sm" onclick="upPrc(\''+s.id+'\')">حفظ</button><button type="button" class="btn b-red b-sm" onclick="delSrv(\''+s.id+'\')">حذف</button></div></div>';
-  }).join("");
-
-  document.getElementById("a-prms").innerHTML = (st.prms||[]).map(function(p){
-    var uCnt = (p.usedBy||[]).length;
-    return '<div style="background:var(--inp);padding:6px 10px;border-radius:8px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;font-size:12px"><span>🎁 <b>'+p.code+'</b> ('+p.amount+' ج.م) - استُخدم: '+uCnt+'/'+p.max+'</span><button type="button" class="btn b-red b-sm" onclick="delPromo(\''+p.code+'\')">حذف</button></div>';
-  }).join("") || '<small style="color:var(--mut)">لا توجد أكواد فعالة</small>';
-
-  document.getElementById("c-ords").innerHTML = st.ords.filter(function(o){return o.clientPhone===st.user.phone;}).map(function(o){
-    var repBox = (o.reply && o.reply!=="-" && o.reply!=="قيد التنفيذ...") ? '<div class="delivery-box">📥 '+o.reply+'</div>' : '<span style="color:var(--mut)">قيد المراجعة أو التنفيذ...</span>';
-    return '<tr><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td>'+o.servicePrice+' ج.م</td><td>'+bdg(o.status)+'</td><td>'+repBox+'</td></tr>';
-  }).join("") || '<tr><td colspan="5" style="text-align:center;color:var(--mut)">لا توجد طلبات</td></tr>';
-
-  document.getElementById("c-recs").innerHTML = st.recs.filter(function(r){return r.clientPhone===st.user.phone;}).map(function(r){
-    return '<tr><td>'+r.method+'</td><td style="color:var(--grn);font-weight:700">+'+r.amount+' ج.م</td><td dir="ltr">'+r.sender+'</td><td>'+bdg(r.status)+'</td></tr>';
-  }).join("") || '<tr><td colspan="4" style="text-align:center;color:var(--mut)">لا توجد عمليات شحن</td></tr>';
-
-  document.getElementById("a-recs").innerHTML = st.recs.map(function(r){
-    var sb = r.screenshot ? '<button type="button" class="btn b-pri b-sm" onclick="shwImg(\''+r.id+'\')">عرض</button>' : 'بدون';
-    var ac = r.status==="قيد المراجعة" ? '<button type="button" class="btn b-grn b-sm" onclick="appRec(\''+r.id+'\',1)">قبول</button><button type="button" class="btn b-red b-sm" onclick="appRec(\''+r.id+'\',0)">رفض</button>' : '-';
-    return '<tr><td>'+r.clientName+'<br><small dir="ltr">'+r.clientPhone+'</small></td><td>'+r.method+'</td><td style="color:var(--grn);font-weight:700">'+r.amount+' ج.م</td><td dir="ltr">'+r.sender+'</td><td>'+sb+'</td><td>'+bdg(r.status)+'</td><td style="display:flex;gap:4px">'+ac+'</td></tr>';
-  }).join("") || '<tr><td colspan="7" style="text-align:center;color:var(--mut)">لا توجد طلبات شحن</td></tr>';
-
-  // إدارة العملاء (إضافة رصيد + تجميد الحساب + حذف الحساب)
-  document.getElementById("a-usrs").innerHTML = st.users.map(function(u){
-    var isMe = (u.phone === ADM_PH);
-    var banBtn = isMe ? "" : '<button type="button" class="btn '+(u.banned?'b-grn':'b-amb')+' b-sm" onclick="toggleBanUser(\''+u.id+'\')">'+(u.banned?'فك تجميد':'تجميد')+'</button>';
-    var delBtn = isMe ? "" : '<button type="button" class="btn b-red b-sm" onclick="deleteUser(\''+u.id+'\')">حذف</button>';
-    var statusText = u.banned ? ' <span style="color:var(--red);font-size:11px">(مجمد)</span>' : '';
-    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+u.name+'</b>'+statusText+' <small dir="ltr">('+u.phone+')</small><div style="color:var(--grn);font-size:12px;font-weight:700">الرصيد: '+u.balance+' ج.م</div></div><div style="display:flex;gap:4px;align-items:center"><input type="number" id="mb-'+u.phone+'" placeholder="+ أو -" class="inp" style="width:60px;padding:4px"><button type="button" class="btn b-pri b-sm" onclick="addBal(\''+u.phone+'\')">رصيد</button>'+banBtn+delBtn+'</div></div>';
-  }).join("");
-
-  document.getElementById("a-ords").innerHTML = st.ords.map(function(o){
-    return '<tr><td>'+o.clientName+'<br><small dir="ltr">'+o.clientPhone+'</small></td><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td style="color:var(--grn);font-weight:700">'+o.servicePrice+' ج.م</td><td>'+o.notes+'</td><td><input type="text" id="rp-'+o.id+'" value="'+(o.reply&&o.reply!=="-"?o.reply:"")+'" placeholder="اكتب كود الشحن أو رابط التسليم للعميل" class="inp" style="min-width:140px;padding:5px 8px;border-color:#10b981"></td><td>'+bdg(o.status)+'</td><td style="display:flex;gap:4px"><button type="button" class="btn b-amb b-sm" onclick="setOrdSt(\''+o.id+'\',\'جاري التنفيذ\')">تنفيذ</button><button type="button" class="btn b-grn b-sm" onclick="setOrdSt(\''+o.id+'\',\'مكتمل\')">إكمال</button><button type="button" class="btn b-red b-sm" onclick="setOrdSt(\''+o.id+'\',\'مرفوض\')">رفض</button></td></tr>';
-  }).join("") || '<tr><td colspan="8" style="text-align:center;color:var(--mut)">لا توجد طلبات واردة</td></tr>';
-}
-
-if(db){
-  try{
-    db.collection("settings").doc("main").onSnapshot(function(d){if(d.exists){st.cfg=d.data();document.getElementById("cfg-cash").value=st.cfg.cash||"";document.getElementById("cfg-tg").value=st.cfg.tg||"";document.getElementById("cfg-ann").value=st.cfg.ann||"";sv();}});
-    db.collection("users").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.users=a;if(st.user){var u=a.find(function(x){return x.phone===st.user.phone;});if(u)st.user=u;}sv();}});
-    db.collection("services").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.srvs=a;sv();}});
-    db.collection("promos").onSnapshot(function(s){var a=[];s.forEach(function(d){a.push(d.data());});st.prms=a;sv();});
-    db.collection("orders").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.ords=a;sv();}});
-    db.collection("recharges").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.recs=a;sv();}});
-  }catch(e){}
-}
-openApp();
-</script>
-</body>
-</html>
