@@ -1,1004 +1,437 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Next Plus | منصة الخدمات الإلكترونية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- مكتبات Firebase الرسمية -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <style>
-        :root {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #090d16;
-            --border: #334155;
-            --primary: #4f46e5;
-            --emerald: #10b981;
-            --amber: #f59e0b;
-            --danger: #ef4444;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; line-height: 1.6; padding-bottom: 40px; }
-        .hidden { display: none !important; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 15px; }
-
-        #toast-box {
-            position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
-            background: var(--emerald); color: #fff; padding: 12px 22px;
-            border-radius: 12px; font-weight: 700; font-size: 14px;
-            z-index: 9999; box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-            text-align: center; min-width: 260px;
-        }
-
-        .navbar {
-            background: var(--bg-card); border-bottom: 1px solid var(--border);
-            padding: 14px 18px; display: flex; justify-content: space-between;
-            align-items: center; flex-wrap: wrap; gap: 10px; position: sticky; top: 0; z-index: 90;
-        }
-        .brand { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 800; }
-        .brand-icon { background: var(--primary); color: #fff; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .brand span { color: #818cf8; }
-        .wallet-badge {
-            background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4);
-            color: #34d399; padding: 5px 14px; border-radius: 50px; font-weight: 700; font-size: 14px;
-        }
-
-        .card {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 16px; padding: 18px; margin-bottom: 18px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        .auth-card { max-width: 400px; margin: 50px auto; text-align: center; }
-        .section-title { font-size: 17px; font-weight: 800; margin-bottom: 14px; color: #fff; }
-        
-        .form-group { margin-bottom: 14px; text-align: right; }
-        .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
-        .input {
-            width: 100%; background: var(--bg-input); border: 1px solid var(--border);
-            color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 14px; outline: none;
-        }
-        .input:focus { border-color: var(--primary); }
-
-        .btn {
-            border: none; padding: 12px 18px; border-radius: 10px;
-            font-weight: 700; font-size: 14px; cursor: pointer;
-            display: inline-flex; align-items: center; justify-content: center;
-            gap: 6px; color: #fff; text-decoration: none;
-        }
-        .btn-full { width: 100%; }
-        .btn-primary { background: var(--primary); }
-        .btn-emerald { background: var(--emerald); }
-        .btn-amber { background: var(--amber); color: #000; }
-        .btn-danger { background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
-        .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 7px; }
-
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
-
-        .service-card {
-            background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 16px; padding: 16px; display: flex;
-            flex-direction: column; justify-content: space-between;
-        }
-        .price-tag {
-            background: rgba(79, 70, 229, 0.2); color: #818cf8;
-            border: 1px solid rgba(79, 70, 229, 0.4); padding: 3px 10px;
-            border-radius: 50px; font-weight: 800; font-size: 13px;
-        }
-
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; }
-        th { color: var(--text-muted); border-bottom: 1px solid var(--border); padding: 9px; white-space: nowrap; }
-        td { padding: 10px 9px; border-bottom: 1px solid rgba(51, 65, 85, 0.5); }
-
-        .badge { padding: 3px 9px; border-radius: 50px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-        .badge-pending { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-        .badge-working { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-        .badge-done { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-        .badge-rejected { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-            display: flex; align-items: center; justify-content: center;
-            padding: 15px; z-index: 500;
-        }
-        .modal-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 420px; padding: 20px; }
-
-        .pay-tabs { display: flex; gap: 8px; background: var(--bg-input); padding: 6px; border-radius: 12px; margin-bottom: 15px; }
-        .pay-tab { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text-muted); border: none; background: transparent; }
-        .pay-tab.active { background: var(--primary); color: #fff; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Next Plus | منصة الخدمات</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--inp:#090d16;--brd:#334155;--pri:#4f46e5;--grn:#10b981;--amb:#f59e0b;--red:#ef4444;--txt:#f8fafc;--mut:#94a3b8}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Cairo',sans-serif}
+body{background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:40px}
+.hide{display:none!important}
+.wrap{max-width:1050px;margin:0 auto;padding:14px}
+#msg-bar{position:fixed;top:15px;left:50%;transform:translateX(-50%);background:var(--grn);color:#fff;padding:10px 20px;border-radius:10px;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.5);text-align:center}
+.nav{background:var(--card);border-bottom:1px solid var(--brd);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:90}
+.logo{display:flex;align-items:center;gap:8px;font-size:21px;font-weight:800}
+.logo-ic{background:var(--pri);color:#fff;width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center}
+.logo span{color:#818cf8}
+.bal-box{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.4);color:#34d399;padding:4px 12px;border-radius:50px;font-weight:700;font-size:13px}
+.card{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.auth-box{max-width:390px;margin:45px auto;text-align:center}
+.ttl{font-size:16px;font-weight:800;margin-bottom:12px;color:#fff}
+.fg{margin-bottom:12px;text-align:right}
+.fg label{display:block;font-size:13px;color:var(--mut);margin-bottom:5px;font-weight:600}
+.inp{width:100%;background:var(--inp);border:1px solid var(--brd);color:#fff;padding:10px 12px;border-radius:10px;font-size:14px;outline:none}
+.inp:focus{border-color:var(--pri)}
+.btn{border:none;padding:11px 16px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.w100{width:100%}.b-pri{background:var(--pri)}.b-grn{background:var(--grn)}.b-amb{background:var(--amb);color:#000}.b-red{background:rgba(239,68,68,.25);color:#f87171;border:1px solid rgba(239,68,68,.4)}.b-sm{padding:5px 10px;font-size:12px;border-radius:7px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.srv-card{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:15px;display:flex;flex-direction:column;justify-content:space-between}
+.ptag{background:rgba(79,70,229,.2);color:#818cf8;border:1px solid rgba(79,70,229,.4);padding:2px 10px;border-radius:50px;font-weight:800;font-size:12px}
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;text-align:right;font-size:12px}
+th{color:var(--mut);border-bottom:1px solid var(--brd);padding:8px;white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid rgba(51,65,85,.5)}
+.bdg{padding:2px 8px;border-radius:50px;font-size:11px;font-weight:700;white-space:nowrap}
+.b-pnd{background:rgba(59,130,246,.2);color:#60a5fa}.b-wrk{background:rgba(245,158,11,.2);color:#fbbf24}.b-dn{background:rgba(16,185,129,.2);color:#34d399}.b-rj{background:rgba(239,68,68,.2);color:#f87171}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:15px;z-index:500}
+.mbox{background:var(--card);border:1px solid var(--brd);border-radius:16px;width:100%;max-width:400px;padding:18px}
+.tabs{display:flex;gap:6px;background:var(--inp);padding:5px;border-radius:10px;margin-bottom:14px}
+.tab{flex:1;text-align:center;padding:8px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;color:var(--mut);border:none;background:transparent}
+.tab.act{background:var(--pri);color:#fff}
+</style>
 </head>
 <body>
 
-    <div id="toast-box" class="hidden"></div>
+<div id="msg-bar" class="hide"></div>
 
-    <!-- الهيدر العلوي -->
-    <nav class="navbar hidden" id="main-navbar">
-        <div class="brand">
-            <div class="brand-icon">⚡</div>
-            <div>Next <span>Plus</span></div>
+<nav class="nav hide" id="top-nav">
+  <div class="logo"><div class="logo-ic">⚡</div><div>Next <span>Plus</span></div></div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <div class="bal-box">الرصيد: <span id="u-bal">0</span> ج.م</div>
+    <span id="u-name" style="font-size:12px;color:var(--mut)"></span>
+    <button type="button" id="adm-btn" class="btn b-amb b-sm hide" onclick="toggleView()">عرض كعميل</button>
+    <button type="button" class="btn b-red b-sm" onclick="doLogout()">خروج</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <!-- 1. شاشة الدخول وإنشاء الحساب -->
+  <div id="scr-auth">
+    <div class="card auth-box">
+      <div class="logo-ic" style="width:50px;height:50px;margin:0 auto 10px;font-size:24px">⚡</div>
+      <h1 style="font-size:24px;font-weight:800;margin-bottom:14px">Next <span style="color:#818cf8">Plus</span></h1>
+
+      <div class="tabs">
+        <button type="button" class="tab act" id="t-login" onclick="setAuthTab(false)">تسجيل دخول</button>
+        <button type="button" class="tab" id="t-reg" onclick="setAuthTab(true)">إنشاء حساب جديد</button>
+      </div>
+
+      <div class="fg hide" id="f-name">
+        <label>الاسم بالكامل</label>
+        <input type="text" id="in-name" class="inp" placeholder="اكتب اسمك هنا">
+      </div>
+      <div class="fg">
+        <label>رقم الموبايل</label>
+        <input type="tel" id="in-phone" class="inp" placeholder="اكتب رقم موبايلك" dir="ltr">
+      </div>
+      <div class="fg">
+        <label>كلمة المرور</label>
+        <input type="password" id="in-pass" class="inp" placeholder="اكتب كلمة المرور" dir="ltr">
+      </div>
+
+      <button type="button" class="btn b-pri w100" id="btn-auth" onclick="doAuth()">دخول</button>
+
+      <div style="margin-top:14px;font-size:13px;color:var(--mut)">
+        <span id="sw-txt">ليس لديك حساب؟</span>
+        <button type="button" onclick="setAuthTab(!isReg)" style="background:none;border:none;color:#818cf8;font-weight:700;cursor:pointer;text-decoration:underline" id="sw-btn">إنشاء حساب جديد</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. واجهة العميل -->
+  <div id="scr-client" class="hide">
+    <div class="card">
+      <div class="ttl">💰 شحن رصيد المحفظة</div>
+      <div class="tabs">
+        <button type="button" class="tab act" id="pt-1" onclick="setPayTab(1)">1. شحن عبر خدمة العملاء</button>
+        <button type="button" class="tab" id="pt-2" onclick="setPayTab(2)">2. دفع على الرقم + سكرين</button>
+      </div>
+
+      <div id="pay-1">
+        <p style="font-size:12px;color:#a5b4fc;margin-bottom:10px">اكتب الرقم الذي ستحول منه والمبلغ، وسيتم إرسال طلبك تلقائياً لخدمة العملاء.</p>
+        <div class="g3">
+          <div class="fg"><label>الرقم الذي سترسل منه</label><input type="tel" id="sup-ph" class="inp" placeholder="رقم المحفظة" dir="ltr"></div>
+          <div class="fg"><label>المبلغ (ج.م)</label><input type="number" id="sup-am" class="inp" placeholder="مثال: 100"></div>
+          <div class="fg" style="display:flex;align-items:flex-end"><button type="button" class="btn b-pri w100" onclick="sendSupPay()">شحن وإرسال لخدمة العملاء</button></div>
         </div>
-        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-            <div class="wallet-badge">الرصيد: <span id="user-balance">0</span> ج.م</div>
-            <span id="user-greeting" style="font-size: 12px; color: var(--text-muted);"></span>
-            <button type="button" id="toggle-admin-btn" class="btn btn-amber btn-sm hidden" onclick="toggleAdminView()">عرض كعميل</button>
-            <button type="button" class="btn btn-danger btn-sm" onclick="logoutUser()">خروج</button>
+        <div id="sup-lnk-box" class="hide" style="margin-top:8px"><a id="sup-lnk" href="#" target="_blank" class="btn b-grn w100">اضغط هنا لفتح محادثة خدمة العملاء</a></div>
+      </div>
+
+      <div id="pay-2" class="hide">
+        <div style="background:var(--inp);border:1px solid var(--amb);padding:10px 14px;border-radius:10px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+          <div><span style="font-size:11px;color:var(--mut);display:block">رقم التحويل الرسمي (فودافون كاش / إنستا باي):</span><strong style="font-size:18px;color:var(--amb)" dir="ltr">01155799387</strong></div>
+          <span class="bdg b-wrk">أرفق سكرين التحويل</span>
         </div>
-    </nav>
-
-    <div class="container">
-
-        <!-- 1. شاشة تسجيل الدخول وإنشاء الحساب -->
-        <div id="screen-auth">
-            <div class="card auth-card">
-                <div class="brand-icon" style="width: 55px; height: 55px; margin: 0 auto 12px; font-size: 26px;">⚡</div>
-                <h1 style="font-size: 26px; font-weight: 800;">Next <span style="color: #818cf8;">Plus</span></h1>
-                <p id="auth-title" style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">تسجيل الدخول برقم الموبايل</p>
-
-                <div class="form-group hidden" id="name-group">
-                    <label>الاسم بالكامل</label>
-                    <input type="text" id="auth-name" class="input" placeholder="اكتب اسمك هنا">
-                </div>
-                <div class="form-group">
-                    <label>رقم الموبايل</label>
-                    <input type="tel" id="auth-phone" class="input" placeholder="01155799387" dir="ltr">
-                </div>
-                <div class="form-group">
-                    <label>كلمة المرور</label>
-                    <input type="password" id="auth-password" class="input" placeholder="••••••••" dir="ltr">
-                </div>
-
-                <button type="button" class="btn btn-primary btn-full" id="auth-submit" onclick="loginNow()">دخول</button>
-
-                <div style="margin-top: 15px; font-size: 13px; color: var(--text-muted);">
-                    <span id="auth-switch-text">ليس لديك حساب؟</span>
-                    <button type="button" onclick="toggleAuthMode()" style="background:none; border:none; color:#818cf8; font-weight:700; cursor:pointer; text-decoration:underline; padding: 5px;" id="auth-switch-btn">إنشاء حساب جديد</button>
-                </div>
-            </div>
+        <div class="g3">
+          <div class="fg"><label>الرقم المحول منه</label><input type="tel" id="dir-ph" class="inp" placeholder="رقمك المحول منه" dir="ltr"></div>
+          <div class="fg"><label>المبلغ المحول (ج.م)</label><input type="number" id="dir-am" class="inp" placeholder="مثال: 150"></div>
+          <div class="fg"><label>صورة سكرين الدفع</label><input type="file" id="dir-fl" accept="image/*" class="inp" style="padding:7px"></div>
         </div>
-
-        <!-- 2. واجهة العميل -->
-        <div id="screen-client" class="hidden">
-            
-            <div class="card">
-                <div class="section-title">💰 شحن رصيد المحفظة (اختر طريقة الدفع)</div>
-
-                <div class="pay-tabs">
-                    <button type="button" class="pay-tab active" id="pay-tab-1" onclick="switchPayMethod(1)">1. شحن عبر خدمة العملاء</button>
-                    <button type="button" class="pay-tab" id="pay-tab-2" onclick="switchPayMethod(2)">2. دفع على الرقم + سكرين</button>
-                </div>
-
-                <!-- الاختيار الأول: خدمة العملاء -->
-                <div id="form-pay-support">
-                    <p style="font-size: 13px; color: #a5b4fc; margin-bottom: 12px;">
-                        اكتب الرقم الذي سترسل منه الفلوس والمبلغ، وبمجرد الضغط على "شحن" سيتم إرسال طلبك تلقائياً لخدمة العملاء.
-                    </p>
-                    <div class="grid-3">
-                        <div class="form-group">
-                            <label>الرقم الذي سترسل منه الفلوس</label>
-                            <input type="tel" id="sup-phone" class="input" placeholder="01xxxxxxxxx" dir="ltr">
-                        </div>
-                        <div class="form-group">
-                            <label>المبلغ المراد شحنه (ج.م)</label>
-                            <input type="number" id="sup-amount" class="input" placeholder="مثال: 100">
-                        </div>
-                        <div class="form-group" style="display:flex; align-items:flex-end;">
-                            <button type="button" class="btn btn-primary btn-full" onclick="submitSupportRecharge()">شحن وإرسال لخدمة العملاء</button>
-                        </div>
-                    </div>
-                    <div id="support-link-box" class="hidden" style="margin-top: 10px; text-align: center;">
-                        <a id="support-direct-link" href="#" target="_blank" class="btn btn-emerald btn-full">اضغط هنا لفتح محادثة خدمة العملاء الآن</a>
-                    </div>
-                </div>
-
-                <!-- الاختيار الثاني: رقم الدفع + سكرين لبوت الطلبات -->
-                <div id="form-pay-direct" class="hidden">
-                    <div style="background: var(--bg-input); border: 1px solid var(--amber); padding: 12px 16px; border-radius: 12px; margin-bottom: 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                        <div>
-                            <span style="font-size: 12px; color: var(--text-muted); display:block;">حوّل المبلغ على رقم الدفع التالي ثم أرفق السكرين:</span>
-                            <strong style="font-size: 20px; color: var(--amber); letter-spacing: 1px;" dir="ltr">01155799387</strong>
-                        </div>
-                        <span class="badge badge-working">فودافون كاش / إنستا باي</span>
-                    </div>
-
-                    <div class="grid-3">
-                        <div class="form-group">
-                            <label>الرقم المحول منه</label>
-                            <input type="tel" id="dir-phone" class="input" placeholder="01xxxxxxxxx" dir="ltr">
-                        </div>
-                        <div class="form-group">
-                            <label>المبلغ المحول (ج.م)</label>
-                            <input type="number" id="dir-amount" class="input" placeholder="مثال: 150">
-                        </div>
-                        <div class="form-group">
-                            <label>سكرين الدفع (صورة التحويل)</label>
-                            <input type="file" id="dir-screen" accept="image/*" class="input" style="padding: 8px;">
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-emerald btn-full" onclick="submitDirectRecharge()">إرسال السكرين لبوت الطلبات وتأكيد الشحن</button>
-                </div>
-            </div>
-
-            <!-- الخدمات -->
-            <div style="margin-bottom: 25px;">
-                <div class="section-title">⚡ خدمات Next Plus المتاحة</div>
-                <div class="grid-3" id="client-services-list"></div>
-            </div>
-
-            <!-- السجلات -->
-            <div class="grid-2">
-                <div class="card">
-                    <div class="section-title">📋 سجل طلباتي</div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead><tr><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>التفاصيل</th><th>الحالة</th></tr></thead>
-                            <tbody id="client-orders-tbody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="section-title">💳 سجل عمليات الشحن</div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead><tr><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>الحالة</th></tr></thead>
-                            <tbody id="client-recharges-tbody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. الداش بورد (تفتح فقط لرقم 01155799387) -->
-        <div id="screen-admin" class="hidden">
-            <div class="card" style="border-color: var(--amber);">
-                <h2 style="font-size: 19px; font-weight: 800; color: var(--amber);">⚙️ لوحة تحكم الأدمن (Dashboard) - Next Plus</h2>
-                <p style="font-size: 13px; color: var(--text-muted);">هذه اللوحة مخفية عن العملاء وتفتح لرقمك فقط (01155799387).</p>
-            </div>
-
-            <div class="grid-2">
-                <div class="card">
-                    <div class="section-title">➕ إضافة خدمة جديدة</div>
-                    <div class="form-group">
-                        <label>اسم الخدمة</label>
-                        <input type="text" id="srv-title" class="input" placeholder="مثال: تزويد 1000 متابع">
-                    </div>
-                    <div class="form-group">
-                        <label>سعر الوحدة (ج.م)</label>
-                        <input type="number" id="srv-price" class="input" placeholder="50">
-                    </div>
-                    <div class="form-group">
-                        <label>وصف الخدمة</label>
-                        <textarea id="srv-desc" rows="2" class="input" placeholder="اكتب تفاصيل الخدمة..."></textarea>
-                    </div>
-                    <button type="button" class="btn btn-primary btn-full" onclick="addNewService()">نشر الخدمة في الموقع</button>
-                </div>
-
-                <div class="card">
-                    <div class="section-title">🏷️ تعديل الأسعار أو حذف خدمة</div>
-                    <div id="admin-services-list" style="max-height: 280px; overflow-y: auto;"></div>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="card">
-                    <div class="section-title">💵 طلبات شحن الرصيد الواردة</div>
-                    <div class="table-wrap">
-                        <table>
-                            <thead><tr><th>العميل</th><th>الطريقة</th><th>المبلغ</th><th>من رقم</th><th>السكرين</th><th>الحالة</th><th>إجراء</th></tr></thead>
-                            <tbody id="admin-recharges-tbody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="section-title">👤 إضافة / خصم رصيد يدوي لعميل</div>
-                    <div id="admin-users-list" style="max-height: 280px; overflow-y: auto;"></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="section-title">🔔 الريكوستات الواردة (طلبات الخدمات)</div>
-                <div class="table-wrap">
-                    <table>
-                        <thead><tr><th>العميل</th><th>الموبايل</th><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>التفاصيل</th><th>الحالة</th><th>تحكم</th></tr></thead>
-                        <tbody id="admin-orders-tbody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
+        <button type="button" class="btn b-grn w100" onclick="sendDirPay()">إرسال السكرين لبوت الطلبات وتأكيد الشحن</button>
+      </div>
     </div>
 
-    <!-- نافذة شراء الخدمة -->
-    <div id="order-modal" class="modal-overlay hidden">
-        <div class="modal-box">
-            <h3 id="modal-title" style="font-size: 18px; font-weight: 800; margin-bottom: 14px;">شراء خدمة</h3>
-            <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="form-group">
-                    <label>سعر الوحدة</label>
-                    <div class="input" style="color:#818cf8; font-weight:800;"><span id="modal-unit-price">0</span> ج.م</div>
-                </div>
-                <div class="form-group">
-                    <label>الكمية المطلوبة</label>
-                    <input type="number" id="modal-qty" class="input" value="1" min="1" oninput="calcModalTotal()">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>الرابط أو التفاصيل المطلوبة للتنفيذ</label>
-                <textarea id="modal-notes" rows="2" class="input" placeholder="ضع الرابط أو الحساب هنا..."></textarea>
-            </div>
-            <div style="background: var(--bg-input); padding: 12px; border-radius: 10px; margin-bottom: 14px; display:flex; justify-content:space-between;">
-                <span>الإجمالي: <strong id="modal-total" style="color:var(--emerald);">0</strong> ج.م</span>
-                <span>رصيدك: <strong id="modal-bal">0</strong> ج.م</span>
-            </div>
-            <div style="display:flex; gap: 10px;">
-                <button type="button" class="btn btn-primary" style="flex:1;" onclick="confirmServiceOrder()">تأكيد الشراء</button>
-                <button type="button" class="btn btn-danger" onclick="closeModal()">إلغاء</button>
-            </div>
-        </div>
+    <div style="margin-bottom:20px">
+      <div class="ttl">⚡ خدمات Next Plus المتاحة</div>
+      <div class="g3" id="c-srvs"></div>
     </div>
 
-    <!-- نافذة عرض صورة السكرين شوت -->
-    <div id="img-modal" class="modal-overlay hidden" onclick="closeImgModal()">
-        <div class="modal-box" style="text-align:center;">
-            <img id="preview-img-el" src="" style="max-width:100%; max-height:70vh; border-radius:12px; margin-bottom:12px;">
-            <button type="button" class="btn btn-danger btn-full" onclick="closeImgModal()">إغلاق الصورة</button>
-        </div>
+    <div class="g2">
+      <div class="card"><div class="ttl">📋 سجل طلباتي</div><div class="twrap"><table><thead><tr><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>التفاصيل</th><th>الحالة</th></tr></thead><tbody id="c-ords"></tbody></table></div></div>
+      <div class="card"><div class="ttl">💳 سجل عمليات الشحن</div><div class="twrap"><table><thead><tr><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>الحالة</th></tr></thead><tbody id="c-recs"></tbody></table></div></div>
+    </div>
+  </div>
+
+  <!-- 3. الداش بورد (تفتح للأدمن فقط) -->
+  <div id="scr-admin" class="hide">
+    <div class="card" style="border-color:var(--amb)"><h2 style="font-size:18px;font-weight:800;color:var(--amb)">⚙️ لوحة تحكم الأدمن (Dashboard) - Next Plus</h2></div>
+
+    <div class="g2">
+      <div class="card">
+        <div class="ttl">➕ إضافة خدمة جديدة</div>
+        <div class="fg"><label>اسم الخدمة</label><input type="text" id="s-ttl" class="inp" placeholder="مثال: تزويد 1000 متابع"></div>
+        <div class="fg"><label>سعر الوحدة (ج.م)</label><input type="number" id="s-prc" class="inp" placeholder="50"></div>
+        <div class="fg"><label>وصف الخدمة</label><textarea id="s-dsc" rows="2" class="inp" placeholder="تفاصيل الخدمة..."></textarea></div>
+        <button type="button" class="btn b-pri w100" onclick="addSrv()">نشر الخدمة</button>
+      </div>
+      <div class="card"><div class="ttl">🏷️ تعديل الأسعار أو حذف خدمة</div><div id="a-srvs" style="max-height:260px;overflow-y:auto"></div></div>
     </div>
 
-    <script>
-        // =================================================================
-        // 1. إعدادات Firebase الخاصة بمشروعك (next-plus-9134b)
-        // =================================================================
-        var firebaseConfig = {
-            apiKey: "AIzaSyCzjX1niR-kteUE5nBaDZlNx8JcrlDr2oY",
-            authDomain: "next-plus-9134b.firebaseapp.com",
-            projectId: "next-plus-9134b",
-            storageBucket: "next-plus-9134b.firebasestorage.app",
-            messagingSenderId: "971698140219",
-            appId: "1:971698140219:web:03f46e4ab3cc91f92b981e"
-        };
-
-        var ADMIN_PHONE = "01155799387";
-        var TELEGRAM_BOT_TOKEN = "8598235615:AAFo7SmpSCQzKzPWtpyHKqbmGkN6AaoOBeA";
-        var TELEGRAM_CHAT_ID = "8964064245";
-
-        var db = null;
-        try {
-            if (typeof firebase !== 'undefined') {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore();
-            }
-        } catch (e) {}
-
-        // تحويل الأرقام العربي إلى إنجليزي تلقائياً
-        function cleanPhoneNumber(str) {
-            if (!str) return "";
-            var ar = '٠١٢٣٤٥٦٧٨٩';
-            var en = '0123456789';
-            var out = '';
-            for (var i = 0; i < str.length; i++) {
-                var ch = str.charAt(i);
-                var idx = ar.indexOf(ch);
-                if (idx > -1) out += en.charAt(idx);
-                else if (ch >= '0' && ch <= '9') out += ch;
-            }
-            return out;
-        }
-
-        var toastTimer = null;
-        function showNotice(msg, isError) {
-            var box = document.getElementById('toast-box');
-            box.innerText = msg;
-            box.style.background = isError ? '#ef4444' : '#10b981';
-            box.classList.remove('hidden');
-            if (toastTimer) clearTimeout(toastTimer);
-            toastTimer = setTimeout(function() {
-                box.classList.add('hidden');
-            }, 3500);
-        }
-
-        var dbState = {
-            currentUser: null,
-            users: [
-                { id: '01155799387', name: 'أدمن Next Plus', phone: '01155799387', pass: '123456', balance: 500, role: 'admin' }
-            ],
-            services: [
-                { id: 's1', title: 'تزويد 1000 متابع حقيقي', price: 50, desc: 'تنفيذ سريع وضمان عدم النقصان' },
-                { id: 's2', title: 'تصميم شعار احترافي (Logo)', price: 150, desc: 'تسليم بجودة عالية خلال 24 ساعة' }
-            ],
-            orders: [],
-            recharges: []
-        };
-
-        try {
-            if (typeof localStorage !== 'undefined' && localStorage !== null) {
-                var saved = localStorage.getItem('nextplus_v4_db');
-                if (saved) dbState = JSON.parse(saved);
-            }
-        } catch (e) {}
-
-        function saveLocal() {
-            try {
-                if (typeof localStorage !== 'undefined' && localStorage !== null) {
-                    localStorage.setItem('nextplus_v4_db', JSON.stringify(dbState));
-                }
-            } catch (e) {}
-            renderUI();
-        }
-
-        // مزامنة لحظية مع Firebase Firestore (تعمل أوتوماتيك فور تفعيل Firestore)
-        function startFirebaseSync() {
-            if (!db) return;
-            try {
-                db.collection('users').onSnapshot(function(snap) {
-                    if (!snap.empty) {
-                        var arr = [];
-                        snap.forEach(function(d) { arr.push(d.data()); });
-                        dbState.users = arr;
-                        if (dbState.currentUser) {
-                            for (var i = 0; i < arr.length; i++) {
-                                if (arr[i].phone === dbState.currentUser.phone) {
-                                    dbState.currentUser = arr[i];
-                                    break;
-                                }
-                            }
-                        }
-                        saveLocal();
-                    }
-                });
-
-                db.collection('services').onSnapshot(function(snap) {
-                    if (!snap.empty) {
-                        var arr = [];
-                        snap.forEach(function(d) { arr.push(d.data()); });
-                        dbState.services = arr;
-                        saveLocal();
-                    }
-                });
-
-                db.collection('orders').onSnapshot(function(snap) {
-                    if (!snap.empty) {
-                        var arr = [];
-                        snap.forEach(function(d) { arr.push(d.data()); });
-                        arr.sort(function(a, b) { return (b.time || 0) - (a.time || 0); });
-                        dbState.orders = arr;
-                        saveLocal();
-                    }
-                });
-
-                db.collection('recharges').onSnapshot(function(snap) {
-                    if (!snap.empty) {
-                        var arr = [];
-                        snap.forEach(function(d) { arr.push(d.data()); });
-                        arr.sort(function(a, b) { return (b.time || 0) - (a.time || 0); });
-                        dbState.recharges = arr;
-                        saveLocal();
-                    }
-                });
-            } catch (e) {}
-        }
-
-        function syncDoc(col, id, data) {
-            if (!db) return;
-            try { db.collection(col).doc(String(id)).set(data); } catch (e) {}
-        }
-
-        function deleteDocFromFirebase(col, id) {
-            if (!db) return;
-            try { db.collection(col).doc(String(id)).delete(); } catch (e) {}
-        }
-
-        // إرسال إشعارات لبوت التليجرام
-        function sendBotMessage(text) {
-            try {
-                fetch("https://api.telegram.org/bot" + TELEGRAM_BOT_TOKEN + "/sendMessage", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'HTML' })
-                });
-            } catch (e) {}
-        }
-
-        function sendBotPhoto(file, caption) {
-            try {
-                var fd = new FormData();
-                fd.append("chat_id", TELEGRAM_CHAT_ID);
-                fd.append("photo", file);
-                fd.append("caption", caption);
-                fd.append("parse_mode", "HTML");
-                fetch("https://api.telegram.org/bot" + TELEGRAM_BOT_TOKEN + "/sendPhoto", {
-                    method: 'POST',
-                    body: fd
-                });
-            } catch (e) {}
-        }
-
-        var isRegister = false;
-        var showingAdmin = false;
-        var selectedService = null;
-
-        function toggleAuthMode() {
-            isRegister = !isRegister;
-            var ng = document.getElementById('name-group');
-            if (isRegister) ng.classList.remove('hidden');
-            else ng.classList.add('hidden');
-            document.getElementById('auth-title').innerText = isRegister ? 'إنشاء حساب جديد' : 'تسجيل الدخول برقم الموبايل';
-            document.getElementById('auth-submit').innerText = isRegister ? 'تسجيل حساب جديد' : 'دخول';
-            document.getElementById('auth-switch-text').innerText = isRegister ? 'لديك حساب بالفعل؟' : 'ليس لديك حساب؟';
-            document.getElementById('auth-switch-btn').innerText = isRegister ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
-        }
-
-        function loginNow() {
-            var rawPhone = document.getElementById('auth-phone').value;
-            var phone = cleanPhoneNumber(rawPhone);
-            var pass = document.getElementById('auth-password').value.trim() || '123456';
-            var nameInput = document.getElementById('auth-name').value.trim();
-
-            if (!phone) {
-                showNotice("يرجى كتابة رقم الموبايل أولاً", true);
-                return;
-            }
-
-            var user = null;
-            for (var i = 0; i < dbState.users.length; i++) {
-                if (dbState.users[i].phone === phone) {
-                    user = dbState.users[i];
-                    break;
-                }
-            }
-
-            if (!user) {
-                user = {
-                    id: phone,
-                    name: nameInput || (phone === ADMIN_PHONE ? 'أدمن Next Plus' : 'عميل ' + phone.slice(-4)),
-                    phone: phone,
-                    pass: pass,
-                    balance: phone === ADMIN_PHONE ? 500 : 0,
-                    role: phone === ADMIN_PHONE ? 'admin' : 'client'
-                };
-                dbState.users.push(user);
-                syncDoc('users', user.id, user);
-            } else if (nameInput) {
-                user.name = nameInput;
-                syncDoc('users', user.id, user);
-            }
-
-            dbState.currentUser = user;
-            saveLocal();
-            openAppForUser();
-            showNotice("تم تسجيل الدخول بنجاح!");
-        }
-
-        function openAppForUser() {
-            var user = dbState.currentUser;
-            if (!user) {
-                document.getElementById('screen-auth').classList.remove('hidden');
-                document.getElementById('main-navbar').classList.add('hidden');
-                document.getElementById('screen-client').classList.add('hidden');
-                document.getElementById('screen-admin').classList.add('hidden');
-                return;
-            }
-
-            document.getElementById('screen-auth').classList.add('hidden');
-            document.getElementById('main-navbar').classList.remove('hidden');
-
-            var adminBtn = document.getElementById('toggle-admin-btn');
-            if (user.phone === ADMIN_PHONE || user.role === 'admin') {
-                adminBtn.classList.remove('hidden');
-                showScreen('admin');
-            } else {
-                adminBtn.classList.add('hidden');
-                showScreen('client');
-            }
-            renderUI();
-        }
-
-        function showScreen(type) {
-            if (type === 'admin') {
-                showingAdmin = true;
-                document.getElementById('screen-admin').classList.remove('hidden');
-                document.getElementById('screen-client').classList.add('hidden');
-                document.getElementById('toggle-admin-btn').innerText = 'عرض كعميل';
-            } else {
-                showingAdmin = false;
-                document.getElementById('screen-client').classList.remove('hidden');
-                document.getElementById('screen-admin').classList.add('hidden');
-                document.getElementById('toggle-admin-btn').innerText = 'الداش بورد';
-            }
-        }
-
-        function toggleAdminView() {
-            showScreen(showingAdmin ? 'client' : 'admin');
-        }
-
-        function logoutUser() {
-            dbState.currentUser = null;
-            saveLocal();
-            openAppForUser();
-        }
-
-        function switchPayMethod(num) {
-            document.getElementById('form-pay-support').classList.toggle('hidden', num !== 1);
-            document.getElementById('form-pay-direct').classList.toggle('hidden', num !== 2);
-            document.getElementById('pay-tab-1').classList.toggle('active', num === 1);
-            document.getElementById('pay-tab-2').classList.toggle('active', num === 2);
-        }
-
-        // 1. الشحن عبر خدمة العملاء
-        function submitSupportRecharge() {
-            var senderPhone = cleanPhoneNumber(document.getElementById('sup-phone').value);
-            var amount = Number(document.getElementById('sup-amount').value);
-            if (!senderPhone || amount <= 0) {
-                showNotice("اكتب الرقم المحول منه والمبلغ أولاً", true);
-                return;
-            }
-
-            var rec = {
-                id: 'r_' + Date.now(),
-                time: Date.now(),
-                userId: dbState.currentUser.id,
-                clientName: dbState.currentUser.name,
-                clientPhone: dbState.currentUser.phone,
-                method: "خدمة العملاء",
-                amount: amount,
-                sender: senderPhone,
-                screenshot: null,
-                status: "قيد المراجعة"
-            };
-            dbState.recharges.unshift(rec);
-            syncDoc('recharges', rec.id, rec);
-            saveLocal();
-
-            sendBotMessage(
-                "🎧 <b>طلب شحن عبر خدمة العملاء - Next Plus</b>\n\n" +
-                "👤 <b>العميل:</b> " + dbState.currentUser.name + "\n" +
-                "📱 <b>حساب العميل:</b> <code>" + dbState.currentUser.phone + "</code>\n" +
-                "📲 <b>الرقم المحول منه:</b> <code>" + senderPhone + "</code>\n" +
-                "💵 <b>المبلغ:</b> " + amount + " ج.م"
-            );
-
-            var waText = encodeURIComponent("مرحباً خدمة عملاء Next Plus، أريد شحن حسابي (" + dbState.currentUser.phone + ") بمبلغ (" + amount + " ج.م) من رقم (" + senderPhone + ").");
-            var linkEl = document.getElementById('support-direct-link');
-            linkEl.href = "https://wa.me/201155799387?text=" + waText;
-            document.getElementById('support-link-box').classList.remove('hidden');
-
-            document.getElementById('sup-phone').value = '';
-            document.getElementById('sup-amount').value = '';
-            showNotice("تم إرسال الطلب لخدمة العملاء وبوت التليجرام!");
-        }
-
-        // 2. الدفع المباشر + السكرين لبوت الطلبات
-        function submitDirectRecharge() {
-            var senderPhone = cleanPhoneNumber(document.getElementById('dir-phone').value);
-            var amount = Number(document.getElementById('dir-amount').value);
-            var fileInput = document.getElementById('dir-screen');
-            var file = fileInput.files[0];
-
-            if (!senderPhone || amount <= 0 || !file) {
-                showNotice("اكتب الرقم والمبلغ واختر صورة السكرين أولاً", true);
-                return;
-            }
-
-            var reader = new FileReader();
-            reader.onload = function(ev) {
-                var rec = {
-                    id: 'r_' + Date.now(),
-                    time: Date.now(),
-                    userId: dbState.currentUser.id,
-                    clientName: dbState.currentUser.name,
-                    clientPhone: dbState.currentUser.phone,
-                    method: "دفع مباشر + سكرين",
-                    amount: amount,
-                    sender: senderPhone,
-                    screenshot: ev.target.result,
-                    status: "قيد المراجعة"
-                };
-                dbState.recharges.unshift(rec);
-                syncDoc('recharges', rec.id, rec);
-                saveLocal();
-
-                var caption = "📸 <b>إشعار دفع بالسكرين - Next Plus</b>\n\n" +
-                              "👤 <b>العميل:</b> " + dbState.currentUser.name + "\n" +
-                              "📱 <b>حساب العميل:</b> <code>" + dbState.currentUser.phone + "</code>\n" +
-                              "📲 <b>محول من رقم:</b> <code>" + senderPhone + "</code>\n" +
-                              "💵 <b>المبلغ المحول:</b> " + amount + " ج.م";
-                sendBotPhoto(file, caption);
-
-                document.getElementById('dir-phone').value = '';
-                document.getElementById('dir-amount').value = '';
-                fileInput.value = '';
-                showNotice("تم إرسال السكرين لبوت الطلبات بنجاح!");
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function approveRecharge(rid) {
-            for (var i = 0; i < dbState.recharges.length; i++) {
-                var r = dbState.recharges[i];
-                if (r.id === rid && r.status === 'قيد المراجعة') {
-                    r.status = 'مقبول';
-                    syncDoc('recharges', r.id, r);
-                    for (var j = 0; j < dbState.users.length; j++) {
-                        if (dbState.users[j].id === r.userId || dbState.users[j].phone === r.clientPhone) {
-                            dbState.users[j].balance += Number(r.amount);
-                            syncDoc('users', dbState.users[j].id, dbState.users[j]);
-                            if (dbState.currentUser && dbState.currentUser.phone === dbState.users[j].phone) {
-                                dbState.currentUser.balance = dbState.users[j].balance;
-                            }
-                            break;
-                        }
-                    }
-                    saveLocal();
-                    showNotice("تم قبول الشحن وإضافة " + r.amount + " ج.م للعميل!");
-                    break;
-                }
-            }
-        }
-
-        function rejectRecharge(rid) {
-            for (var i = 0; i < dbState.recharges.length; i++) {
-                if (dbState.recharges[i].id === rid) {
-                    dbState.recharges[i].status = 'مرفوض';
-                    syncDoc('recharges', dbState.recharges[i].id, dbState.recharges[i]);
-                    saveLocal();
-                    showNotice("تم رفض طلب الشحن", true);
-                    break;
-                }
-            }
-        }
-
-        function addManualBal(uid) {
-            var inp = document.getElementById('man-bal-' + uid);
-            var val = Number(inp.value);
-            if (!val) {
-                showNotice("اكتب المبلغ أولاً", true);
-                return;
-            }
-            for (var i = 0; i < dbState.users.length; i++) {
-                if (dbState.users[i].id === uid) {
-                    dbState.users[i].balance += val;
-                    syncDoc('users', dbState.users[i].id, dbState.users[i]);
-                    if (dbState.currentUser && dbState.currentUser.id === uid) {
-                        dbState.currentUser.balance = dbState.users[i].balance;
-                    }
-                    inp.value = '';
-                    saveLocal();
-                    showNotice("تم تحديث رصيد " + dbState.users[i].name + " بنجاح!");
-                    break;
-                }
-            }
-        }
-
-        function showScreenImage(rid) {
-            for (var i = 0; i < dbState.recharges.length; i++) {
-                if (dbState.recharges[i].id === rid && dbState.recharges[i].screenshot) {
-                    document.getElementById('preview-img-el').src = dbState.recharges[i].screenshot;
-                    document.getElementById('img-modal').classList.remove('hidden');
-                    break;
-                }
-            }
-        }
-
-        function closeImgModal() {
-            document.getElementById('img-modal').classList.add('hidden');
-        }
-
-        function addNewService() {
-            var title = document.getElementById('srv-title').value.trim();
-            var price = Number(document.getElementById('srv-price').value);
-            var desc = document.getElementById('srv-desc').value.trim();
-            if (!title || price <= 0) {
-                showNotice("اكتب اسم الخدمة والسعر أولاً", true);
-                return;
-            }
-            var srv = { id: 's_' + Date.now(), title: title, price: price, desc: desc };
-            dbState.services.push(srv);
-            syncDoc('services', srv.id, srv);
-            saveLocal();
-            document.getElementById('srv-title').value = '';
-            document.getElementById('srv-price').value = '';
-            document.getElementById('srv-desc').value = '';
-            showNotice("تم نشر الخدمة في الموقع بنجاح!");
-        }
-
-        function updateServicePrice(id) {
-            var newPrice = Number(document.getElementById('edit-price-' + id).value);
-            for (var i = 0; i < dbState.services.length; i++) {
-                if (dbState.services[i].id === id && newPrice > 0) {
-                    dbState.services[i].price = newPrice;
-                    syncDoc('services', id, dbState.services[i]);
-                    saveLocal();
-                    showNotice("تم تحديث سعر الخدمة!");
-                    break;
-                }
-            }
-        }
-
-        function deleteService(id) {
-            dbState.services = dbState.services.filter(function(x) { return x.id !== id; });
-            deleteDocFromFirebase('services', id);
-            saveLocal();
-            showNotice("تم حذف الخدمة", true);
-        }
-
-        function openOrderModal(id) {
-            for (var i = 0; i < dbState.services.length; i++) {
-                if (dbState.services[i].id === id) {
-                    selectedService = dbState.services[i];
-                    break;
-                }
-            }
-            if (!selectedService) return;
-            document.getElementById('modal-title').innerText = selectedService.title;
-            document.getElementById('modal-unit-price').innerText = selectedService.price;
-            document.getElementById('modal-qty').value = 1;
-            document.getElementById('modal-notes').value = '';
-            document.getElementById('modal-bal').innerText = dbState.currentUser ? dbState.currentUser.balance : 0;
-            calcModalTotal();
-            document.getElementById('order-modal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('order-modal').classList.add('hidden');
-            selectedService = null;
-        }
-
-        function calcModalTotal() {
-            if (!selectedService) return;
-            var q = Math.max(1, Number(document.getElementById('modal-qty').value) || 1);
-            document.getElementById('modal-total').innerText = q * selectedService.price;
-        }
-
-        function confirmServiceOrder() {
-            if (!selectedService || !dbState.currentUser) return;
-            var q = Math.max(1, Number(document.getElementById('modal-qty').value) || 1);
-            var total = q * selectedService.price;
-            var notes = document.getElementById('modal-notes').value.trim() || 'بدون ملاحظات';
-
-            if (dbState.currentUser.balance < total) {
-                showNotice("عفواً، رصيدك الحالي لا يكفي! اشحن رصيدك أولاً", true);
-                return;
-            }
-
-            dbState.currentUser.balance -= total;
-            for (var i = 0; i < dbState.users.length; i++) {
-                if (dbState.users[i].phone === dbState.currentUser.phone) {
-                    dbState.users[i].balance = dbState.currentUser.balance;
-                    syncDoc('users', dbState.users[i].id, dbState.users[i]);
-                }
-            }
-
-            var ord = {
-                id: 'o_' + Date.now(),
-                time: Date.now(),
-                userId: dbState.currentUser.id,
-                clientName: dbState.currentUser.name,
-                clientPhone: dbState.currentUser.phone,
-                serviceTitle: selectedService.title,
-                quantity: q,
-                servicePrice: total,
-                notes: notes,
-                status: "قيد المراجعة"
-            };
-            dbState.orders.unshift(ord);
-            syncDoc('orders', ord.id, ord);
-            saveLocal();
-
-            sendBotMessage(
-                "🛒 <b>طلب خدمة جديد - Next Plus</b>\n\n" +
-                "👤 <b>العميل:</b> " + dbState.currentUser.name + "\n" +
-                "📱 <b>الموبايل:</b> <code>" + dbState.currentUser.phone + "</code>\n" +
-                "⚡ <b>الخدمة:</b> " + selectedService.title + "\n" +
-                "🔢 <b>الكمية:</b> " + q + "\n" +
-                "💵 <b>الإجمالي المخصوم:</b> " + total + " ج.م\n" +
-                "📝 <b>التفاصيل:</b>\n<code>" + notes + "</code>"
-            );
-
-            closeModal();
-            showNotice("تم خصم الرصيد وإرسال طلبك لبوت التليجرام!");
-        }
-
-        function setOrderStatus(oid, newSt) {
-            for (var i = 0; i < dbState.orders.length; i++) {
-                var o = dbState.orders[i];
-                if (o.id === oid && o.status !== newSt) {
-                    if (newSt === 'مرفوض' && o.status !== 'مرفوض') {
-                        for (var j = 0; j < dbState.users.length; j++) {
-                            if (dbState.users[j].id === o.userId || dbState.users[j].phone === o.clientPhone) {
-                                dbState.users[j].balance += Number(o.servicePrice);
-                                syncDoc('users', dbState.users[j].id, dbState.users[j]);
-                                if (dbState.currentUser && dbState.currentUser.phone === dbState.users[j].phone) {
-                                    dbState.currentUser.balance = dbState.users[j].balance;
-                                }
-                                break;
-                            }
-                        }
-                        showNotice("تم رفض الطلب وإرجاع " + o.servicePrice + " ج.م لمحفظة العميل", true);
-                    } else {
-                        showNotice("تم تحديث حالة الطلب إلى: " + newSt);
-                    }
-                    o.status = newSt;
-                    syncDoc('orders', o.id, o);
-                    saveLocal();
-                    break;
-                }
-            }
-        }
-
-        function badgeHTML(st) {
-            if (st === 'مكتمل' || st === 'مقبول') return '<span class="badge badge-done">' + st + '</span>';
-            if (st === 'جاري التنفيذ') return '<span class="badge badge-working">جاري التنفيذ</span>';
-            if (st === 'مرفوض') return '<span class="badge badge-rejected">مرفوض</span>';
-            return '<span class="badge badge-pending">قيد المراجعة</span>';
-        }
-
-        function renderUI() {
-            if (!dbState.currentUser) return;
-            document.getElementById('user-balance').innerText = dbState.currentUser.balance;
-            document.getElementById('user-greeting').innerText = dbState.currentUser.name + " (" + dbState.currentUser.phone + ")";
-
-            document.getElementById('client-services-list').innerHTML = dbState.services.map(function(s) {
-                return '<div class="service-card">' +
-                    '<div>' +
-                        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">' +
-                            '<strong style="font-size:16px;">' + s.title + '</strong>' +
-                            '<span class="price-tag">' + s.price + ' ج.م</span>' +
-                        '</div>' +
-                        '<p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">' + s.desc + '</p>' +
-                    '</div>' +
-                    '<button type="button" class="btn btn-primary btn-full" onclick="openOrderModal(\'' + s.id + '\')">شراء الخدمة بالرصيد</button>' +
-                '</div>';
-            }).join('');
-
-            document.getElementById('admin-services-list').innerHTML = dbState.services.map(function(s) {
-                return '<div style="background:var(--bg-input); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">' +
-                    '<span style="font-weight:700; font-size:14px;">' + s.title + '</span>' +
-                    '<div style="display:flex; gap:6px; align-items:center;">' +
-                        '<input type="number" id="edit-price-' + s.id + '" value="' + s.price + '" class="input" style="width:80px; padding:5px 8px;">' +
-                        '<button type="button" class="btn btn-emerald btn-sm" onclick="updateServicePrice(\'' + s.id + '\')">حفظ</button>' +
-                        '<button type="button" class="btn btn-danger btn-sm" onclick="deleteService(\'' + s.id + '\')">حذف</button>' +
-                    '</div>' +
-                '</div>';
-            }).join('');
-
-            var myOrders = dbState.orders.filter(function(o) { return o.clientPhone === dbState.currentUser.phone; });
-            document.getElementById('client-orders-tbody').innerHTML = myOrders.map(function(o) {
-                return '<tr><td>' + o.serviceTitle + '</td><td>' + o.quantity + '</td><td>' + o.servicePrice + ' ج.م</td><td>' + o.notes + '</td><td>' + badgeHTML(o.status) + '</td></tr>';
-            }).join('') || '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">لا توجد طلبات بعد</td></tr>';
-
-            var myRecharges = dbState.recharges.filter(function(r) { return r.clientPhone === dbState.currentUser.phone; });
-            document.getElementById('client-recharges-tbody').innerHTML = myRecharges.map(function(r) {
-                return '<tr><td>' + r.method + '</td><td style="color:var(--emerald); font-weight:700;">+' + r.amount + ' ج.م</td><td dir="ltr">' + r.sender + '</td><td>' + badgeHTML(r.status) + '</td></tr>';
-            }).join('') || '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">لا توجد عمليات شحن</td></tr>';
-
-            document.getElementById('admin-recharges-tbody').innerHTML = dbState.recharges.map(function(r) {
-                var scrBtn = r.screenshot ? '<button type="button" class="btn btn-primary btn-sm" onclick="showScreenImage(\'' + r.id + '\')">عرض السكرين</button>' : 'بدون';
-                var act = r.status === 'قيد المراجعة' ?
-                    '<button type="button" class="btn btn-emerald btn-sm" onclick="approveRecharge(\'' + r.id + '\')">قبول</button>' +
-                    '<button type="button" class="btn btn-danger btn-sm" onclick="rejectRecharge(\'' + r.id + '\')">رفض</button>' : '-';
-                return '<tr>' +
-                    '<td>' + r.clientName + '<br><small style="color:var(--text-muted);" dir="ltr">' + r.clientPhone + '</small></td>' +
-                    '<td>' + r.method + '</td>' +
-                    '<td style="color:var(--emerald); font-weight:700;">' + r.amount + ' ج.م</td>' +
-                    '<td dir="ltr">' + r.sender + '</td>' +
-                    '<td>' + scrBtn + '</td>' +
-                    '<td>' + badgeHTML(r.status) + '</td>' +
-                    '<td style="display:flex; gap:4px;">' + act + '</td>' +
-                '</tr>';
-            }).join('') || '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">لا توجد طلبات شحن</td></tr>';
-
-            document.getElementById('admin-users-list').innerHTML = dbState.users.map(function(u) {
-                return '<div style="background:var(--bg-input); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
-                    '<div>' +
-                        '<strong>' + u.name + '</strong> <span style="font-size:12px; color:var(--text-muted);" dir="ltr">(' + u.phone + ')</span>' +
-                        '<div style="font-size:12px; color:var(--emerald); font-weight:700;">الرصيد الحالي: ' + u.balance + ' ج.م</div>' +
-                    '</div>' +
-                    '<div style="display:flex; gap:6px;">' +
-                        '<input type="number" id="man-bal-' + u.id + '" placeholder="+
+    <div class="g2">
+      <div class="card"><div class="ttl">💵 طلبات شحن الرصيد</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الطريقة</th><th>المبلغ</th><th>الرقم</th><th>السكرين</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="a-recs"></tbody></table></div></div>
+      <div class="card"><div class="ttl">👤 إضافة / خصم رصيد لعميل</div><div id="a-usrs" style="max-height:260px;overflow-y:auto"></div></div>
+    </div>
+
+    <div class="card"><div class="ttl">🔔 الريكوستات الواردة (طلبات الخدمات)</div><div class="twrap"><table><thead><tr><th>العميل</th><th>الموبايل</th><th>الخدمة</th><th>الكمية</th><th>الإجمالي</th><th>التفاصيل</th><th>الحالة</th><th>تحكم</th></tr></thead><tbody id="a-ords"></tbody></table></div></div>
+  </div>
+</div>
+
+<!-- نافذة شراء الخدمة -->
+<div id="ord-mdl" class="modal hide">
+  <div class="mbox">
+    <h3 id="m-ttl" style="font-size:17px;font-weight:800;margin-bottom:12px">شراء خدمة</h3>
+    <div class="g2" style="grid-template-columns:1fr 1fr;gap:8px">
+      <div class="fg"><label>سعر الوحدة</label><div class="inp" style="color:#818cf8;font-weight:800"><span id="m-prc">0</span> ج.م</div></div>
+      <div class="fg"><label>الكمية</label><input type="number" id="m-qty" class="inp" value="1" min="1" oninput="calcTot()"></div>
+    </div>
+    <div class="fg"><label>الرابط أو التفاصيل المطلوبة</label><textarea id="m-nts" rows="2" class="inp" placeholder="ضع الرابط أو الحساب هنا..."></textarea></div>
+    <div style="background:var(--inp);padding:10px;border-radius:10px;margin-bottom:12px;display:flex;justify-content:space-between">
+      <span>الإجمالي: <strong id="m-tot" style="color:var(--grn)">0</strong> ج.م</span>
+      <span>رصيدك: <strong id="m-bal">0</strong> ج.م</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button type="button" class="btn b-pri" style="flex:1" onclick="buySrv()">تأكيد الشراء</button>
+      <button type="button" class="btn b-red" onclick="clsMdl()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div id="img-mdl" class="modal hide" onclick="this.classList.add('hide')">
+  <div class="mbox" style="text-align:center"><img id="prv-img" src="" style="max-width:100%;max-height:70vh;border-radius:10px;margin-bottom:10px"><button type="button" class="btn b-red w100">إغلاق</button></div>
+</div>
+
+<script>
+var ADM_PH = "01155799387";
+var TG_TOK = "8598235615:AAFo7SmpSCQzKzPWtpyHKqbmGkN6AaoOBeA";
+var TG_ID = "8964064245";
+var db = null;
+try {
+  firebase.initializeApp({
+    apiKey: "AIzaSyCzjX1niR-kteUE5nBaDZlNx8JcrlDr2oY",
+    authDomain: "next-plus-9134b.firebaseapp.com",
+    projectId: "next-plus-9134b",
+    storageBucket: "next-plus-9134b.firebasestorage.app",
+    messagingSenderId: "971698140219",
+    appId: "1:971698140219:web:03f46e4ab3cc91f92b981e"
+  });
+  db = firebase.firestore();
+} catch(e){}
+
+var st = {
+  user: null,
+  users: [{id:"01155799387",name:"أدمن Next Plus",phone:"01155799387",pass:"123456",balance:500,role:"admin"}],
+  srvs: [
+    {id:"s1",title:"تزويد 1000 متابع حقيقي",price:50,desc:"تنفيذ سريع وضمان عدم النقصان"},
+    {id:"s2",title:"تصميم شعار احترافي (Logo)",price:150,desc:"تسليم بجودة عالية خلال 24 ساعة"}
+  ],
+  ords: [], recs: []
+};
+try { var s = localStorage.getItem("np_db"); if(s) st = JSON.parse(s); } catch(e){}
+function sv(){ try{localStorage.setItem("np_db",JSON.stringify(st));}catch(e){} render(); }
+function fSet(c,id,d){ if(db) try{db.collection(c).doc(String(id)).set(d);}catch(e){} }
+
+function clnPh(v){
+  if(!v) return "";
+  var a="٠١٢٣٤٥٦٧٨٩", e="0123456789", o="";
+  for(var i=0;i<v.length;i++){ var c=v.charAt(i), x=a.indexOf(c); o += x>-1 ? e.charAt(x) : (c>='0'&&c<='9'?c:''); }
+  return o;
+}
+function msg(t,err){
+  var b=document.getElementById("msg-bar"); b.innerText=t; b.style.background=err?"#ef4444":"#10b981";
+  b.classList.remove("hide"); setTimeout(function(){b.classList.add("hide");},3000);
+}
+function tgMsg(t){
+  try{fetch("https://api.telegram.org/bot"+TG_TOK+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:TG_ID,text:t,parse_mode:"HTML"})});}catch(e){}
+}
+function tgPic(f,c){
+  try{var d=new FormData();d.append("chat_id",TG_ID);d.append("photo",f);d.append("caption",c);d.append("parse_mode","HTML");fetch("https://api.telegram.org/bot"+TG_TOK+"/sendPhoto",{method:"POST",body:d});}catch(e){}
+}
+
+var isReg = false, isAdmView = false, curSrv = null;
+function setAuthTab(r){
+  isReg = r;
+  document.getElementById("f-name").classList.toggle("hide", !r);
+  document.getElementById("t-login").classList.toggle("act", !r);
+  document.getElementById("t-reg").classList.toggle("act", r);
+  document.getElementById("btn-auth").innerText = r ? "إنشاء حساب ودخول" : "دخول";
+  document.getElementById("sw-txt").innerText = r ? "لديك حساب بالفعل؟" : "ليس لديك حساب؟";
+  document.getElementById("sw-btn").innerText = r ? "تسجيل الدخول" : "إنشاء حساب جديد";
+}
+
+function doAuth(){
+  var ph = clnPh(document.getElementById("in-phone").value);
+  var ps = document.getElementById("in-pass").value.trim();
+  var nm = document.getElementById("in-name").value.trim();
+  if(!ph || !ps){ msg("اكتب رقم الموبايل وكلمة المرور أولاً", true); return; }
+  var u = st.users.find(function(x){return x.phone===ph;});
+  if(isReg){
+    if(!nm){ msg("اكتب اسمك بالكامل", true); return; }
+    if(u){ msg("الرقم مسجل بالفعل، اضغط تسجيل دخول", true); setAuthTab(false); return; }
+    u = {id:ph, name:nm, phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client"};
+    st.users.push(u); fSet("users", u.id, u);
+  } else {
+    if(!u){
+      u = {id:ph, name:ph===ADM_PH?"أدمن Next Plus":("عميل "+ph.slice(-4)), phone:ph, pass:ps, balance:ph===ADM_PH?500:0, role:ph===ADM_PH?"admin":"client"};
+      st.users.push(u); fSet("users", u.id, u);
+    } else if(u.pass && u.pass!==ps && ph!==ADM_PH){
+      msg("كلمة المرور غير صحيحة", true); return;
+    }
+  }
+  st.user = u; sv(); openApp(); msg("مرحباً بك يا " + u.name);
+}
+
+function openApp(){
+  var u = st.user;
+  document.getElementById("scr-auth").classList.toggle("hide", !!u);
+  document.getElementById("top-nav").classList.toggle("hide", !u);
+  if(!u){ document.getElementById("scr-client").classList.add("hide"); document.getElementById("scr-admin").classList.add("hide"); return; }
+  var adm = u.phone===ADM_PH || u.role==="admin";
+  document.getElementById("adm-btn").classList.toggle("hide", !adm);
+  showView(adm ? "admin" : "client"); render();
+}
+function showView(v){
+  isAdmView = (v==="admin");
+  document.getElementById("scr-admin").classList.toggle("hide", !isAdmView);
+  document.getElementById("scr-client").classList.toggle("hide", isAdmView);
+  document.getElementById("adm-btn").innerText = isAdmView ? "عرض كعميل" : "الداش بورد";
+}
+function toggleView(){ showView(isAdmView ? "client" : "admin"); }
+function doLogout(){ st.user = null; sv(); openApp(); }
+function setPayTab(n){
+  document.getElementById("pay-1").classList.toggle("hide", n!==1);
+  document.getElementById("pay-2").classList.toggle("hide", n!==2);
+  document.getElementById("pt-1").classList.toggle("act", n===1);
+  document.getElementById("pt-2").classList.toggle("act", n===2);
+}
+
+function sendSupPay(){
+  var ph = clnPh(document.getElementById("sup-ph").value), am = Number(document.getElementById("sup-am").value);
+  if(!ph || am<=0){ msg("اكتب الرقم والمبلغ أولاً", true); return; }
+  var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"خدمة العملاء", amount:am, sender:ph, screenshot:null, status:"قيد المراجعة"};
+  st.recs.unshift(r); fSet("recharges", r.id, r); sv();
+  tgMsg("🎧 <b>طلب شحن خدمة العملاء - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 حسابه: <code>"+st.user.phone+"</code>\n📲 يحول من: <code>"+ph+"</code>\n💵 المبلغ: "+am+" ج.م");
+  document.getElementById("sup-lnk").href = "https://wa.me/201155799387?text=" + encodeURIComponent("شحن حساب "+st.user.phone+" بمبلغ "+am+" ج.م من رقم "+ph);
+  document.getElementById("sup-lnk-box").classList.remove("hide");
+  document.getElementById("sup-ph").value=""; document.getElementById("sup-am").value="";
+  msg("تم إرسال طلب الشحن لخدمة العملاء!");
+}
+
+function sendDirPay(){
+  var ph = clnPh(document.getElementById("dir-ph").value), am = Number(document.getElementById("dir-am").value), fl = document.getElementById("dir-fl").files[0];
+  if(!ph || am<=0 || !fl){ msg("اكتب الرقم والمبلغ وأرفق السكرين", true); return; }
+  var rd = new FileReader();
+  rd.onload = function(e){
+    var r = {id:"r_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, method:"دفع مباشر + سكرين", amount:am, sender:ph, screenshot:e.target.result, status:"قيد المراجعة"};
+    st.recs.unshift(r); fSet("recharges", r.id, r); sv();
+    tgPic(fl, "📸 <b>إشعار دفع بالسكرين - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 حسابه: <code>"+st.user.phone+"</code>\n📲 محول من: <code>"+ph+"</code>\n💵 المبلغ: "+am+" ج.م");
+    document.getElementById("dir-ph").value=""; document.getElementById("dir-am").value=""; document.getElementById("dir-fl").value="";
+    msg("تم إرسال السكرين لبوت الطلبات بنجاح!");
+  };
+  rd.readAsDataURL(fl);
+}
+
+function appRec(id, ok){
+  var r = st.recs.find(function(x){return x.id===id;}); if(!r) return;
+  r.status = ok ? "مقبول" : "مرفوض"; fSet("recharges", r.id, r);
+  if(ok){
+    var u = st.users.find(function(x){return x.phone===r.clientPhone;});
+    if(u){ u.balance += Number(r.amount); fSet("users", u.id, u); if(st.user.phone===u.phone) st.user.balance=u.balance; }
+    msg("تم قبول الشحن وإضافة الرصيد!");
+  } else msg("تم رفض الطلب", true);
+  sv();
+}
+
+function addBal(ph){
+  var v = Number(document.getElementById("mb-"+ph).value); if(!v) return;
+  var u = st.users.find(function(x){return x.phone===ph;});
+  if(u){ u.balance += v; fSet("users", u.id, u); if(st.user.phone===ph) st.user.balance=u.balance; sv(); msg("تم تحديث الرصيد!"); }
+}
+
+function addSrv(){
+  var t = document.getElementById("s-ttl").value.trim(), p = Number(document.getElementById("s-prc").value), d = document.getElementById("s-dsc").value.trim();
+  if(!t || p<=0){ msg("اكتب اسم الخدمة والسعر", true); return; }
+  var s = {id:"s_"+Date.now(), title:t, price:p, desc:d};
+  st.srvs.push(s); fSet("services", s.id, s); sv();
+  document.getElementById("s-ttl").value=""; document.getElementById("s-prc").value=""; document.getElementById("s-dsc").value="";
+  msg("تم نشر الخدمة!");
+}
+function upPrc(id){
+  var p = Number(document.getElementById("ep-"+id).value), s = st.srvs.find(function(x){return x.id===id;});
+  if(s && p>0){ s.price=p; fSet("services", s.id, s); sv(); msg("تم تعديل السعر!"); }
+}
+function delSrv(id){
+  st.srvs = st.srvs.filter(function(x){return x.id!==id;});
+  if(db) try{db.collection("services").doc(id).delete();}catch(e){}
+  sv(); msg("تم الحذف", true);
+}
+
+function opnMdl(id){
+  curSrv = st.srvs.find(function(x){return x.id===id;}); if(!curSrv) return;
+  document.getElementById("m-ttl").innerText = curSrv.title;
+  document.getElementById("m-prc").innerText = curSrv.price;
+  document.getElementById("m-qty").value = 1;
+  document.getElementById("m-nts").value = "";
+  document.getElementById("m-bal").innerText = st.user.balance;
+  calcTot(); document.getElementById("ord-mdl").classList.remove("hide");
+}
+function clsMdl(){ document.getElementById("ord-mdl").classList.add("hide"); }
+function calcTot(){ if(curSrv) document.getElementById("m-tot").innerText = Math.max(1, Number(document.getElementById("m-qty").value)||1) * curSrv.price; }
+
+function buySrv(){
+  if(!curSrv || !st.user) return;
+  var q = Math.max(1, Number(document.getElementById("m-qty").value)||1), tot = q * curSrv.price, nts = document.getElementById("m-nts").value.trim()||"بدون ملاحظات";
+  if(st.user.balance < tot){ msg("رصيدك لا يكفي! اشحن رصيدك أولاً", true); return; }
+  st.user.balance -= tot;
+  var u = st.users.find(function(x){return x.phone===st.user.phone;});
+  if(u){ u.balance = st.user.balance; fSet("users", u.id, u); }
+  var o = {id:"o_"+Date.now(), time:Date.now(), clientName:st.user.name, clientPhone:st.user.phone, serviceTitle:curSrv.title, quantity:q, servicePrice:tot, notes:nts, status:"قيد المراجعة"};
+  st.ords.unshift(o); fSet("orders", o.id, o); sv(); clsMdl();
+  tgMsg("🛒 <b>طلب خدمة جديد - Next Plus</b>\n👤 العميل: "+st.user.name+"\n📱 الموبايل: <code>"+st.user.phone+"</code>\n⚡ الخدمة: "+curSrv.title+"\n🔢 الكمية: "+q+"\n💵 الإجمالي: "+tot+" ج.م\n📝 التفاصيل: <code>"+nts+"</code>");
+  msg("تم خصم الرصيد وإرسال طلبك بنجاح!");
+}
+
+function setOrdSt(id, ns){
+  var o = st.ords.find(function(x){return x.id===id;}); if(!o || o.status===ns) return;
+  if(ns==="مرفوض" && o.status!=="مرفوض"){
+    var u = st.users.find(function(x){return x.phone===o.clientPhone;});
+    if(u){ u.balance += Number(o.servicePrice); fSet("users", u.id, u); if(st.user.phone===u.phone) st.user.balance=u.balance; }
+    msg("تم رفض الطلب وإرجاع الرصيد للعميل", true);
+  } else msg("تم تحديث حالة الطلب!");
+  o.status = ns; fSet("orders", o.id, o); sv();
+}
+
+function shwImg(id){
+  var r = st.recs.find(function(x){return x.id===id;});
+  if(r && r.screenshot){ document.getElementById("prv-img").src=r.screenshot; document.getElementById("img-mdl").classList.remove("hide"); }
+}
+function bdg(s){
+  var c = (s==="مكتمل"||s==="مقبول")?"b-dn":(s==="جاري التنفيذ"?"b-wrk":(s==="مرفوض"?"b-rj":"b-pnd"));
+  return '<span class="bdg '+c+'">'+s+'</span>';
+}
+
+function render(){
+  if(!st.user) return;
+  document.getElementById("u-bal").innerText = st.user.balance;
+  document.getElementById("u-name").innerText = st.user.name + " (" + st.user.phone + ")";
+  document.getElementById("c-srvs").innerHTML = st.srvs.map(function(s){
+    return '<div class="srv-card"><div><div style="display:flex;justify-content:space-between;margin-bottom:8px"><strong>'+s.title+'</strong><span class="ptag">'+s.price+' ج.م</span></div><p style="font-size:12px;color:var(--mut);margin-bottom:12px">'+s.desc+'</p></div><button type="button" class="btn b-pri w100" onclick="opnMdl(\''+s.id+'\')">شراء الخدمة بالرصيد</button></div>';
+  }).join("");
+  document.getElementById("a-srvs").innerHTML = st.srvs.map(function(s){
+    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><b>'+s.title+'</b><div style="display:flex;gap:4px"><input type="number" id="ep-'+s.id+'" value="'+s.price+'" class="inp" style="width:70px;padding:4px"><button type="button" class="btn b-grn b-sm" onclick="upPrc(\''+s.id+'\')">حفظ</button><button type="button" class="btn b-red b-sm" onclick="delSrv(\''+s.id+'\')">حذف</button></div></div>';
+  }).join("");
+  document.getElementById("c-ords").innerHTML = st.ords.filter(function(o){return o.clientPhone===st.user.phone;}).map(function(o){
+    return '<tr><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td>'+o.servicePrice+' ج.م</td><td>'+o.notes+'</td><td>'+bdg(o.status)+'</td></tr>';
+  }).join("") || '<tr><td colspan="5" style="text-align:center;color:var(--mut)">لا توجد طلبات</td></tr>';
+  document.getElementById("c-recs").innerHTML = st.recs.filter(function(r){return r.clientPhone===st.user.phone;}).map(function(r){
+    return '<tr><td>'+r.method+'</td><td style="color:var(--grn);font-weight:700">+'+r.amount+' ج.م</td><td dir="ltr">'+r.sender+'</td><td>'+bdg(r.status)+'</td></tr>';
+  }).join("") || '<tr><td colspan="4" style="text-align:center;color:var(--mut)">لا توجد عمليات شحن</td></tr>';
+  document.getElementById("a-recs").innerHTML = st.recs.map(function(r){
+    var sb = r.screenshot ? '<button type="button" class="btn b-pri b-sm" onclick="shwImg(\''+r.id+'\')">عرض</button>' : 'بدون';
+    var ac = r.status==="قيد المراجعة" ? '<button type="button" class="btn b-grn b-sm" onclick="appRec(\''+r.id+'\',1)">قبول</button><button type="button" class="btn b-red b-sm" onclick="appRec(\''+r.id+'\',0)">رفض</button>' : '-';
+    return '<tr><td>'+r.clientName+'<br><small dir="ltr">'+r.clientPhone+'</small></td><td>'+r.method+'</td><td style="color:var(--grn);font-weight:700">'+r.amount+' ج.م</td><td dir="ltr">'+r.sender+'</td><td>'+sb+'</td><td>'+bdg(r.status)+'</td><td style="display:flex;gap:4px">'+ac+'</td></tr>';
+  }).join("") || '<tr><td colspan="7" style="text-align:center;color:var(--mut)">لا توجد طلبات شحن</td></tr>';
+  document.getElementById("a-usrs").innerHTML = st.users.map(function(u){
+    return '<div style="background:var(--inp);padding:8px;border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:6px"><div><b>'+u.name+'</b> <small dir="ltr">('+u.phone+')</small><div style="color:var(--grn);font-size:12px;font-weight:700">الرصيد: '+u.balance+' ج.م</div></div><div style="display:flex;gap:4px"><input type="number" id="mb-'+u.phone+'" placeholder="+ أو -" class="inp" style="width:80px;padding:4px"><button type="button" class="btn b-pri b-sm" onclick="addBal(\''+u.phone+'\')">إضافة</button></div></div>';
+  }).join("");
+  document.getElementById("a-ords").innerHTML = st.ords.map(function(o){
+    return '<tr><td>'+o.clientName+'</td><td dir="ltr">'+o.clientPhone+'</td><td>'+o.serviceTitle+'</td><td>'+o.quantity+'</td><td style="color:var(--grn);font-weight:700">'+o.servicePrice+' ج.م</td><td>'+o.notes+'</td><td>'+bdg(o.status)+'</td><td style="display:flex;gap:4px"><button type="button" class="btn b-amb b-sm" onclick="setOrdSt(\''+o.id+'\',\'جاري التنفيذ\')">تنفيذ</button><button type="button" class="btn b-grn b-sm" onclick="setOrdSt(\''+o.id+'\',\'مكتمل\')">إكمال</button><button type="button" class="btn b-red b-sm" onclick="setOrdSt(\''+o.id+'\',\'مرفوض\')">رفض</button></td></tr>';
+  }).join("") || '<tr><td colspan="8" style="text-align:center;color:var(--mut)">لا توجد طلبات واردة</td></tr>';
+}
+
+if(db){
+  try{
+    db.collection("users").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.users=a;if(st.user){var u=a.find(function(x){return x.phone===st.user.phone;});if(u)st.user=u;}sv();}});
+    db.collection("services").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});st.srvs=a;sv();}});
+    db.collection("orders").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.ords=a;sv();}});
+    db.collection("recharges").onSnapshot(function(s){if(!s.empty){var a=[];s.forEach(function(d){a.push(d.data());});a.sort(function(x,y){return(y.time||0)-(x.time||0);});st.recs=a;sv();}});
+  }catch(e){}
+}
+openApp();
+</script>
+</body>
+</html>
